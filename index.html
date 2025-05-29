@@ -123,6 +123,30 @@
         flex-direction: column;
         align-items: center;
         gap: 4px;
+        position: relative;
+    }
+    #sidebar.svelte-x383ly a .sidebar-tooltip {
+        display: none;
+        position: absolute;
+        left: 110%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #18181a;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: 'Playfair Display', serif;
+        white-space: nowrap;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.25);
+        z-index: 200;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    #sidebar.svelte-x383ly a:hover .sidebar-tooltip {
+        display: block;
+        opacity: 1;
     }
     #sidebar.svelte-x383ly .tab-title {
         margin-top: 2px;
