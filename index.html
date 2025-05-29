@@ -117,7 +117,7 @@
         color: #fff !important;
         fill: #fff !important;
     }
-    #sidebar.svelte-x383ly a {
+    #sidebar.svelte-x383ly a { /* General style for all links in sidebar */
         text-decoration: none !important;
         display: flex;
         flex-direction: column;
@@ -125,10 +125,48 @@
         gap: 4px;
         position: relative;
     }
+
+    /* ===== NEW STYLES FOR TAB BUTTON HOVER EFFECT ===== */
+    /* Base style for sidebar tab buttons to define shape and transition */
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp {
+        padding: 10px 0; /* Vertical padding for the box height */
+        width: calc(var(--sidebar-width) - var(--sidebar-inner-padding)); /* Adjusted width for better fit */
+        box-sizing: border-box;
+        border-radius: 10px; /* Curved box */
+        background-color: transparent; /* Initially transparent */
+        transition: background-color 0.2s ease-in-out;
+        margin-bottom: 8px; /* Add a little space between buttons */
+    }
+
+    /* Ensure icons and text within tabs also transition smoothly */
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp svg {
+        transition: fill 0.2s ease-in-out, stroke 0.2s ease-in-out;
+    }
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp .tab-title {
+        transition: color 0.2s ease-in-out;
+    }
+
+    /* Hover state for sidebar tab buttons */
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp:hover {
+        background-color: white; /* White background on hover */
+    }
+
+    /* Style for SVG icon on tab hover */
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp:hover svg {
+        fill: black !important;
+        stroke: black !important; /* Ensures stroke color also changes */
+    }
+
+    /* Style for text on tab hover */
+    #sidebar.svelte-x383ly a.sidebar-tab.svelte-cebixp:hover .tab-title {
+        color: black !important;
+    }
+    /* ===== END OF NEW STYLES ===== */
+
     #sidebar.svelte-x383ly a .sidebar-tooltip {
         display: none;
         position: absolute;
-        left: 110%;
+        left: 110%; /* Positioned outside the button area */
         top: 50%;
         transform: translateY(-50%);
         background: #18181a;
@@ -139,7 +177,7 @@
         font-family: 'Playfair Display', serif;
         white-space: nowrap;
         box-shadow: 0 2px 12px 0 rgba(0,0,0,0.25);
-        z-index: 200;
+        z-index: 200; /* Ensures tooltip is above the button background */
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.15s;
@@ -149,10 +187,10 @@
         opacity: 1;
     }
     #sidebar.svelte-x383ly .tab-title {
-        margin-top: 2px;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.5px;
+        margin-top: 2px; /* This is from your original .tab-title style */
+        font-size: 11px; /* This is from your original .tab-title style */
+        font-weight: 500; /* This is from your original .tab-title style */
+        letter-spacing: 0.5px; /* This is from your original .tab-title style */
     }
     #sidebar-tabs.svelte-x383ly {
         display: flex;
@@ -164,7 +202,7 @@
     #sidebar-actions.svelte-x383ly, #sidebar-info.svelte-x383ly {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 16px; /* Adjusted gap slightly to accommodate button margin */
         align-items: center;
     }
     /* Remove margin-top from body to align content with sidebar */
@@ -194,42 +232,50 @@
         <div id="sidebar-tabs" role="tablist" class="svelte-x383ly">
             <div id="sidebar-actions" class="sidebar-inner-container svelte-x383ly">
                 <a id="sidebar-tab-save" class="sidebar-tab svelte-cebixp active" href="/" role="tab" aria-selected="true">
-                    <!--[!--><!--]--> <!---->
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-download ">
-                        <!--[--><!----><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"><!----></path><!----><!----><path d="M7 11l5 5l5 -5"><!----></path><!----><!----><path d="M12 4l0 12"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path><path d="M7 11l5 5l5 -5"></path><path d="M12 4l0 12"></path>
                     </svg>
-                    <!---->
                     <span class="tab-title svelte-cebixp">save</span>
+                    <span class="sidebar-tooltip">Save Session</span> <!-- Example tooltip text -->
                 </a>
-                <!----> <!--[--><a id="sidebar-tab-videos" class="sidebar-tab svelte-cebixp" href="/videos" role="tab" aria-selected="false"><!--[--><div class="beta-sign svelte-cebixp" aria-label="beta">β</div><!--]--> <!---->
+                <a id="sidebar-tab-videos" class="sidebar-tab svelte-cebixp" href="/videos" role="tab" aria-selected="false">
+                    <div class="beta-sign svelte-cebixp" aria-label="beta">β</div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-repeat ">
-                        <!--[--><!----><path d="M4 12v-3a3 3 0 0 1 3 -3h13m-3 -3l3 3l-3 3"><!----></path><!----><!----><path d="M20 12v3a3 3 0 0 1 -3 3h-13m3 3l-3 -3l3 -3"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M4 12v-3a3 3 0 0 1 3 -3h13m-3 -3l3 3l-3 3"></path><path d="M20 12v3a3 3 0 0 1 -3 3h-13m3 3l-3 -3l3 -3"></path>
                     </svg>
-                    <!---->
                     <span class="tab-title svelte-cebixp">videos</span>
-                </a><!--]--></div>
+                    <span class="sidebar-tooltip">View Videos</span> <!-- Example tooltip text -->
+                </a>
+            </div>
             <div id="sidebar-info" class="sidebar-inner-container svelte-x383ly">
                 <a id="sidebar-tab-settings" class="sidebar-tab svelte-cebixp" href="/settings/appearance" role="tab" aria-selected="false">
-                    <!--[!--><!--]--> <!---->
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-settings ">
-                        <!--[--><!----><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"><!----></path><!----><!----><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                    </svg>
+                    <span class="tab-title svelte-cebixp">settings</span> <!-- Added missing span text -->
+                    <span class="sidebar-tooltip">Settings</span> <!-- Example tooltip text -->
                 </a>
-                <!----> <a id="sidebar-tab-donate" class="sidebar-tab svelte-cebixp" href="/donate" role="tab" aria-selected="false">
-                    <!--[!--><!--]--> <!---->
+                <a id="sidebar-tab-donate" class="sidebar-tab svelte-cebixp" href="/donate" role="tab" aria-selected="false">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-heart ">
-                        <!--[--><!----><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"></path>
+                    </svg>
+                    <span class="tab-title svelte-cebixp">donate</span> <!-- Added missing span text -->
+                    <span class="sidebar-tooltip">Donate</span> <!-- Example tooltip text -->
                 </a>
-                <!----> <a id="sidebar-tab-updates" class="sidebar-tab svelte-cebixp" href="/updates" role="tab" aria-selected="false">
-                    <!--[!--><!--]--> <!---->
+                <a id="sidebar-tab-updates" class="sidebar-tab svelte-cebixp" href="/updates" role="tab" aria-selected="false">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-comet ">
-                        <!--[--><!----><path d="M15.5 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z"><!----></path><!----><!----><path d="M4 4l7 7"><!----></path><!----><!----><path d="M9 4l3.5 3.5"><!----></path><!----><!----><path d="M4 9l3.5 3.5"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M15.5 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5z"></path><path d="M4 4l7 7"></path><path d="M9 4l3.5 3.5"></path><path d="M4 9l3.5 3.5"></path>
+                    </svg>
+                    <span class="tab-title svelte-cebixp">updates</span> <!-- Added missing span text -->
+                    <span class="sidebar-tooltip">Updates</span> <!-- Example tooltip text -->
                 </a>
-                <!----> <a id="sidebar-tab-about" class="sidebar-tab svelte-cebixp" href="/about/general" role="tab" aria-selected="false">
-                    <!--[!--><!--]--> <!---->
+                <a id="sidebar-tab-about" class="sidebar-tab svelte-cebixp" href="/about/general" role="tab" aria-selected="false">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-info-circle ">
-                        <!--[--><!----><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"><!----></path><!----><!----><path d="M12 9h.01"><!----></path><!----><!----><path d="M11 12h1v4h1"><!----></path><!----><!--]--><!----><!----><!----><!---->
+                        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path><path d="M12 9h.01"></path><path d="M11 12h1v4h1"></path>
+                    </svg>
+                    <span class="tab-title svelte-cebixp">about</span> <!-- Added missing span text -->
+                    <span class="sidebar-tooltip">About</span> <!-- Example tooltip text -->
                 </a>
-                <!---->
             </div>
         </div>
     </nav>
