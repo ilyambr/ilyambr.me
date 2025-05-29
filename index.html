@@ -4,6 +4,114 @@
     <title>ilyambr</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
+        :root {
+        --primary: #ffffff;
+        --secondary: #000000;
+        --white: #ffffff;
+        --gray: #75757e;
+        --red: #ed2236;
+        --medium-red: #ce3030;
+        --dark-red: #d61c2e;
+        --green: #30bd1b;
+        --blue: #2f8af9;
+        --magenta: #eb445a;
+        --purple: #5857d4;
+        --orange: #f19a38;
+        --focus-ring: solid 2px var(--blue);
+        --focus-ring-offset: -2px;
+        --button: #f4f4f4;
+        --button-hover: #ededed;
+        --button-press: #e8e8e8;
+        --button-active-hover: #2a2a2a;
+        --button-hover-transparent: rgba(0, 0, 0, .06);
+        --button-press-transparent: rgba(0, 0, 0, .09);
+        --button-stroke: rgba(0, 0, 0, .06);
+        --button-text: #282828;
+        --button-box-shadow: 0 0 0 1px var(--button-stroke) inset;
+        --button-elevated: #e3e3e3;
+        --button-elevated-hover: #dadada;
+        --button-elevated-press: #d3d3d3;
+        --button-elevated-shimmer: #ededed;
+        --popover-glow: var(--button-stroke);
+        --popup-bg: #f1f1f1;
+        --popup-stroke: rgba(0, 0, 0, .08);
+        --dialog-backdrop: rgba(255, 255, 255, .3);
+        --sidebar-bg: var(--button);
+        --sidebar-highlight: var(--secondary);
+        --sidebar-stroke: rgba(0, 0, 0, .04);
+        --content-border: rgba(0, 0, 0, .03);
+        --content-border-thickness: 1px;
+        --input-border: #adadb7;
+        --toggle-bg: var(--input-border);
+        --toggle-bg-enabled: var(--secondary);
+        --padding: 12px;
+        --border-radius: 11px;
+        --sidebar-width: 80px;
+        --sidebar-font-size: 11px;
+        --sidebar-inner-padding: 4px;
+        --sidebar-tab-padding: 10px;
+        --sidebar-height-mobile: calc(50px + env(safe-area-inset-bottom) - (5px*sign(env(safe-area-inset-bottom))));
+        --safe-area-inset-top: env(safe-area-inset-top);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        --switcher-padding: 3.5px;
+        --sidebar-mobile-gradient: linear-gradient( 90deg, rgba(0, 0, 0, .9) 0%, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, .9) 100% );
+        --skeleton-gradient: linear-gradient( 90deg, var(--button-hover), var(--button), var(--button-hover) );
+        --skeleton-gradient-elevated: linear-gradient( 90deg, var(--button-elevated), var(--button-elevated-shimmer), var(--button-elevated) );
+    }
+    [data-theme="dark"] {
+        --primary: #000000;
+        --secondary: #e1e1e1;
+        --gray: #818181;
+        --blue: #2a7ce1;
+        --green: #37aa42;
+        --button: #191919;
+        --button-hover: #242424;
+        --button-press: #2a2a2a;
+        --button-active-hover: #f9f9f9;
+        --button-hover-transparent: rgba(225, 225, 225, .1);
+        --button-press-transparent: rgba(225, 225, 225, .15);
+        --button-stroke: rgba(255, 255, 255, .05);
+        --button-text: #e1e1e1;
+        --button-box-shadow: 0 0 0 1px var(--button-stroke) inset;
+        --button-elevated: #282828;
+        --button-elevated-hover: #2f2f2f;
+        --button-elevated-press: #343434;
+        --popover-glow: rgba(135, 135, 135, .12);
+        --popup-bg: #191919;
+        --popup-stroke: rgba(255, 255, 255, .08);
+        --dialog-backdrop: rgba(0, 0, 0, .3);
+        --sidebar-bg: #131313;
+        --sidebar-highlight: var(--secondary);
+        --sidebar-stroke: rgba(255, 255, 255, .04);
+        --content-border: rgba(255, 255, 255, .045);
+        --input-border: #383838;
+        --toggle-bg: var(--input-border);
+        --toggle-bg-enabled: #8a8a8a;
+        --sidebar-mobile-gradient: linear-gradient( 90deg, rgba(19, 19, 19, .9) 0%, rgba(19, 19, 19, 0) 5%, rgba(19, 19, 19, 0) 50%, rgba(19, 19, 19, 0) 95%, rgba(19, 19, 19, .9) 100% );
+        --skeleton-gradient: linear-gradient( 90deg, var(--button), var(--button-hover), var(--button) );
+        --skeleton-gradient-elevated: linear-gradient( 90deg, var(--button-elevated), var(--button-elevated-hover), var(--button-elevated) );
+    }
+    #sidebar.svelte-x383ly {
+        background: var(--sidebar-bg);
+        height: 100vh;
+        width: calc(var(--sidebar-width) + var(--sidebar-inner-padding) * 2);
+        position: sticky;
+    }
+    #sidebar.svelte-x383ly, #sidebar-tabs.svelte-x383ly, .sidebar-inner-container.svelte-x383ly {
+        display: flex;
+        flex-direction: column;
+    }
+    * {
+        font-family: IBM Plex Mono,monospace;
+        user-select: none;
+        scrollbar-width: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #ilyambr.svelte-19vcn1w {
+        color: var(--secondary);
+    }
         body {
             background-color: black;
             color: white;
