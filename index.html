@@ -118,7 +118,17 @@
         fill: #fff !important;
     }
     #sidebar.svelte-x383ly a {
-        text-decoration: underline;
+        text-decoration: none !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    #sidebar.svelte-x383ly .tab-title {
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
     #sidebar-tabs.svelte-x383ly {
         display: flex;
@@ -151,6 +161,9 @@
         font-family: 'Playfair Display', serif; /* font family for title (ilyambr) */
         color: white; /* color for title (ilyambr) */
         font-size: 60px; /* font size for title (ilyambr) */
+    }
+    .beta-sign.svelte-cebixp {
+        display: none !important;
     }
     </style>
 </head>
