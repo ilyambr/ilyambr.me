@@ -101,8 +101,9 @@
         z-index: 100;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-items: stretch;
+        justify-content: space-between; /* space out top and bottom */
+        align-items: center; /* center items horizontally */
+        padding: 32px 0; /* add vertical padding for breathing room */
         border-right: 1px solid #fff; /* ultra-thin solid white border */
         box-shadow: 0 0 24px 4px rgba(255,255,255,0.25); /* white glow */
         backdrop-filter: none;
@@ -119,12 +120,29 @@
     #sidebar.svelte-x383ly a {
         text-decoration: underline;
     }
+    #sidebar-tabs.svelte-x383ly {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        width: 100%;
+    }
+    #sidebar-actions.svelte-x383ly, #sidebar-info.svelte-x383ly {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+    }
+    #ilyambr-logo.svelte-1i1887r {
+        margin-bottom: 32px;
+        margin-top: 0;
+    }
     /* Remove margin-top from body to align content with sidebar */
     body {
         margin-top: 0;
         margin-left: calc(var(--sidebar-width) + var(--sidebar-inner-padding) * 2);
         min-height: 100vh;
-        background: linear-gradient(135deg, #0d0d0d, #232323) fixed;
+        background: #000000 !important;
         color: white;
         font-family: 'Playfair Display', serif;
         text-align: center;
