@@ -103,7 +103,10 @@
         flex-direction: column;
         justify-content: flex-start;
         align-items: stretch;
-        border-right: 8px solid #000;
+        border-right: 8px solid rgba(255,255,255,0.12); /* semi-transparent white for acrylic effect */
+        box-shadow: 8px 0 24px 0 rgba(0,0,0,0.25); /* subtle shadow for depth */
+        backdrop-filter: blur(12px) saturate(160%) contrast(120%);
+        -webkit-backdrop-filter: blur(8px) saturate(160%) contrast(120%);
         box-sizing: border-box;
     }
     #sidebar.svelte-x383ly a,
