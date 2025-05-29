@@ -95,35 +95,43 @@
         background: var(--sidebar-bg);
         height: 100vh;
         width: calc(var(--sidebar-width) + var(--sidebar-inner-padding) * 2);
-        position: sticky;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
     }
     #sidebar.svelte-x383ly, #sidebar-tabs.svelte-x383ly, .sidebar-inner-container.svelte-x383ly {
         display: flex;
         flex-direction: column;
     }
-    * {
-        font-family: IBM Plex Mono,monospace;
-        user-select: none;
-        scrollbar-width: none;
-        -webkit-user-select: none;
-        -webkit-user-drag: none;
-        -webkit-tap-highlight-color: transparent;
+    #sidebar.svelte-x383ly a,
+    #sidebar.svelte-x383ly span,
+    #sidebar.svelte-x383ly svg,
+    #sidebar.svelte-x383ly {
+        color: #000 !important;
+        fill: #000 !important;
     }
-    #ilyambr.svelte-19vcn1w {
-        color: var(--secondary);
+    #sidebar.svelte-x383ly a {
+        text-decoration: underline;
     }
-        body {
-            background-color: black;
-            color: white;
-            font-family: 'Playfair Display', serif;
-            text-align: center;
-            margin-top: 10%;
-        }
-        h1 {
-            font-family: 'Playfair Display', serif; /* font family for title (ilyambr) */
-            color: white; /* color for title (ilyambr) */
-            font-size: 60px; /* font size for title (ilyambr) */
-        }
+    /* Remove margin-top from body to align content with sidebar */
+    body {
+        margin-top: 0;
+        margin-left: calc(var(--sidebar-width) + var(--sidebar-inner-padding) * 2);
+        background-color: black;
+        color: white;
+        font-family: 'Playfair Display', serif;
+        text-align: center;
+    }
+    h1 {
+        font-family: 'Playfair Display', serif; /* font family for title (ilyambr) */
+        color: white; /* color for title (ilyambr) */
+        font-size: 60px; /* font size for title (ilyambr) */
+    }
     </style>
 </head>
 <body> 
