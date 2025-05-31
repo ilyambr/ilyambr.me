@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My Canvas Courses &amp; Final Grades</title>
+  <title>My Canvas Courses & Final Grades</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #121212;
-      color: white;
+      color: #eee;
       padding: 40px;
       max-width: 800px;
       margin: 0 auto;
@@ -35,6 +35,9 @@
     button:hover {
       background: #666;
     }
+    #results {
+      margin-top: 30px;
+    }
     .course-item {
       border-bottom: 1px solid #333;
       padding: 15px 0;
@@ -45,11 +48,12 @@
     .course-item h2 {
       margin: 0;
       font-size: 20px;
+      color: #ccc;
     }
     .course-item p {
       margin: 5px 0 0;
       font-size: 16px;
-      color: #a8ff9e; /* light green for the grade */
+      color: #a8ff9e; /* light green for grade */
     }
     #error {
       color: #ff4d4d;
@@ -71,7 +75,7 @@
   <div id="error"></div>
 
   <script>
-    // Your proxy URL – replace this with your own Vercel deployment if it differs.
+    //  IMPORTANT: change this to exactly match your Vercel function URL:
     const PROXY_URL = "https://canvas-proxy-kqgrxluqm-ilyambrrs-projects.vercel.app/api/grades";
 
     document.getElementById("fetchBtn").addEventListener("click", fetchAllGrades);
@@ -81,7 +85,7 @@
       const resultsDiv = document.getElementById("results");
       const errorDiv = document.getElementById("error");
 
-      // Clear previous output / errors:
+      // Clear out previous results / errors:
       resultsDiv.innerHTML = "";
       errorDiv.textContent = "";
 
@@ -106,7 +110,6 @@
         console.log("📥 Response object:", response);
 
         if (!response.ok) {
-          // If Canvas returned an error (e.g. 401, 500, etc.), show the text:
           const text = await response.text();
           console.error("❌ Proxy returned error text:", text);
           throw new Error(`Proxy returned status ${response.status}`);
@@ -115,25 +118,25 @@
         const data = await response.json();
         console.log("✅ Parsed data:", data);
 
-        // Expecting data = [ { course_id, course_name, final_grade, final_score }, … ]
+        // data = [ { course_id, course_name, final_grade, final_score }, … ]
         if (!Array.isArray(data) || data.length === 0) {
           resultsDiv.innerHTML = "<p>No courses or grades found.</p>";
           return;
         }
 
-        // Render each course as a .course-item
+        // Render each course
         data.forEach((c) => {
           const container = document.createElement("div");
           container.classList.add("course-item");
 
-          // Course title (name + ID)
+          // Course title
           const title = document.createElement("h2");
           title.textContent = `${c.course_name}  (ID: ${c.course_id})`;
           container.appendChild(title);
 
           // Final Grade / Score
           const gradePara = document.createElement("p");
-          gradePara.innerHTML = `Final Grade: <strong>${c.final_grade}</strong>  (Score: ${c.final_score})`;
+          gradePara.innerHTML = `Final Grade: <strong>${c.final_grade}</strong>  (Score: <strong>${c.final_score}</strong>)`;
           container.appendChild(gradePara);
 
           resultsDiv.appendChild(container);
