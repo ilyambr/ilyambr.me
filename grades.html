@@ -1,136 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>My Canvas Courses &amp; Final Grades</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: white;
-      padding: 30px;
-    }
-    input {
-      width: 500px;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 18px;
-      font-size: 16px;
-      margin-left: 10px;
-    }
-    .course-box {
-      margin-top: 30px;
-      border-top: 1px solid #444;
-      padding-top: 20px;
-    }
-    .course-header {
-      font-size: 22px;
-      margin-bottom: 6px;
-    }
-    .final-grade {
-      font-size: 18px;
-      color: #7fff7f; /* light green */
-      margin-bottom: 10px;
-    }
-    .no-history {
-      color: #ffae00; /* amber if no final grade */
-      margin-bottom: 10px;
-    }
-    #error {
-      color: #ff4d4d;
-      margin-top: 15px;
-      font-size: 18px;
-    }
-  </style>
-</head>
-<body>
-  <h1>My Canvas Courses &amp; Final Grades</h1>
+// in grades.html (or index.html) …
+async function fetchAll() {
+  const token = document.getElementById("token").value.trim();
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = "";
 
-  <input id="token" placeholder="Paste your Canvas access token here" />
-  <button onclick="fetchFinalGrades()">Fetch All</button>
-  <p id="error"></p>
+  if (!token) {
+    resultsContainer.textContent = "Paste your token first!";
+    return;
+  }
 
-  <div id="results"></div>
-
-  <script>
-    async function fetchFinalGrades() {
-      const token = document.getElementById('token').value.trim();
-      const resultsDiv = document.getElementById('results');
-      const errorP = document.getElementById('error');
-      resultsDiv.innerHTML = '';
-      errorP.textContent = '';
-
-      if (!token) {
-        errorP.textContent = 'You need to paste your access token first.';
-        return;
+  try {
+    const resp = await fetch(
+      "https://canvas-proxy–<your-deployment-url>/api/grades",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
       }
-
-      try {
-        console.log('🔄 Sending request to proxy…');
-        console.log('🧠 Token:', token);
-
-        const response = await fetch(
-          'https://canvas-proxy-kqgrxluqm-ilyambrrs-projects.vercel.app/api/grades',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token }),
-          }
-        );
-
-        console.log('📥 Raw response object:', response);
-
-        if (!response.ok) {
-          const errText = await response.text();
-          console.error('❌ Proxy returned error text:', errText);
-          throw new Error('Invalid token or proxy error');
-        }
-
-        const data = await response.json();
-        console.log('✅ Parsed JSON from proxy:', data);
-
-        if (!Array.isArray(data) || data.length === 0) {
-          resultsDiv.innerHTML = '<p>No courses / history found.</p>';
-          return;
-        }
-
-        data.forEach((courseObj) => {
-          // 1) Container div
-          const container = document.createElement('div');
-          container.className = 'course-box';
-
-          // 2) Course name + ID
-          const header = document.createElement('div');
-          header.className = 'course-header';
-          header.textContent = `${courseObj.course_name} (ID: ${courseObj.course_id})`;
-          container.appendChild(header);
-
-          // 3) Final Grade line
-          if (courseObj.final_grade !== null) {
-            const gradeLine = document.createElement('div');
-            gradeLine.className = 'final-grade';
-            gradeLine.textContent = `Final Grade: ${courseObj.final_grade}`;
-            container.appendChild(gradeLine);
-          } else {
-            const noHist = document.createElement('div');
-            noHist.className = 'no-history';
-            noHist.textContent = 'No Final Score entry in gradebook history.';
-            container.appendChild(noHist);
-          }
-
-          // 4) (Optional) If you want to inspect the entire history object:
-          //    Uncomment these two lines to log it in the browser console:
-          // console.log(`History[${courseObj.course_id}] =`, courseObj.history);
-
-          resultsDiv.appendChild(container);
-        });
-      } catch (err) {
-        console.error('❗ Fetch Error:', err);
-        errorP.textContent = 'Failed to fetch: ' + err.message;
-      }
+    );
+    if (!resp.ok) {
+      throw new Error("Proxy returned " + resp.status);
     }
-  </script>
-</body>
-</html>
+    const data = await resp.json();
+    // data will be an array like:
+    // [
+    //   { course_id: 34917, course_name: "Italian II-Caprio", final_grade: "92", final_score: "92.0" },
+    //   { ... }
+    // ]
+    data.forEach((c) => {
+      const div = document.createElement("div");
+      div.innerHTML = `
+        <h3>${c.course_name} (ID: ${c.course_id})</h3>
+        <p>Final Grade: <span style="color: green">${c.final_grade}</span>
+           (Score: ${c.final_score})</p>
+      `;
+      resultsContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error(err);
+    resultsContainer.textContent = "Fetch failed: " + err.message;
+  }
+}
