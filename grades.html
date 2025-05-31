@@ -5,78 +5,81 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 30px;
-      background-color: #f2f2f2;
+      background: #121212;
+      color: white;
+      padding: 40px;
     }
     input {
-      width: 400px;
-      padding: 10px;
-      font-size: 14px;
+      width: 500px;
+      padding: 12px;
+      font-size: 16px;
     }
     button {
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 12px 20px;
+      font-size: 16px;
       margin-left: 10px;
     }
     ul {
       margin-top: 20px;
     }
     li {
-      font-size: 16px;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    #error {
+      color: #ff4d4d;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
   <h1>My Canvas Grades</h1>
-  <label>Access Token: </label>
-  <input type="text" id="token" placeholder="Paste your access token here">
-  <button onclick="loadGrades()">Fetch Grades</button>
+
+  <input id="token" placeholder="Paste your Canvas access token here" />
+  <button onclick="fetchGrades()">Fetch Grades</button>
+
   <ul id="grades"></ul>
-  <p id="error" style="color:red;"></p>
+  <p id="error"></p>
 
   <script>
-    const apiBase = 'https://providencepsd.instructure.com/api/v1';
-
-    async function loadGrades() {
+    async function fetchGrades() {
       const token = document.getElementById("token").value.trim();
       const gradesList = document.getElementById("grades");
       const errorMsg = document.getElementById("error");
+
       gradesList.innerHTML = '';
       errorMsg.textContent = '';
 
+      if (!token) {
+        errorMsg.textContent = "You need to paste your access token first.";
+        return;
+      }
+
       try {
-        const courseRes = await fetch(`${apiBase}/courses`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
+        const res = await fetch("https://canvas-proxy-loykfy3t2-ilyambrrs-projects.vercel.app/api/grades", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token })
         });
-        if (!courseRes.ok) throw new Error("Invalid token or CORS blocked");
 
-        const courses = await courseRes.json();
-
-        for (const course of courses) {
-          const enrollRes = await fetch(`${apiBase}/courses/${course.id}/enrollments`, {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          });
-          if (!enrollRes.ok) continue;
-
-          const enrollments = await enrollRes.json();
-          const student = enrollments.find(e => e.type === "StudentEnrollment");
-
-          if (student && student.grades) {
-            const li = document.createElement("li");
-            const name = course.name;
-            const letter = student.grades.current_grade || "N/A";
-            const percent = student.grades.current_score || "N/A";
-            li.textContent = `${name}: ${letter} (${percent}%)`;
-            gradesList.appendChild(li);
-          }
+        if (!res.ok) {
+          throw new Error("Invalid token or proxy failed");
         }
+
+        const data = await res.json();
+        if (!data.length) {
+          gradesList.innerHTML = "<li>No grade data found.</li>";
+          return;
+        }
+
+        data.forEach(course => {
+          const li = document.createElement("li");
+          li.textContent = `${course.course}: ${course.grade || "N/A"} (${course.score || "N/A"}%)`;
+          gradesList.appendChild(li);
+        });
+
       } catch (err) {
         errorMsg.textContent = "Failed to fetch: " + err.message;
-        console.error(err);
       }
     }
   </script>
