@@ -1,160 +1,139 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Canvas Grades</title>
+  <meta charset="utf-8" />
+  <title>My Canvas Assignments (per Course)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #121212;
       color: white;
-      padding: 40px;
+      padding: 30px;
     }
     input {
       width: 500px;
-      padding: 12px;
+      padding: 10px;
       font-size: 16px;
-      margin-bottom: 10px;
     }
     button {
-      padding: 12px 20px;
+      padding: 10px 18px;
       font-size: 16px;
       margin-left: 10px;
     }
-    .course-section {
+    .course-box {
       margin-top: 30px;
       border-top: 1px solid #444;
       padding-top: 20px;
     }
-    .course-title {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-    .course-grade {
-      font-size: 20px;
-      margin-bottom: 12px;
-      color: #a0e0a0;
-    }
-    ul {
-      list-style: disc inside;
-    }
-    li {
+    .course-header {
+      font-size: 22px;
       margin-bottom: 6px;
+    }
+    ul.assign-list {
+      margin-left: 20px;
+    }
+    ul.assign-list li {
+      margin-bottom: 4px;
       font-size: 18px;
     }
     #error {
       color: #ff4d4d;
       margin-top: 15px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <h1>My Canvas Grades</h1>
+  <h1>My Canvas Courses &amp; Assignments</h1>
 
   <input id="token" placeholder="Paste your Canvas access token here" />
-  <button onclick="fetchGrades()">Fetch Grades</button>
-
+  <button onclick="fetchCourseAssignments()">Fetch All Assignments</button>
   <p id="error"></p>
+
   <div id="results"></div>
 
   <script>
-    async function fetchGrades() {
-      const token = document.getElementById("token").value.trim();
-      const resultsContainer = document.getElementById("results");
-      const errorMsg = document.getElementById("error");
-
-      resultsContainer.innerHTML = "";
-      errorMsg.textContent = "";
+    async function fetchCourseAssignments() {
+      const token = document.getElementById('token').value.trim();
+      const resultsDiv = document.getElementById('results');
+      const errorP = document.getElementById('error');
+      resultsDiv.innerHTML = '';
+      errorP.textContent = '';
 
       if (!token) {
-        errorMsg.textContent = "You need to paste your access token first.";
+        errorP.textContent = 'You need to paste your access token first.';
         return;
       }
 
       try {
-        console.log("🔄 Sending request to proxy...");
-        console.log("🧠 Token:", token);
+        console.log('-> Sending request to proxy…');
+        console.log('   Token:', token);
 
-        const res = await fetch(
-          "https://canvas-proxy-kqgrxluqm-ilyambrrs-projects.vercel.app/api/grades",
+        const response = await fetch(
+          'https://canvas-proxy-kqgrxluqm-ilyambrrs-projects.vercel.app/api/grades',
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token }),
           }
         );
 
-        console.log("📥 Response object:", res);
+        console.log('   Raw response object:', response);
 
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("❌ Error response text:", text);
-          throw new Error("Invalid token or proxy failed");
+        if (!response.ok) {
+          const text = await response.text();
+          console.error('   Proxy returned error text:', text);
+          throw new Error('Invalid token or proxy failed');
         }
 
-        const data = await res.json();
-        console.log("✅ Parsed data:", data);
+        const coursesArray = await response.json();
+        console.log('   Parsed JSON:', coursesArray);
 
-        if (!data.length) {
-          resultsContainer.innerHTML = "<p>No courses or grades found.</p>";
+        if (!Array.isArray(coursesArray) || coursesArray.length === 0) {
+          resultsDiv.innerHTML = '<p>No courses / assignments found.</p>';
           return;
         }
 
-        // Loop over each course in the returned array:
-        data.forEach((courseObj) => {
-          // Container for this course
-          const section = document.createElement("div");
-          section.className = "course-section";
+        // Loop through each returned course object
+        coursesArray.forEach((courseObj) => {
+          // Course container
+          const container = document.createElement('div');
+          container.className = 'course-box';
 
-          // Course title
-          const title = document.createElement("div");
-          title.className = "course-title";
-          title.textContent = courseObj.course;
-          section.appendChild(title);
+          // Header: Course Name (ID)
+          const header = document.createElement('div');
+          header.className = 'course-header';
+          header.textContent = `${courseObj.course_name} (ID: ${courseObj.course_id})`;
+          container.appendChild(header);
 
-          // Overall Current Grade
-          const gradeLine = document.createElement("div");
-          gradeLine.className = "course-grade";
-
-          // Only format a percent if current_score is a real number:
-          let percentText = "";
-          if (typeof courseObj.current_score === "number") {
-            percentText = ` (${courseObj.current_score.toFixed(2)}%)`;
-          }
-
-          if (courseObj.current_grade !== null) {
-            gradeLine.textContent =
-              "Current Grade: " +
-              courseObj.current_grade +
-              percentText;
+          // If no assignments were returned:
+          if (
+            !courseObj.assignments ||
+            !Array.isArray(courseObj.assignments) ||
+            courseObj.assignments.length === 0
+          ) {
+            const noAssign = document.createElement('div');
+            noAssign.textContent = 'No assignments found for this course.';
+            container.appendChild(noAssign);
           } else {
-            gradeLine.textContent = "Current Grade: N/A";
-          }
-          section.appendChild(gradeLine);
+            // Create an unordered list of assignments
+            const ul = document.createElement('ul');
+            ul.className = 'assign-list';
 
-          // List of assignments
-          if (courseObj.assignments && courseObj.assignments.length > 0) {
-            const ul = document.createElement("ul");
-            courseObj.assignments.forEach((a) => {
-              const li = document.createElement("li");
-              if (a.score === null) {
-                li.textContent = `${a.name}: not graded yet`;
-              } else {
-                li.textContent = `${a.name}: ${a.score} / ${a.possible}`;
-              }
+            courseObj.assignments.forEach((assign) => {
+              const li = document.createElement('li');
+              li.textContent = `${assign.name} (ID: ${assign.id}) – ${assign.points_possible} pts possible`;
               ul.appendChild(li);
             });
-            section.appendChild(ul);
-          } else {
-            const noAssign = document.createElement("div");
-            noAssign.textContent = "No assignments found for this course.";
-            section.appendChild(noAssign);
+
+            container.appendChild(ul);
           }
 
-          resultsContainer.appendChild(section);
+          resultsDiv.appendChild(container);
         });
       } catch (err) {
-        console.error("❗ Fetch Error:", err);
-        errorMsg.textContent = "Failed to fetch: " + err.message;
+        console.error('Fetch Error:', err);
+        errorP.textContent = 'Failed to fetch: ' + err.message;
       }
     }
   </script>
