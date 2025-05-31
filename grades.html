@@ -56,17 +56,26 @@
       }
 
       try {
+        console.log("🔄 Sending request to proxy...");
+        console.log("🧠 Token:", token);
+
         const res = await fetch("https://canvas-proxy-loykfy3t2-ilyambrrs-projects.vercel.app/api/grades", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token })
         });
 
+        console.log("📥 Response object:", res);
+
         if (!res.ok) {
+          const text = await res.text();
+          console.error("❌ Error response text:", text);
           throw new Error("Invalid token or proxy failed");
         }
 
         const data = await res.json();
+        console.log("✅ Parsed grade data:", data);
+
         if (!data.length) {
           gradesList.innerHTML = "<li>No grade data found.</li>";
           return;
@@ -79,6 +88,7 @@
         });
 
       } catch (err) {
+        console.error("❗ Fetch Error:", err);
         errorMsg.textContent = "Failed to fetch: " + err.message;
       }
     }
