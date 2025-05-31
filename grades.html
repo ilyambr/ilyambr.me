@@ -1,43 +1,148 @@
-// in grades.html (or index.html) …
-async function fetchAll() {
-  const token = document.getElementById("token").value.trim();
-  const resultsContainer = document.getElementById("results");
-  resultsContainer.innerHTML = "";
-
-  if (!token) {
-    resultsContainer.textContent = "Paste your token first!";
-    return;
-  }
-
-  try {
-    const resp = await fetch(
-      "https://canvas-proxy–<your-deployment-url>/api/grades",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      }
-    );
-    if (!resp.ok) {
-      throw new Error("Proxy returned " + resp.status);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Canvas Courses &amp; Final Grades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
     }
-    const data = await resp.json();
-    // data will be an array like:
-    // [
-    //   { course_id: 34917, course_name: "Italian II-Caprio", final_grade: "92", final_score: "92.0" },
-    //   { ... }
-    // ]
-    data.forEach((c) => {
-      const div = document.createElement("div");
-      div.innerHTML = `
-        <h3>${c.course_name} (ID: ${c.course_id})</h3>
-        <p>Final Grade: <span style="color: green">${c.final_grade}</span>
-           (Score: ${c.final_score})</p>
-      `;
-      resultsContainer.appendChild(div);
-    });
-  } catch (err) {
-    console.error(err);
-    resultsContainer.textContent = "Fetch failed: " + err.message;
-  }
-}
+    h1 {
+      margin-bottom: 20px;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #202020;
+      color: #eee;
+    }
+    input {
+      width: 500px;
+    }
+    button {
+      cursor: pointer;
+      background: #555;
+      color: #fff;
+    }
+    button:hover {
+      background: #666;
+    }
+    .course-item {
+      border-bottom: 1px solid #333;
+      padding: 15px 0;
+    }
+    .course-item:last-child {
+      border-bottom: none;
+    }
+    .course-item h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .course-item p {
+      margin: 5px 0 0;
+      font-size: 16px;
+      color: #a8ff9e; /* light green for the grade */
+    }
+    #error {
+      color: #ff4d4d;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Canvas Courses &amp; Final Grades</h1>
+
+  <!-- 1) Paste your Canvas API token here -->
+  <input id="token" type="text" placeholder="Paste your Canvas access token here" />
+  <button id="fetchBtn">Fetch All</button>
+
+  <!-- 2) Where we will show each course + final grade -->
+  <div id="results"></div>
+
+  <!-- 3) Show any error messages here -->
+  <div id="error"></div>
+
+  <script>
+    // Your proxy URL – replace this with your own Vercel deployment if it differs.
+    const PROXY_URL = "https://canvas-proxy-kqgrxluqm-ilyambrrs-projects.vercel.app/api/grades";
+
+    document.getElementById("fetchBtn").addEventListener("click", fetchAllGrades);
+
+    async function fetchAllGrades() {
+      const tokenInput = document.getElementById("token");
+      const resultsDiv = document.getElementById("results");
+      const errorDiv = document.getElementById("error");
+
+      // Clear previous output / errors:
+      resultsDiv.innerHTML = "";
+      errorDiv.textContent = "";
+
+      const token = tokenInput.value.trim();
+      if (!token) {
+        errorDiv.textContent = "❗ Please paste your Canvas access token first.";
+        return;
+      }
+
+      try {
+        console.log("🔄 Sending request to proxy…");
+        console.log("🧠 Token:", token);
+
+        const response = await fetch(PROXY_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        console.log("📥 Response object:", response);
+
+        if (!response.ok) {
+          // If Canvas returned an error (e.g. 401, 500, etc.), show the text:
+          const text = await response.text();
+          console.error("❌ Proxy returned error text:", text);
+          throw new Error(`Proxy returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("✅ Parsed data:", data);
+
+        // Expecting data = [ { course_id, course_name, final_grade, final_score }, … ]
+        if (!Array.isArray(data) || data.length === 0) {
+          resultsDiv.innerHTML = "<p>No courses or grades found.</p>";
+          return;
+        }
+
+        // Render each course as a .course-item
+        data.forEach((c) => {
+          const container = document.createElement("div");
+          container.classList.add("course-item");
+
+          // Course title (name + ID)
+          const title = document.createElement("h2");
+          title.textContent = `${c.course_name}  (ID: ${c.course_id})`;
+          container.appendChild(title);
+
+          // Final Grade / Score
+          const gradePara = document.createElement("p");
+          gradePara.innerHTML = `Final Grade: <strong>${c.final_grade}</strong>  (Score: ${c.final_score})`;
+          container.appendChild(gradePara);
+
+          resultsDiv.appendChild(container);
+        });
+      } catch (err) {
+        console.error("🚨 Fetch Error:", err);
+        errorDiv.textContent = "Failed to fetch: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
