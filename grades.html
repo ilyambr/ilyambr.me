@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Canvas Grades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f2f2f2;
+    }
+    input {
+      width: 400px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    ul {
+      margin-top: 20px;
+    }
+    li {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Canvas Grades</h1>
+  <label>Access Token: </label>
+  <input type="text" id="token" placeholder="Paste your access token here">
+  <button onclick="loadGrades()">Fetch Grades</button>
+  <ul id="grades"></ul>
+  <p id="error" style="color:red;"></p>
+
+  <script>
+    const apiBase = 'https://providencepsd.instructure.com/api/v1';
+
+    async function loadGrades() {
+      const token = document.getElementById("token").value.trim();
+      const gradesList = document.getElementById("grades");
+      const errorMsg = document.getElementById("error");
+      gradesList.innerHTML = '';
+      errorMsg.textContent = '';
+
+      try {
+        const courseRes = await fetch(`${apiBase}/courses`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (!courseRes.ok) throw new Error("Invalid token or CORS blocked");
+
+        const courses = await courseRes.json();
+
+        for (const course of courses) {
+          const enrollRes = await fetch(`${apiBase}/courses/${course.id}/enrollments`, {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+          if (!enrollRes.ok) continue;
+
+          const enrollments = await enrollRes.json();
+          const student = enrollments.find(e => e.type === "StudentEnrollment");
+
+          if (student && student.grades) {
+            const li = document.createElement("li");
+            const name = course.name;
+            const letter = student.grades.current_grade || "N/A";
+            const percent = student.grades.current_score || "N/A";
+            li.textContent = `${name}: ${letter} (${percent}%)`;
+            gradesList.appendChild(li);
+          }
+        }
+      } catch (err) {
+        errorMsg.textContent = "Failed to fetch: " + err.message;
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
