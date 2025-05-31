@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>My Canvas Assignments (per Course)</title>
+  <title>My Canvas Courses &amp; Final Grades</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,6 +29,11 @@
       font-size: 22px;
       margin-bottom: 6px;
     }
+    .final-grade {
+      font-size: 18px;
+      color: #7fff7f; /* light green */
+      margin-bottom: 10px;
+    }
     ul.assign-list {
       margin-left: 20px;
     }
@@ -44,10 +49,10 @@
   </style>
 </head>
 <body>
-  <h1>My Canvas Courses &amp; Assignments</h1>
+  <h1>My Canvas Courses &amp; Final Grades</h1>
 
   <input id="token" placeholder="Paste your Canvas access token here" />
-  <button onclick="fetchCourseAssignments()">Fetch All Assignments</button>
+  <button onclick="fetchCourseAssignments()">Fetch All</button>
   <p id="error"></p>
 
   <div id="results"></div>
@@ -94,19 +99,29 @@
           return;
         }
 
-        // Loop through each returned course object
         coursesArray.forEach((courseObj) => {
-          // Course container
+          // 1) Course container
           const container = document.createElement('div');
           container.className = 'course-box';
 
-          // Header: Course Name (ID)
+          // 2) Header: Course Name (ID)
           const header = document.createElement('div');
           header.className = 'course-header';
           header.textContent = `${courseObj.course_name} (ID: ${courseObj.course_id})`;
           container.appendChild(header);
 
-          // If no assignments were returned:
+          // 3) Show Final Grade
+          const gradeLine = document.createElement('div');
+          gradeLine.className = 'final-grade';
+          if (courseObj.final_grade !== null) {
+            gradeLine.textContent = `Final Grade: ${courseObj.final_grade}`;
+          } else {
+            gradeLine.textContent = `Final Grade: N/A`;
+            gradeLine.style.color = '#ffae00'; // amber if missing
+          }
+          container.appendChild(gradeLine);
+
+          // 4) Assignments list (if any)
           if (
             !courseObj.assignments ||
             !Array.isArray(courseObj.assignments) ||
@@ -116,16 +131,13 @@
             noAssign.textContent = 'No assignments found for this course.';
             container.appendChild(noAssign);
           } else {
-            // Create an unordered list of assignments
             const ul = document.createElement('ul');
             ul.className = 'assign-list';
-
             courseObj.assignments.forEach((assign) => {
               const li = document.createElement('li');
               li.textContent = `${assign.name} (ID: ${assign.id}) – ${assign.points_possible} pts possible`;
               ul.appendChild(li);
             });
-
             container.appendChild(ul);
           }
 
