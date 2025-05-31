@@ -32,7 +32,7 @@
     .course-grade {
       font-size: 20px;
       margin-bottom: 12px;
-      color: #a0e0a0; /* light green */
+      color: #a0e0a0;
     }
     ul {
       list-style: disc inside;
@@ -62,9 +62,8 @@
       const resultsContainer = document.getElementById("results");
       const errorMsg = document.getElementById("error");
 
-      // Clear previous results / errors:
-      resultsContainer.innerHTML = '';
-      errorMsg.textContent = '';
+      resultsContainer.innerHTML = "";
+      errorMsg.textContent = "";
 
       if (!token) {
         errorMsg.textContent = "You need to paste your access token first.";
@@ -102,31 +101,37 @@
 
         // Loop over each course in the returned array:
         data.forEach((courseObj) => {
-          // Create a container div for this course
+          // Container for this course
           const section = document.createElement("div");
           section.className = "course-section";
 
-          // 1️⃣ Course title:
+          // Course title
           const title = document.createElement("div");
           title.className = "course-title";
           title.textContent = courseObj.course;
           section.appendChild(title);
 
-          // 2️⃣ Overall Current Grade (if available):
+          // Overall Current Grade
           const gradeLine = document.createElement("div");
           gradeLine.className = "course-grade";
+
+          // Only format a percent if current_score is a real number:
+          let percentText = "";
+          if (typeof courseObj.current_score === "number") {
+            percentText = ` (${courseObj.current_score.toFixed(2)}%)`;
+          }
+
           if (courseObj.current_grade !== null) {
-            // show "Current Grade: A- (90.94%)"
-            const percent = courseObj.current_score !== null
-              ? ` (${courseObj.current_score.toFixed(2)}%)`
-              : "";
-            gradeLine.textContent = `Current Grade: ${courseObj.current_grade}${percent}`;
+            gradeLine.textContent =
+              "Current Grade: " +
+              courseObj.current_grade +
+              percentText;
           } else {
             gradeLine.textContent = "Current Grade: N/A";
           }
           section.appendChild(gradeLine);
 
-          // 3️⃣ List of assignments (if any)
+          // List of assignments
           if (courseObj.assignments && courseObj.assignments.length > 0) {
             const ul = document.createElement("ul");
             courseObj.assignments.forEach((a) => {
@@ -145,7 +150,6 @@
             section.appendChild(noAssign);
           }
 
-          // Append this course’s section into the main results container
           resultsContainer.appendChild(section);
         });
       } catch (err) {
