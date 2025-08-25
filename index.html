@@ -897,93 +897,34 @@
 		
 		async function loadLatestYouTubeVideo() {
 			try {
-				// Use the correct channel ID for @ilyambr
-				const channelId = 'UCIT9_QQpyUP2zg_39sLFb8Q'; // Your actual channel ID
+				// Use the same API approach that works for subscriber count
+				const obfuscatedApiKey = 'Jh1UYtWS4gzcTpHZHRDWMJjUIhzVmVmQPJle5MEZnhmQ5NVY6lUQ';
+				const apiKey = decode(obfuscatedApiKey);
+				const channelId = 'UCIT9_QQpyUP2zg_39sLFb8Q';
 				
-				// Try to fetch from YouTube RSS feed first (no API key needed)
-				const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+				const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=1&type=video`);
 				
-				try {
-					// Use a CORS proxy to fetch the RSS feed
-					const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`);
-					const data = await response.json();
-					
-					if (data.contents) {
-						// Parse the XML to get the latest video ID
-						const parser = new DOMParser();
-						const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-						const entries = xmlDoc.getElementsByTagName('entry');
-						
-						if (entries.length > 0) {
-							const videoUrl = entries[0].getElementsByTagName('link')[0].getAttribute('href');
-							const videoId = videoUrl.split('v=')[1];
-							
-							if (videoId) {
-								const youtubeEmbed = document.getElementById('youtube-embed');
-								youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
-								return;
-							}
-						}
-					}
-				} catch (rssError) {
-					console.log('RSS feed method failed, trying fallback');
+				if (!response.ok) {
+					throw new Error('YouTube API request failed');
 				}
 				
-				// Fallback: Load a specific video or show message
-				console.log('No recent YouTube videos found');
-				const youtubeEmbed = document.getElementById('youtube-embed');
-				const embedContainer = youtubeEmbed.parentElement;
+				const data = await response.json();
+				console.log('YouTube video data:', data);
 				
-				// Clear the iframe and show a message in the container
-				youtubeEmbed.style.display = 'none';
-				
-				// Create or update message div
-				let messageDiv = embedContainer.querySelector('.youtube-message');
-				if (!messageDiv) {
-					messageDiv = document.createElement('div');
-					messageDiv.className = 'youtube-message';
-					messageDiv.style.cssText = `
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-						color: var(--muted);
-						text-align: center;
-						font-size: 14px;
-						padding: 20px;
-						width: 100%;
-						box-sizing: border-box;
-					`;
-					embedContainer.appendChild(messageDiv);
+				if (data.items && data.items.length > 0) {
+					const videoId = data.items[0].id.videoId;
+					const youtubeEmbed = document.getElementById('youtube-embed');
+					youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+					console.log('Loaded video ID:', videoId);
+				} else {
+					console.log('No YouTube videos found');
+					const youtubeEmbed = document.getElementById('youtube-embed');
+					youtubeEmbed.src = 'about:blank';
 				}
-				messageDiv.textContent = 'No recent YouTube videos found';
-				
 			} catch (error) {
 				console.error('Error loading YouTube video:', error);
 				const youtubeEmbed = document.getElementById('youtube-embed');
-				const embedContainer = youtubeEmbed.parentElement;
-				
-				youtubeEmbed.style.display = 'none';
-				
-				let messageDiv = embedContainer.querySelector('.youtube-message');
-				if (!messageDiv) {
-					messageDiv = document.createElement('div');
-					messageDiv.className = 'youtube-message';
-					messageDiv.style.cssText = `
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-						color: var(--muted);
-						text-align: center;
-						font-size: 14px;
-						padding: 20px;
-						width: 100%;
-						box-sizing: border-box;
-					`;
-					embedContainer.appendChild(messageDiv);
-				}
-				messageDiv.textContent = 'YouTube video unavailable';
+				youtubeEmbed.src = 'about:blank';
 			}
 		}
 	</script>
