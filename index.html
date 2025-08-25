@@ -38,8 +38,9 @@
 			margin:0;
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
-			background: url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2));
+			background: transparent; /* Initially transparent to prevent flickering */
 			overflow-x:hidden;
+			transition: background 0.5s ease-in-out;
 		}
 
 		.aurora{
@@ -147,6 +148,11 @@
 				0 0 0 6px rgba(120,120,120,0.08),
 				0 0 0 1px rgba(255,255,255,0.10) inset;
 			display:grid; place-items:center; overflow:hidden;
+			opacity: 0; /* Initially hidden to prevent flickering */
+			transition: opacity 0.3s ease-in-out;
+		}
+		.avatar.loaded {
+			opacity: 1; /* Show once loaded */
 		}
 		.avatar img{width:100%; height:100%; object-fit:cover; display:block}
 		.badges{
@@ -1532,37 +1538,48 @@
 			console.log('🎨 Global background:', savedBg);
 			console.log('📺 Global YouTube video:', savedVideo);
 			
-			if (savedPic && savedPic !== 'Default') {
-				// Update profile picture for ALL visitors
-				const avatarImg = document.querySelector('.avatar img');
-				if (avatarImg) {
+			// Handle profile picture
+			const avatarImg = document.querySelector('.avatar img');
+			const avatar = document.querySelector('.avatar');
+			if (avatarImg && avatar) {
+				if (savedPic && savedPic !== 'Default') {
 					console.log('✅ Applying global profile picture to ALL visitors');
 					avatarImg.src = savedPic;
+					avatarImg.onload = function() {
+						avatar.classList.add('loaded'); // Show avatar after image loads
+					};
 					avatarImg.onerror = function() {
-						// If image fails to load, revert to default
 						console.log('❌ Global profile pic failed to load, reverting to default');
 						this.src = 'https://ilyambr.me/img/avatar.webp';
+						avatar.classList.add('loaded');
 						saveGlobalSetting('profile-pic', 'Default');
+					};
+				} else {
+					// Use default image
+					avatarImg.src = 'https://ilyambr.me/img/avatar.webp';
+					avatarImg.onload = function() {
+						avatar.classList.add('loaded');
 					};
 				}
 			}
 			
+			// Handle background
 			if (savedBg && savedBg !== 'Default') {
-				// Apply background image for ALL visitors
 				console.log('✅ Applying global background to ALL visitors');
 				const img = new Image();
 				img.onload = function() {
-					// Image loaded successfully, apply it globally
 					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 					console.log('🎨 Global background applied successfully');
 				};
 				img.onerror = function() {
-					// Image failed to load, revert to default
 					console.log('❌ Global background failed to load, reverting to default');
 					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 					saveGlobalSetting('background', 'Default');
 				};
 				img.src = savedBg;
+			} else {
+				// Use default background
+				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 			}
 			
 			if (savedVideo && savedVideo !== 'Auto-Latest') {
