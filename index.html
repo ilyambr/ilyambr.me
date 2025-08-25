@@ -830,7 +830,7 @@
 	</div>
 
 	<!-- Admin Console Button -->
-	<div class="admin-button" id="adminButton">
+	<div class="admin-button" onclick="openAdminLogin()">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 			<circle cx="12" cy="12" r="3"/>
@@ -1256,6 +1256,39 @@
 			console.log('Firebase not available, using localStorage fallback');
 		}
 
+		// Admin Console Functionality (moved here to be available immediately)
+		let isAdminLoggedIn = false;
+		let adminUser = null;
+		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
+		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
+
+		function openAdminLogin() {
+			console.log('🔧 Admin button clicked!');
+			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
+			
+			if (isAdminLoggedIn) {
+				console.log('✅ User is logged in, opening admin panel');
+				loadCurrentSettings();
+				document.getElementById('adminPanelPopup').style.display = 'flex';
+				document.body.style.overflow = 'hidden';
+			} else {
+				console.log('🔐 User not logged in, opening login popup');
+				const loginPopup = document.getElementById('adminLoginPopup');
+				if (loginPopup) {
+					loginPopup.style.display = 'flex';
+					document.body.style.overflow = 'hidden';
+					console.log('✅ Login popup should be visible now');
+				} else {
+					console.error('❌ adminLoginPopup element not found!');
+				}
+			}
+		}
+
+		function closeAdminPopup(popupId) {
+			document.getElementById(popupId).style.display = 'none';
+			document.body.style.overflow = 'auto';
+		}
+
 		// Global settings management
 		async function saveGlobalSetting(key, value) {
 			try {
@@ -1294,41 +1327,6 @@
 				// Fallback to localStorage
 				return localStorage.getItem('admin-' + key);
 			}
-		}
-
-		// Admin Console Functionality
-		let isAdminLoggedIn = false;
-		let adminUser = null;
-
-		// Google Sign-In Configuration
-		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
-		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
-
-		function openAdminLogin() {
-			console.log('🔧 Admin button clicked!');
-			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
-			
-			if (isAdminLoggedIn) {
-				console.log('✅ User is logged in, opening admin panel');
-				loadCurrentSettings();
-				document.getElementById('adminPanelPopup').style.display = 'flex';
-				document.body.style.overflow = 'hidden';
-			} else {
-				console.log('🔐 User not logged in, opening login popup');
-				const loginPopup = document.getElementById('adminLoginPopup');
-				if (loginPopup) {
-					loginPopup.style.display = 'flex';
-					document.body.style.overflow = 'hidden';
-					console.log('✅ Login popup should be visible now');
-				} else {
-					console.error('❌ adminLoginPopup element not found!');
-				}
-			}
-		}
-
-		function closeAdminPopup(popupId) {
-			document.getElementById(popupId).style.display = 'none';
-			document.body.style.overflow = 'auto';
 		}
 
 		// Initialize Google Sign-In when the page loads
@@ -1743,20 +1741,6 @@
 			if (event.key === 'Escape') {
 				closeAdminPopup('adminLoginPopup');
 				closeAdminPopup('adminPanelPopup');
-			}
-		});
-
-		// Set up admin button click listener when DOM is loaded
-		document.addEventListener('DOMContentLoaded', function() {
-			const adminButton = document.getElementById('adminButton');
-			if (adminButton) {
-				adminButton.addEventListener('click', function() {
-					console.log('🔧 Admin button clicked!');
-					openAdminLogin();
-				});
-				console.log('✅ Admin button event listener attached');
-			} else {
-				console.error('❌ Admin button not found!');
 			}
 		});
 	</script>
