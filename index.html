@@ -57,7 +57,7 @@
 			align-items: center;
 			z-index: 9999;
 			opacity: 1;
-			transition: opacity 0.8s ease-out, backdrop-filter 0.8s ease-out;
+			transition: opacity 1.2s ease-out, backdrop-filter 1.2s ease-out;
 		}
 
 		.loading-overlay.fade-out {
@@ -1601,11 +1601,17 @@
 					const loadingOverlay = document.getElementById('loadingOverlay');
 					const pageContent = document.getElementById('pageContent');
 					
+					// Add longer delay to ensure background is fully rendered
 					setTimeout(() => {
 						loadingOverlay.classList.add('fade-out');
 						pageContent.classList.remove('loading');
 						console.log('✨ Loading complete - page ready!');
-					}, 500); // Small delay to ensure everything is rendered
+						
+						// Remove loading overlay completely after transition
+						setTimeout(() => {
+							loadingOverlay.style.display = 'none';
+						}, 1200);
+					}, 800); // Longer delay to ensure everything is rendered
 				}
 			};
 			
@@ -1650,22 +1656,30 @@
 				img.onload = function() {
 					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 					console.log('🎨 Global background applied successfully');
-					backgroundLoaded = true;
-					checkAllLoaded();
+					// Small delay to let background render before marking as loaded
+					setTimeout(() => {
+						backgroundLoaded = true;
+						checkAllLoaded();
+					}, 200);
 				};
 				img.onerror = function() {
 					console.log('❌ Global background failed to load, reverting to default');
 					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
-					backgroundLoaded = true;
+					setTimeout(() => {
+						backgroundLoaded = true;
+						checkAllLoaded();
+					}, 200);
 					saveGlobalSetting('background', 'Default');
-					checkAllLoaded();
 				};
 				img.src = savedBg;
 			} else {
 				// Use default background
 				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
-				backgroundLoaded = true;
-				checkAllLoaded();
+				// Small delay to let default background render
+				setTimeout(() => {
+					backgroundLoaded = true;
+					checkAllLoaded();
+				}, 200);
 			}
 			
 			if (savedVideo && savedVideo !== 'Auto-Latest') {
