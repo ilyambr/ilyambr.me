@@ -1522,18 +1522,25 @@
 		}
 
 		async function loadExistingSettings() {
+			console.log('🌍 Loading global settings for ALL visitors...');
 			// Apply saved GLOBAL settings on page load - visible to ALL users
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
 			
+			console.log('🖼️ Global profile pic:', savedPic);
+			console.log('🎨 Global background:', savedBg);
+			console.log('📺 Global YouTube video:', savedVideo);
+			
 			if (savedPic && savedPic !== 'Default') {
 				// Update profile picture for ALL visitors
 				const avatarImg = document.querySelector('.avatar img');
 				if (avatarImg) {
+					console.log('✅ Applying global profile picture to ALL visitors');
 					avatarImg.src = savedPic;
 					avatarImg.onerror = function() {
 						// If image fails to load, revert to default
+						console.log('❌ Global profile pic failed to load, reverting to default');
 						this.src = 'https://ilyambr.me/img/avatar.webp';
 						saveGlobalSetting('profile-pic', 'Default');
 					};
@@ -1542,13 +1549,16 @@
 			
 			if (savedBg && savedBg !== 'Default') {
 				// Apply background image for ALL visitors
+				console.log('✅ Applying global background to ALL visitors');
 				const img = new Image();
 				img.onload = function() {
 					// Image loaded successfully, apply it globally
 					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					console.log('🎨 Global background applied successfully');
 				};
 				img.onerror = function() {
 					// Image failed to load, revert to default
+					console.log('❌ Global background failed to load, reverting to default');
 					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 					saveGlobalSetting('background', 'Default');
 				};
@@ -1557,6 +1567,7 @@
 			
 			if (savedVideo && savedVideo !== 'Auto-Latest') {
 				// Apply custom YouTube video for ALL visitors
+				console.log('✅ Applying global YouTube video to ALL visitors');
 				updateYouTubeEmbed(savedVideo);
 			}
 		}
