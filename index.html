@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Twitch Profile — Aurora Glow</title>
+	<title>ilyambr</title>
 	<link rel="icon" type="image/x-icon" href="https://ilyambr.me/favicon.ico">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,11 +233,11 @@
 			display:grid; place-items:center;
 			color:#fff; font-weight:800; letter-spacing:0.5px;
 		}
-		.thumb #twitch-embed{width:100%; height:100%}
+		.thumb #twitch-embed{width:100%; height:100%; visibility:visible}
 		.thumb .embed-container{width:100%; height:100%; position:absolute; top:0; left:0}
 		.thumb:after{
 			content:"LIVE";
-			position:absolute; top:10px; left:10px;
+			position:absolute; top:10px; right:10px;
 			background:linear-gradient(90deg, #3a3a3a, #7a7a7a);
 			padding:4px 8px; border-radius:999px; font-size:12px;
 			border:1px solid rgba(255,255,255,0.15);
@@ -265,7 +265,7 @@
 		
 		.embed-container{position:relative; width:100%; height:100%}
 		.embed-frame{width:100%; height:100%; border:0}
-		.embed-frame.hidden{display:none}
+		.embed-frame.hidden{visibility:hidden; opacity:0; pointer-events:none}
 		.tags{margin-top:12px; display:flex; flex-wrap:wrap; gap:10px}
 		.tag{
 			padding:6px 10px; border-radius:999px; font-size:12px;
@@ -897,36 +897,93 @@
 		
 		async function loadLatestYouTubeVideo() {
 			try {
-				const youtubeApiKey = atob('QUl6YVN5QXY5VTVEekNXWkV2WVU4T0ExZUU5OGMxOW1UekJhQnNr').split('').reverse().join('');
-				const channelId = 'UCpkBEJgDe8uWl-s9MT1w4dQ'; // Replace with your channel ID
+				// Use the correct channel ID for @ilyambr
+				const channelId = 'UCIT9_QQpyUP2zg_39sLFb8Q'; // Your actual channel ID
 				
-				const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${youtubeApiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=1&type=video`);
+				// Try to fetch from YouTube RSS feed first (no API key needed)
+				const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 				
-				if (!response.ok) {
-					throw new Error('YouTube API request failed');
+				try {
+					// Use a CORS proxy to fetch the RSS feed
+					const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`);
+					const data = await response.json();
+					
+					if (data.contents) {
+						// Parse the XML to get the latest video ID
+						const parser = new DOMParser();
+						const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+						const entries = xmlDoc.getElementsByTagName('entry');
+						
+						if (entries.length > 0) {
+							const videoUrl = entries[0].getElementsByTagName('link')[0].getAttribute('href');
+							const videoId = videoUrl.split('v=')[1];
+							
+							if (videoId) {
+								const youtubeEmbed = document.getElementById('youtube-embed');
+								youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+								return;
+							}
+						}
+					}
+				} catch (rssError) {
+					console.log('RSS feed method failed, trying fallback');
 				}
 				
-				const data = await response.json();
+				// Fallback: Load a specific video or show message
+				console.log('No recent YouTube videos found');
+				const youtubeEmbed = document.getElementById('youtube-embed');
+				const embedContainer = youtubeEmbed.parentElement;
 				
-				if (data.items && data.items.length > 0) {
-					const videoId = data.items[0].id.videoId;
-					const youtubeEmbed = document.getElementById('youtube-embed');
-					youtubeEmbed.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
-				} else {
-					console.log('No YouTube videos found');
-					// Fallback to a default video or message
-					const youtubeEmbed = document.getElementById('youtube-embed');
-					youtubeEmbed.src = 'about:blank';
-					youtubeEmbed.style.display = 'flex';
-					youtubeEmbed.style.alignItems = 'center';
-					youtubeEmbed.style.justifyContent = 'center';
-					youtubeEmbed.innerHTML = '<div style="color: var(--muted); text-align: center; font-size: 14px;">No recent YouTube videos found</div>';
+				// Clear the iframe and show a message in the container
+				youtubeEmbed.style.display = 'none';
+				
+				// Create or update message div
+				let messageDiv = embedContainer.querySelector('.youtube-message');
+				if (!messageDiv) {
+					messageDiv = document.createElement('div');
+					messageDiv.className = 'youtube-message';
+					messageDiv.style.cssText = `
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						color: var(--muted);
+						text-align: center;
+						font-size: 14px;
+						padding: 20px;
+						width: 100%;
+						box-sizing: border-box;
+					`;
+					embedContainer.appendChild(messageDiv);
 				}
+				messageDiv.textContent = 'No recent YouTube videos found';
+				
 			} catch (error) {
 				console.error('Error loading YouTube video:', error);
 				const youtubeEmbed = document.getElementById('youtube-embed');
-				youtubeEmbed.src = 'about:blank';
-				youtubeEmbed.innerHTML = '<div style="color: var(--muted); text-align: center; font-size: 14px; padding: 20px;">YouTube video unavailable</div>';
+				const embedContainer = youtubeEmbed.parentElement;
+				
+				youtubeEmbed.style.display = 'none';
+				
+				let messageDiv = embedContainer.querySelector('.youtube-message');
+				if (!messageDiv) {
+					messageDiv = document.createElement('div');
+					messageDiv.className = 'youtube-message';
+					messageDiv.style.cssText = `
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						color: var(--muted);
+						text-align: center;
+						font-size: 14px;
+						padding: 20px;
+						width: 100%;
+						box-sizing: border-box;
+					`;
+					embedContainer.appendChild(messageDiv);
+				}
+				messageDiv.textContent = 'YouTube video unavailable';
 			}
 		}
 	</script>
