@@ -9,6 +9,9 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<!-- Firebase SDK -->
+	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 	<style>
 		:root{
 			--bg-1:#0b0b12;
@@ -1108,6 +1111,11 @@
 						<p><strong>Background:</strong> <span id="currentBackground">Default</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">Auto-Latest</span></p>
 					</div>
+					<div class="admin-setting" style="margin-top: 15px;">
+						<button onclick="resetToDefaults()" style="background: linear-gradient(90deg, #ff4757, #ff3838); border-color: rgba(255, 71, 87, 0.3);">
+							Reset All to Defaults
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1225,6 +1233,69 @@
 	</script>
 
 	<script>
+		// Firebase Configuration (from your Firebase project)
+		const firebaseConfig = {
+			apiKey: "AIzaSyCTyk_sZYCXFsFOQK_faVQ5KQiQNtK1Q0",
+			authDomain: "ilyambr-45403.firebaseapp.com",
+			databaseURL: "https://ilyambr-45403-default-rtdb.firebaseio.com",
+			projectId: "ilyambr-45403",
+			storageBucket: "ilyambr-45403.firebasestorage.app",
+			messagingSenderId: "826687105713",
+			appId: "1:826687105713:web:a5e0b97818a2bf91da5098"
+		};
+
+		// Initialize Firebase
+		let database = null;
+		try {
+			if (typeof firebase !== 'undefined') {
+				firebase.initializeApp(firebaseConfig);
+				database = firebase.database();
+				console.log('🔥 Firebase initialized successfully!');
+			}
+		} catch (error) {
+			console.log('Firebase not available, using localStorage fallback');
+		}
+
+		// Global settings management
+		async function saveGlobalSetting(key, value) {
+			try {
+				if (database) {
+					// Save to Firebase for all users
+					await database.ref('siteSettings/' + key).set(value);
+					console.log(`🌍 Global setting ${key} saved to Firebase for ALL users!`);
+				} else {
+					// Fallback to localStorage
+					localStorage.setItem('admin-' + key, value);
+					console.log(`💾 Setting ${key} saved to localStorage (fallback)`);
+				}
+			} catch (error) {
+				console.error('Failed to save setting:', error);
+				// Fallback to localStorage
+				localStorage.setItem('admin-' + key, value);
+			}
+		}
+
+		async function loadGlobalSetting(key) {
+			try {
+				if (database) {
+					// Load from Firebase
+					const snapshot = await database.ref('siteSettings/' + key).once('value');
+					const value = snapshot.val();
+					console.log(`🌍 Global setting ${key} loaded from Firebase:`, value);
+					return value;
+				} else {
+					// Fallback to localStorage
+					const value = localStorage.getItem('admin-' + key);
+					console.log(`💾 Setting ${key} loaded from localStorage:`, value);
+					return value;
+				}
+			} catch (error) {
+				console.error('Failed to load setting:', error);
+				// Fallback to localStorage
+				return localStorage.getItem('admin-' + key);
+			}
+		}
+
 		// Admin Console Functionality
 		let isAdminLoggedIn = false;
 		let adminUser = null;
@@ -1436,68 +1507,49 @@
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
 		}
 
-		function loadExistingSettings() {
-			// Apply saved settings on page load
-			const savedPic = localStorage.getItem('admin-profile-pic');
-			const savedBg = localStorage.getItem('admin-background');
-			const savedVideo = localStorage.getItem('admin-youtube-video');
+		async function loadExistingSettings() {
+			// Apply saved GLOBAL settings on page load - visible to ALL users
+			const savedPic = await loadGlobalSetting('profile-pic');
+			const savedBg = await loadGlobalSetting('background');
+			const savedVideo = await loadGlobalSetting('youtube-video');
 			
 			if (savedPic && savedPic !== 'Default') {
-				document.querySelector('.avatar img').src = savedPic;
+				// Update profile picture for ALL visitors
+				const avatarImg = document.querySelector('.avatar img');
+				if (avatarImg) {
+					avatarImg.src = savedPic;
+					avatarImg.onerror = function() {
+						// If image fails to load, revert to default
+						this.src = 'https://ilyambr.me/img/avatar.webp';
+						saveGlobalSetting('profile-pic', 'Default');
+					};
+				}
 			}
 			
 			if (savedBg && savedBg !== 'Default') {
-				document.body.style.backgroundImage = `url('${savedBg}'), linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				// Apply background image for ALL visitors
+				const img = new Image();
+				img.onload = function() {
+					// Image loaded successfully, apply it globally
+					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				};
+				img.onerror = function() {
+					// Image failed to load, revert to default
+					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					saveGlobalSetting('background', 'Default');
+				};
+				img.src = savedBg;
 			}
 			
 			if (savedVideo && savedVideo !== 'Auto-Latest') {
-				const youtubeEmbed = document.getElementById('youtube-embed');
-				if (youtubeEmbed) {
-					youtubeEmbed.outerHTML = `
-						<iframe 
-							id="youtube-embed"
-							class="embed-frame hidden" 
-							width="100%" 
-							height="100%" 
-							src="https://www.youtube-nocookie.com/embed/${savedVideo}?autoplay=0&controls=1&rel=0" 
-							frameborder="0" 
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-							allowfullscreen>
-						</iframe>
-					`;
-				}
+				// Apply custom YouTube video for ALL visitors
+				updateYouTubeEmbed(savedVideo);
 			}
 		}
 
-		function updateProfilePicture() {
-			const url = document.getElementById('profilePicture').value.trim();
-			if (url) {
-				localStorage.setItem('admin-profile-pic', url);
-				document.querySelector('.avatar img').src = url;
-				document.getElementById('currentProfilePic').textContent = url;
-				document.getElementById('profilePicture').value = '';
-				alert('Profile picture updated successfully!');
-			}
-		}
-
-		function updateBackgroundImage() {
-			const url = document.getElementById('backgroundImage').value.trim();
-			if (url) {
-				localStorage.setItem('admin-background', url);
-				document.body.style.backgroundImage = `url('${url}'), linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
-				document.getElementById('currentBackground').textContent = url;
-				document.getElementById('backgroundImage').value = '';
-				alert('Background image updated successfully!');
-			}
-		}
-
-		function updateYouTubeVideo() {
-			const videoId = document.getElementById('youtubeVideoId').value.trim();
-			if (videoId) {
-				localStorage.setItem('admin-youtube-video', videoId);
-				
-				// Update the YouTube embed
-				const youtubeEmbed = document.getElementById('youtube-embed');
+		function updateYouTubeEmbed(videoId) {
+			const youtubeEmbed = document.getElementById('youtube-embed');
+			if (youtubeEmbed) {
 				youtubeEmbed.outerHTML = `
 					<iframe 
 						id="youtube-embed"
@@ -1510,10 +1562,151 @@
 						allowfullscreen>
 					</iframe>
 				`;
+			}
+		}
+
+		// Admin Panel Functions
+		async function loadCurrentSettings() {
+			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name}`;
+			
+			// Load current GLOBAL settings
+			const currentPic = await loadGlobalSetting('profile-pic') || 'Default';
+			const currentBg = await loadGlobalSetting('background') || 'Default';
+			const currentVideo = await loadGlobalSetting('youtube-video') || 'Auto-Latest';
+			
+			document.getElementById('currentProfilePic').textContent = currentPic === 'Default' ? 'Default' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
+			document.getElementById('currentBackground').textContent = currentBg === 'Default' ? 'Default' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
+			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
+		}
+			
+			if (savedVideo && savedVideo !== 'Auto-Latest') {
+				// Apply custom YouTube video
+				updateYouTubeEmbed(savedVideo);
+			}
+		}
+
+		function updateYouTubeEmbed(videoId) {
+			const youtubeEmbed = document.getElementById('youtube-embed');
+			if (youtubeEmbed) {
+				youtubeEmbed.outerHTML = `
+					<iframe 
+						id="youtube-embed"
+						class="embed-frame hidden" 
+						width="100%" 
+						height="100%" 
+						src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&rel=0" 
+						frameborder="0" 
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+						allowfullscreen>
+					</iframe>
+				`;
+			}
+		}
+
+		async function updateProfilePicture() {
+			const url = document.getElementById('profilePicture').value.trim();
+			if (!url) {
+				alert('Please enter a valid image URL');
+				return;
+			}
+
+			// Test if image loads before applying GLOBALLY
+			const img = new Image();
+			img.onload = async function() {
+				// Image loaded successfully - save GLOBALLY for ALL users
+				await saveGlobalSetting('profile-pic', url);
 				
-				document.getElementById('currentYouTubeVideo').textContent = videoId;
-				document.getElementById('youtubeVideoId').value = '';
-				alert('YouTube video updated successfully!');
+				// Apply to all avatar images immediately
+				const avatarImgs = document.querySelectorAll('.avatar img');
+				avatarImgs.forEach(img => img.src = url);
+				
+				// Update current settings display
+				document.getElementById('currentProfilePic').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
+				document.getElementById('profilePicture').value = '';
+				
+				alert('Profile picture updated GLOBALLY! All visitors will see this change.');
+			};
+			img.onerror = function() {
+				alert('Failed to load image. Please check the URL and try again.');
+			};
+			img.src = url;
+		}
+
+		async function updateBackgroundImage() {
+			const url = document.getElementById('backgroundImage').value.trim();
+			if (!url) {
+				alert('Please enter a valid image URL');
+				return;
+			}
+
+			// Test if image loads before applying GLOBALLY
+			const img = new Image();
+			img.onload = async function() {
+				// Image loaded successfully - save GLOBALLY for ALL users
+				await saveGlobalSetting('background', url);
+				
+				// Apply background immediately
+				document.body.style.background = `url('${url}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				
+				// Update current settings display
+				document.getElementById('currentBackground').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
+				document.getElementById('backgroundImage').value = '';
+				
+				alert('Background image updated GLOBALLY! All visitors will see this change.');
+			};
+			img.onerror = function() {
+				alert('Failed to load image. Please check the URL and try again.');
+			};
+			img.src = url;
+		}
+
+		async function updateYouTubeVideo() {
+			const videoId = document.getElementById('youtubeVideoId').value.trim();
+			if (!videoId) {
+				alert('Please enter a YouTube video ID');
+				return;
+			}
+
+			// Validate video ID format (basic check)
+			if (videoId.length < 8 || videoId.length > 15) {
+				alert('Invalid YouTube video ID format. It should be 8-15 characters.');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('youtube-video', videoId);
+			
+			// Update the YouTube embed immediately
+			updateYouTubeEmbed(videoId);
+			
+			// Update current settings display
+			document.getElementById('currentYouTubeVideo').textContent = videoId;
+			document.getElementById('youtubeVideoId').value = '';
+			
+			alert('YouTube video updated GLOBALLY! All visitors will see this video.');
+		}
+
+		// Add reset functions
+		async function resetToDefaults() {
+			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
+				// Clear GLOBAL settings
+				await saveGlobalSetting('profile-pic', 'Default');
+				await saveGlobalSetting('background', 'Default');
+				await saveGlobalSetting('youtube-video', 'Auto-Latest');
+				
+				// Reset to defaults immediately
+				document.querySelector('.avatar img').src = 'https://ilyambr.me/img/avatar.webp';
+				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				
+				// Reset YouTube to auto-latest
+				loadLatestYouTubeVideo();
+				
+				// Update display
+				document.getElementById('currentProfilePic').textContent = 'Default';
+				document.getElementById('currentBackground').textContent = 'Default';
+				document.getElementById('currentYouTubeVideo').textContent = 'Auto-Latest';
+				
+				alert('All settings have been reset to defaults GLOBALLY!');
 			}
 		}
 
