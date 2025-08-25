@@ -1230,7 +1230,7 @@
 		let adminUser = null;
 
 		// Google Sign-In Configuration
-		const GOOGLE_CLIENT_ID = '507965092209-7gvs8eg4e9qe6oc15dg89qam76lmtvue.apps.googleusercontent.com'; // Replace with your actual client ID
+		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
 		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
 
 		function openAdminLogin() {
@@ -1254,6 +1254,7 @@
 			// Check for existing valid session first
 			checkExistingSession();
 			
+			// Now we have a valid Google Client ID, so use proper Google OAuth
 			if (typeof google !== 'undefined' && google.accounts) {
 				google.accounts.id.initialize({
 					client_id: GOOGLE_CLIENT_ID,
@@ -1272,6 +1273,10 @@
 			} else {
 				// Fallback for when Google API isn't loaded
 				document.getElementById("googleSignIn").onclick = fallbackGoogleSignIn;
+				document.getElementById("googleSignIn").innerHTML = `
+					<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google"/>
+					Sign in with Google (Fallback)
+				`;
 			}
 			
 			// Load existing settings from localStorage
