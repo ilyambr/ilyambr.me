@@ -830,7 +830,7 @@
 	</div>
 
 	<!-- Admin Console Button -->
-	<div class="admin-button" onclick="openAdminLogin()">
+	<div class="admin-button" id="adminButton">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 			<circle cx="12" cy="12" r="3"/>
@@ -1305,13 +1305,24 @@
 		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
 
 		function openAdminLogin() {
+			console.log('🔧 Admin button clicked!');
+			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
+			
 			if (isAdminLoggedIn) {
+				console.log('✅ User is logged in, opening admin panel');
 				loadCurrentSettings();
 				document.getElementById('adminPanelPopup').style.display = 'flex';
 				document.body.style.overflow = 'hidden';
 			} else {
-				document.getElementById('adminLoginPopup').style.display = 'flex';
-				document.body.style.overflow = 'hidden';
+				console.log('🔐 User not logged in, opening login popup');
+				const loginPopup = document.getElementById('adminLoginPopup');
+				if (loginPopup) {
+					loginPopup.style.display = 'flex';
+					document.body.style.overflow = 'hidden';
+					console.log('✅ Login popup should be visible now');
+				} else {
+					console.error('❌ adminLoginPopup element not found!');
+				}
 			}
 		}
 
@@ -1321,7 +1332,7 @@
 		}
 
 		// Initialize Google Sign-In when the page loads
-		window.onload = function() {
+		window.onload = async function() {
 			// Check for existing valid session first
 			checkExistingSession();
 			
@@ -1350,8 +1361,13 @@
 				`;
 			}
 			
-			// Load existing settings from localStorage
-			loadExistingSettings();
+			// Load existing settings from Firebase/localStorage (now properly awaited)
+			try {
+				await loadExistingSettings();
+				console.log('✅ Settings loaded successfully');
+			} catch (error) {
+				console.error('❌ Error loading settings:', error);
+			}
 		};
 
 		function checkExistingSession() {
@@ -1579,10 +1595,9 @@
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
 		}
 			
-			if (savedVideo && savedVideo !== 'Auto-Latest') {
-				// Apply custom YouTube video
-				updateYouTubeEmbed(savedVideo);
-			}
+		if (savedVideo && savedVideo !== 'Auto-Latest') {
+			// Apply custom YouTube video
+			updateYouTubeEmbed(savedVideo);
 		}
 
 		function updateYouTubeEmbed(videoId) {
@@ -1728,6 +1743,20 @@
 			if (event.key === 'Escape') {
 				closeAdminPopup('adminLoginPopup');
 				closeAdminPopup('adminPanelPopup');
+			}
+		});
+
+		// Set up admin button click listener when DOM is loaded
+		document.addEventListener('DOMContentLoaded', function() {
+			const adminButton = document.getElementById('adminButton');
+			if (adminButton) {
+				adminButton.addEventListener('click', function() {
+					console.log('🔧 Admin button clicked!');
+					openAdminLogin();
+				});
+				console.log('✅ Admin button event listener attached');
+			} else {
+				console.error('❌ Admin button not found!');
 			}
 		});
 	</script>
