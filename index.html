@@ -1076,7 +1076,7 @@
 			<div class="popup-body">
 				<p>Choose where you'd like to subscribe:</p>
 				<div class="popup-buttons">
-					<a href="https://twitch.tv/ilyambrr" target="_blank" class="popup-button twitch">
+					<a href="https://subs.twitch.tv/ilyambrr" target="_blank" class="popup-button twitch">
 						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
 						Subscribe on Twitch
 					</a>
@@ -1250,20 +1250,21 @@
 					const videoId = data.items[0].id.videoId;
 					const youtubeEmbed = document.getElementById('youtube-embed');
 					
-					// Use innerHTML approach like the example, but maintain our styling
+					// Use the same iframe format as admin panel with all specified parameters
 					youtubeEmbed.outerHTML = `
 						<iframe 
 							id="youtube-embed"
 							class="embed-frame hidden" 
 							width="100%" 
 							height="100%" 
-							src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&rel=0" 
+							src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&cc_load_policy=0&enablejsapi=0&fs=1&hd=1&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&vq=hd1080" 
 							frameborder="0" 
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
 							allowfullscreen>
 						</iframe>
 					`;
-					console.log('Loaded video ID:', videoId);
+					console.log('✅ Loaded latest video ID:', videoId);
+					youtubeVideoLoaded = true; // Mark as loaded
 				} else {
 					console.log('No YouTube videos found');
 					const youtubeEmbed = document.getElementById('youtube-embed');
@@ -1659,11 +1660,18 @@
 				// Apply custom YouTube video for ALL visitors
 				console.log('✅ Applying global YouTube video to ALL visitors');
 				updateYouTubeEmbed(savedVideo);
+				youtubeVideoLoaded = true; // Mark as loaded
+			} else {
+				// Use auto-latest for ALL visitors
+				loadLatestYouTubeVideo();
 			}
 		}
 
 		function updateYouTubeEmbed(videoId) {
+			console.log('🎥 Updating YouTube embed with video ID:', videoId);
 			const youtubeEmbed = document.getElementById('youtube-embed');
+			console.log('Found YouTube embed element:', youtubeEmbed);
+			
 			if (youtubeEmbed) {
 				youtubeEmbed.outerHTML = `
 					<iframe 
@@ -1671,12 +1679,23 @@
 						class="embed-frame hidden" 
 						width="100%" 
 						height="100%" 
-						src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&rel=0" 
+						src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&cc_load_policy=0&enablejsapi=0&fs=1&hd=1&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&vq=hd1080" 
 						frameborder="0" 
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
 						allowfullscreen>
 					</iframe>
 				`;
+				console.log('✅ Updated YouTube embed with video ID:', videoId);
+				
+				// Re-get the element after outerHTML replacement and check if it's visible when YouTube tab is active
+				const newYoutubeEmbed = document.getElementById('youtube-embed');
+				const youtubeButton = document.querySelector('.stream-switch[onclick*="youtube"]');
+				if (youtubeButton && youtubeButton.classList.contains('active')) {
+					console.log('YouTube tab is active, removing hidden class');
+					newYoutubeEmbed.classList.remove('hidden');
+				}
+			} else {
+				console.error('❌ YouTube embed element not found!');
 			}
 		}
 
@@ -1697,24 +1716,9 @@
 		if (savedVideo && savedVideo !== 'Auto-Latest') {
 			// Apply custom YouTube video
 			updateYouTubeEmbed(savedVideo);
-		}
-
-		function updateYouTubeEmbed(videoId) {
-			const youtubeEmbed = document.getElementById('youtube-embed');
-			if (youtubeEmbed) {
-				youtubeEmbed.outerHTML = `
-					<iframe 
-						id="youtube-embed"
-						class="embed-frame hidden" 
-						width="100%" 
-						height="100%" 
-						src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&rel=0" 
-						frameborder="0" 
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-						allowfullscreen>
-					</iframe>
-				`;
-			}
+		} else {
+			// Use auto-latest
+			loadLatestYouTubeVideo();
 		}
 
 		async function updateProfilePicture() {
