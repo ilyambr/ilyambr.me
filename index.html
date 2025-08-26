@@ -1295,6 +1295,22 @@
 				</div>
 				
 				<div class="admin-section">
+					<h4>Name Settings</h4>
+					<div class="admin-setting">
+						<label for="displayName">Display Name:</label>
+						<input type="text" id="displayName" placeholder="ilyambr" maxlength="50">
+						<button onclick="updateDisplayName()">Update</button>
+						<small>This is shown as your main name on the website</small>
+					</div>
+					<div class="admin-setting">
+						<label for="username">Username:</label>
+						<input type="text" id="username" placeholder="@ilyambrr" maxlength="30">
+						<button onclick="updateUsername()">Update</button>
+						<small>This is your handle/username (include @ if desired)</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
 					<h4>Background Settings</h4>
 					<div class="admin-setting">
 						<label for="backgroundImage">Background Image URL:</label>
@@ -1316,6 +1332,8 @@
 				<div class="admin-section">
 					<h4>Current Settings</h4>
 					<div class="current-settings">
+						<p><strong>Display Name:</strong> <span id="currentDisplayName">ilyambr</span></p>
+						<p><strong>Username:</strong> <span id="currentUsername">@ilyambrr</span></p>
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">Default</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">Default</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">Auto-Latest</span></p>
@@ -1734,13 +1752,43 @@
 		async function loadExistingSettings() {
 			console.log('🌍 Loading global settings for ALL visitors...');
 			// Apply saved GLOBAL settings on page load - visible to ALL users
+			const savedDisplayName = await loadGlobalSetting('display-name');
+			const savedUsername = await loadGlobalSetting('username');
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
 			
-			console.log('🖼️ Global profile pic:', savedPic);
+			console.log('� Global display name:', savedDisplayName);
+			console.log('📧 Global username:', savedUsername);
+			console.log('�🖼️ Global profile pic:', savedPic);
 			console.log('🎨 Global background:', savedBg);
 			console.log('📺 Global YouTube video:', savedVideo);
+			
+			// Apply saved names
+			if (savedDisplayName) {
+				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
+				nameElements.forEach(element => {
+					if (element.textContent.includes('ilyambr') || element.textContent === 'ilyambr') {
+						element.textContent = savedDisplayName;
+					}
+				});
+				document.title = savedDisplayName;
+			}
+			
+			if (savedUsername) {
+				const usernameElements = document.querySelectorAll('.username, .handle, .user-handle');
+				usernameElements.forEach(element => {
+					element.textContent = savedUsername;
+				});
+				
+				// Also look for any elements that contain @ilyambrr and update them
+				const allElements = document.querySelectorAll('*');
+				allElements.forEach(element => {
+					if (element.textContent && element.textContent.includes('@ilyambrr')) {
+						element.textContent = element.textContent.replace('@ilyambrr', savedUsername);
+					}
+				});
+			}
 			
 			// Track loading state for simple coordination
 			let avatarLoaded = false;
@@ -1868,10 +1916,14 @@
 			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name}`;
 			
 			// Load current GLOBAL settings
+			const currentDisplayName = await loadGlobalSetting('display-name') || 'ilyambr';
+			const currentUsername = await loadGlobalSetting('username') || '@ilyambrr';
 			const currentPic = await loadGlobalSetting('profile-pic') || 'Default';
 			const currentBg = await loadGlobalSetting('background') || 'Default';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'Auto-Latest';
 			
+			document.getElementById('currentDisplayName').textContent = currentDisplayName;
+			document.getElementById('currentUsername').textContent = currentUsername;
 			document.getElementById('currentProfilePic').textContent = currentPic === 'Default' ? 'Default' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
 			document.getElementById('currentBackground').textContent = currentBg === 'Default' ? 'Default' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
@@ -1942,6 +1994,65 @@
 			img.src = url;
 		}
 
+		async function updateDisplayName() {
+			const displayName = document.getElementById('displayName').value.trim();
+			if (!displayName) {
+				alert('Please enter a display name');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('display-name', displayName);
+			
+			// Update all instances of display name on the page
+			const nameElements = document.querySelectorAll('.name, h1, .profile-name');
+			nameElements.forEach(element => {
+				if (element.textContent.includes('ilyambr') || element.textContent === 'ilyambr') {
+					element.textContent = displayName;
+				}
+			});
+			
+			// Also update the page title
+			document.title = displayName;
+			
+			// Update current settings display
+			document.getElementById('currentDisplayName').textContent = displayName;
+			document.getElementById('displayName').value = '';
+			
+			alert('Display name updated GLOBALLY! All visitors will see this change.');
+		}
+
+		async function updateUsername() {
+			const username = document.getElementById('username').value.trim();
+			if (!username) {
+				alert('Please enter a username');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('username', username);
+			
+			// Update all instances of username on the page
+			const usernameElements = document.querySelectorAll('.username, .handle, .user-handle');
+			usernameElements.forEach(element => {
+				element.textContent = username;
+			});
+			
+			// Also look for any elements that contain @ilyambrr and update them
+			const allElements = document.querySelectorAll('*');
+			allElements.forEach(element => {
+				if (element.textContent && element.textContent.includes('@ilyambrr')) {
+					element.textContent = element.textContent.replace('@ilyambrr', username);
+				}
+			});
+			
+			// Update current settings display
+			document.getElementById('currentUsername').textContent = username;
+			document.getElementById('username').value = '';
+			
+			alert('Username updated GLOBALLY! All visitors will see this change.');
+		}
+
 		async function updateYouTubeVideo() {
 			const videoId = document.getElementById('youtubeVideoId').value.trim();
 			if (!videoId) {
@@ -1972,9 +2083,31 @@
 		async function resetToDefaults() {
 			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
 				// Clear GLOBAL settings
+				await saveGlobalSetting('display-name', 'Default');
+				await saveGlobalSetting('username', 'Default');
 				await saveGlobalSetting('profile-pic', 'Default');
 				await saveGlobalSetting('background', 'Default');
 				await saveGlobalSetting('youtube-video', 'Auto-Latest');
+				
+				// Reset names to defaults immediately
+				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
+				nameElements.forEach(element => {
+					element.textContent = 'ilyambr';
+				});
+				document.title = 'ilyambr';
+				
+				const usernameElements = document.querySelectorAll('.username, .handle, .user-handle');
+				usernameElements.forEach(element => {
+					element.textContent = '@ilyambrr';
+				});
+				
+				// Reset all elements that might contain the old username
+				const allElements = document.querySelectorAll('*');
+				allElements.forEach(element => {
+					if (element.textContent && !element.textContent.includes('@ilyambrr') && element.textContent.includes('@')) {
+						element.textContent = element.textContent.replace(/@[a-zA-Z0-9_]+/g, '@ilyambrr');
+					}
+				});
 				
 				// Reset to defaults immediately
 				document.querySelector('.avatar img').src = 'https://ilyambr.me/img/avatar.webp';
@@ -1984,6 +2117,8 @@
 				loadLatestYouTubeVideo();
 				
 				// Update display
+				document.getElementById('currentDisplayName').textContent = 'ilyambr';
+				document.getElementById('currentUsername').textContent = '@ilyambrr';
 				document.getElementById('currentProfilePic').textContent = 'Default';
 				document.getElementById('currentBackground').textContent = 'Default';
 				document.getElementById('currentYouTubeVideo').textContent = 'Auto-Latest';
