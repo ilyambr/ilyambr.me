@@ -123,6 +123,24 @@
 			height:135px;
 			z-index:1000;
 		}
+		
+		/* Desktop: Logo moves with page scroll (absolute positioning relative to content) */
+		@media (min-width: 981px) {
+			.page-logo {
+				position: absolute;
+			}
+		}
+		
+		/* Tablet and Mobile: Logo floats above everything (fixed positioning) */
+		@media (max-width: 980px) {
+			.page-logo {
+				position: fixed;
+				top: 10px;
+				left: 10px;
+				width: 80px;
+				height: 80px;
+			}
+		}
 		.page-logo img{
 			width:100%;
 			height:100%;
@@ -140,6 +158,33 @@
 			list-style:none;
 			margin:0;
 			padding:0;
+		}
+		
+		/* Desktop: Social bar moves with page scroll (absolute positioning relative to content) */
+		@media (min-width: 981px) {
+			.social-bar {
+				position: absolute;
+			}
+		}
+		
+		/* Tablet and Mobile: Social bar floats above everything (fixed positioning) */
+		@media (max-width: 980px) {
+			.social-bar {
+				position: fixed;
+				top: 10px;
+				right: 10px;
+				gap: 6px;
+			}
+			
+			.social-link {
+				width: 20px;
+				height: 20px;
+			}
+			
+			.social-link img {
+				width: 100%;
+				height: 100%;
+			}
 		}
 		.social-link{
 			width:24px;
