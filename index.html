@@ -840,7 +840,7 @@
 		<li><a href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
 			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
 		</a></li>
-		<li><a href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Discord">
+		<li><a href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
 			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
 		</a></li>
 		<li><a href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
@@ -925,7 +925,7 @@
 				<h3>About</h3>
 				<div class="about">
 					i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶
-					<a class="discord-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
+					<a class="discord-link discord-about-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
 					</a>
@@ -1445,9 +1445,19 @@
 							<option value="">None</option>
 							<option value="affiliate">Affiliate</option>
 							<option value="partner">Partner</option>
-							<option value="verified">Verified</option>
+							<option value="verified">Verified <img src="https://ilyambr.me/img/checkmark.svg" style="width: 12px; height: 12px; margin-left: 4px; filter: invert(1); vertical-align: middle;" alt="✓"></option>
 						</select>
 						<small>Choose your Twitch account status</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Discord Settings</h4>
+					<div class="admin-setting">
+						<label for="discordLink">Discord Invite Link:</label>
+						<input type="url" id="discordLink" placeholder="https://discord.gg/YourInviteCode">
+						<button onclick="updateDiscordLink()">Update</button>
+						<small>Enter your Discord server invite link</small>
 					</div>
 				</div>
 				
@@ -1476,6 +1486,7 @@
 						<p><strong>Display Name:</strong> <span id="currentDisplayName">ilyambr</span></p>
 						<p><strong>Username:</strong> <span id="currentUsername">@ilyambrr</span></p>
 						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
+						<p><strong>Discord Link:</strong> <span id="currentDiscordLink">Default</span></p>
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">Default</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">Default</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">Auto-Latest</span></p>
@@ -1897,6 +1908,7 @@
 			const savedDisplayName = await loadGlobalSetting('display-name');
 			const savedUsername = await loadGlobalSetting('username');
 			const savedTwitchStatus = await loadGlobalSetting('twitchStatus');
+			const savedDiscordLink = await loadGlobalSetting('discordLink');
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
@@ -1938,12 +1950,26 @@
 				console.log('💜 Applying global Twitch status to ALL visitors:', savedTwitchStatus);
 				const statusBadge = document.getElementById('twitchStatusBadge');
 				if (statusBadge) {
-					statusBadge.textContent = savedTwitchStatus.charAt(0).toUpperCase() + savedTwitchStatus.slice(1);
+					let statusText = savedTwitchStatus.charAt(0).toUpperCase() + savedTwitchStatus.slice(1);
+					if (savedTwitchStatus === 'verified') {
+						statusText += ' <img src="https://ilyambr.me/img/checkmark.svg" style="width: 12px; height: 12px; margin-left: 4px; filter: invert(1); vertical-align: middle;" alt="✓">';
+					}
+					statusBadge.innerHTML = statusText;
 					statusBadge.style.display = 'block'; // Show the badge
 					console.log('✅ Twitch status badge shown:', savedTwitchStatus);
 				}
 			} else {
 				console.log('💜 No Twitch status set, badge remains hidden');
+			}
+			
+			// Apply saved Discord link
+			if (savedDiscordLink) {
+				console.log('💬 Applying global Discord link to ALL visitors:', savedDiscordLink);
+				const discordLinks = document.querySelectorAll('a[href*="discord"]');
+				discordLinks.forEach(link => {
+					link.href = savedDiscordLink;
+				});
+				console.log('✅ Discord links updated:', discordLinks.length, 'links updated');
 			}
 			
 			// Track loading state for simple coordination
@@ -2075,6 +2101,7 @@
 			const currentDisplayName = await loadGlobalSetting('display-name') || 'ilyambr';
 			const currentUsername = await loadGlobalSetting('username') || '@ilyambrr';
 			const currentTwitchStatus = await loadGlobalSetting('twitchStatus') || '';
+			const currentDiscordLink = await loadGlobalSetting('discordLink') || 'Default';
 			const currentPic = await loadGlobalSetting('profile-pic') || 'Default';
 			const currentBg = await loadGlobalSetting('background') || 'Default';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'Auto-Latest';
@@ -2083,6 +2110,7 @@
 			document.getElementById('currentUsername').textContent = currentUsername;
 			document.getElementById('currentTwitchStatus').textContent = currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None';
 			document.getElementById('twitchStatus').value = currentTwitchStatus; // Set the selector value
+			document.getElementById('currentDiscordLink').textContent = currentDiscordLink === 'Default' ? 'Default' : (currentDiscordLink.length > 30 ? currentDiscordLink.substring(0, 30) + '...' : currentDiscordLink);
 			document.getElementById('currentProfilePic').textContent = currentPic === 'Default' ? 'Default' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
 			document.getElementById('currentBackground').textContent = currentBg === 'Default' ? 'Default' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
@@ -2223,7 +2251,11 @@
 			const statusBadge = document.getElementById('twitchStatusBadge');
 			if (statusBadge) {
 				if (status) {
-					statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+					let statusText = status.charAt(0).toUpperCase() + status.slice(1);
+					if (status === 'verified') {
+						statusText += ' <img src="https://ilyambr.me/img/checkmark.svg" style="width: 12px; height: 12px; margin-left: 4px; filter: invert(1); vertical-align: middle;" alt="✓">';
+					}
+					statusBadge.innerHTML = statusText;
 					statusBadge.style.display = 'block'; // Show the badge
 				} else {
 					statusBadge.style.display = 'none'; // Hide the badge
@@ -2235,6 +2267,37 @@
 			
 			console.log(`Twitch status updated to: ${statusText}`);
 			alert(`Twitch status updated GLOBALLY to: ${statusText}! All visitors will see this change.`);
+		}
+
+		async function updateDiscordLink() {
+			const discordUrl = document.getElementById('discordLink').value.trim();
+			if (!discordUrl) {
+				alert('Please enter a Discord invite link');
+				return;
+			}
+
+			// Basic validation for Discord URLs
+			if (!discordUrl.includes('discord.gg/') && !discordUrl.includes('discord.com/invite/')) {
+				alert('Please enter a valid Discord invite link (should contain discord.gg/ or discord.com/invite/)');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('discordLink', discordUrl);
+			
+			// Update all Discord links immediately
+			const discordLinks = document.querySelectorAll('a[href*="discord"]');
+			discordLinks.forEach(link => {
+				link.href = discordUrl;
+			});
+			
+			// Update current settings display
+			const shortUrl = discordUrl.length > 30 ? discordUrl.substring(0, 30) + '...' : discordUrl;
+			document.getElementById('currentDiscordLink').textContent = shortUrl;
+			document.getElementById('discordLink').value = '';
+			
+			console.log(`Discord link updated to: ${discordUrl}`);
+			alert(`Discord link updated GLOBALLY! All visitors will see this change.`);
 		}
 
 		async function updateYouTubeVideo() {
@@ -2270,6 +2333,7 @@
 				await saveGlobalSetting('display-name', 'Default');
 				await saveGlobalSetting('username', 'Default');
 				await saveGlobalSetting('twitchStatus', ''); // Clear Twitch status
+				await saveGlobalSetting('discordLink', 'Default'); // Reset Discord link
 				await saveGlobalSetting('profile-pic', 'Default');
 				await saveGlobalSetting('background', 'Default');
 				await saveGlobalSetting('youtube-video', 'Auto-Latest');
@@ -2307,11 +2371,22 @@
 					statusBadge.style.display = 'none';
 				}
 				
+				// Reset Discord links to default
+				const discordLinks = document.querySelectorAll('a[href*="discord"]');
+				discordLinks.forEach(link => {
+					if (link.href.includes('ilyambr.me/discord')) {
+						link.href = 'https://ilyambr.me/discord';
+					} else {
+						link.href = 'https://discord.gg/EK4nvAJPzc';
+					}
+				});
+				
 				// Update display
 				document.getElementById('currentDisplayName').textContent = 'ilyambr';
 				document.getElementById('currentUsername').textContent = '@ilyambrr';
 				document.getElementById('currentTwitchStatus').textContent = 'None';
 				document.getElementById('twitchStatus').value = ''; // Reset selector
+				document.getElementById('currentDiscordLink').textContent = 'Default';
 				document.getElementById('currentProfilePic').textContent = 'Default';
 				document.getElementById('currentBackground').textContent = 'Default';
 				document.getElementById('currentYouTubeVideo').textContent = 'Auto-Latest';
