@@ -914,6 +914,34 @@
 			document.getElementById('counter').innerHTML = html;
 		}
 		
+		// Base64 utility functions
+		function base64Encode(str) {
+			return btoa(str);
+		}
+
+		function base64Decode(str) {
+			try {
+				return atob(str);
+			} catch (e) {
+				console.error('Base64 decode error:', e);
+				return null;
+			}
+		}
+
+		// Get decoded Twitch credentials
+		function getTwitchCredentials() {
+			const clientId = base64Decode(twitchConfig.clientId);
+			const clientSecret = base64Decode(twitchConfig.clientSecret);
+			
+			if (!clientId || !clientSecret || 
+				twitchConfig.clientId === 'YOUR_TWITCH_CLIENT_ID_BASE64' ||
+				twitchConfig.clientSecret === 'YOUR_TWITCH_CLIENT_SECRET_BASE64') {
+				return null;
+			}
+			
+			return { clientId, clientSecret };
+		}
+
 		// Twitch API Access Token Management
 		let twitchAccessToken = null;
 		let twitchTokenExpiry = null;
@@ -1425,34 +1453,6 @@
 			clientSecret: 'eHRvOGZkdXAzNnhpa3JzeXo3cWtndGs4d2poZGJz', // Get from https://dev.twitch.tv/console/apps (Base64 encoded)
 			username: 'ilyambrr'
 		};
-
-		// Base64 utility functions
-		function base64Encode(str) {
-			return btoa(str);
-		}
-
-		function base64Decode(str) {
-			try {
-				return atob(str);
-			} catch (e) {
-				console.error('Base64 decode error:', e);
-				return null;
-			}
-		}
-
-		// Get decoded Twitch credentials
-		function getTwitchCredentials() {
-			const clientId = base64Decode(twitchConfig.clientId);
-			const clientSecret = base64Decode(twitchConfig.clientSecret);
-			
-			if (!clientId || !clientSecret || 
-				twitchConfig.clientId === 'YOUR_TWITCH_CLIENT_ID_BASE64' ||
-				twitchConfig.clientSecret === 'YOUR_TWITCH_CLIENT_SECRET_BASE64') {
-				return null;
-			}
-			
-			return { clientId, clientSecret };
-		}
 
 		// Initialize Firebase
 		let database = null;
