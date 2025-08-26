@@ -883,6 +883,14 @@
 	</div>
 
 	<script>
+		// Twitch API Configuration
+		const twitchConfig = {
+			// Base64 encoded credentials for security
+			clientId: 'dzZyeWFhYmVkbGNtejJzMDJrNjV2NG9iaHA1bDQ3', // Get from https://dev.twitch.tv/console/apps (Base64 encoded)
+			clientSecret: 'eHRvOGZkdXAzNnhpa3JzeXo3cWtndGs4d2poZGJz', // Get from https://dev.twitch.tv/console/apps (Base64 encoded)
+			username: 'ilyambrr'
+		};
+
 		// Counter script - using localStorage for persistence
 		function updateCounter() {
 			// Get current count from localStorage or start at a base number
@@ -1444,14 +1452,6 @@
 			storageBucket: "ilyambr-45403.firebasestorage.app",
 			messagingSenderId: "826687105713",
 			appId: "1:826687105713:web:a5e0b97818a2bf91da5098"
-		};
-
-		// Twitch API Configuration
-		const twitchConfig = {
-			// Base64 encoded credentials for security
-			clientId: 'dzZyeWFhYmVkbGNtejJzMDJrNjV2NG9iaHA1bDQ3', // Get from https://dev.twitch.tv/console/apps (Base64 encoded)
-			clientSecret: 'eHRvOGZkdXAzNnhpa3JzeXo3cWtndGs4d2poZGJz', // Get from https://dev.twitch.tv/console/apps (Base64 encoded)
-			username: 'ilyambrr'
 		};
 
 		// Initialize Firebase
