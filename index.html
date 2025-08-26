@@ -749,23 +749,26 @@
 			.gallery{grid-template-columns:1fr}
 		}
 
-		/* Mobile and Tablet: Add space at top for fixed logo and social bar */
-		@media (max-width: 980px) {
+		/* Mobile and Tablet: Header scrolls with page, not fixed */
+		@media (max-width: 1200px) { /* Changed from 980px to include landscape tablets */
 			.container {
 				margin-top: 100px; /* Create space for logo and social bar */
 				padding-top: 20px;
 			}
 			
 			.page-logo {
-				width: 80px;
-				height: 80px;
+				position: absolute; /* Change from fixed to absolute so it scrolls */
+				width: 100px; /* Bigger logo */
+				height: 100px;
 				top: 10px;
-				left: 10px;
+				left: 20px; /* Keep it on the left like desktop */
 			}
 			
 			.social-bar {
-				top: 10px;
-				right: 10px;
+				position: absolute; /* Change from fixed to absolute so it scrolls */
+				top: 50px; /* Align with middle of logo (10px + 100px/2 - social bar height/2) */
+				right: 20px; /* Keep it on the right like desktop */
+				left: auto;
 				gap: 6px;
 			}
 			
@@ -782,8 +785,16 @@
 			}
 			
 			.page-logo {
-				width: 60px;
-				height: 60px;
+				position: absolute; /* Change from fixed to absolute so it scrolls */
+				width: 80px; /* Bigger on mobile too */
+				height: 80px;
+				left: 15px;
+			}
+			
+			.social-bar {
+				position: absolute; /* Change from fixed to absolute so it scrolls */
+				top: 40px; /* Align with middle of smaller logo */
+				right: 15px;
 			}
 			
 			.social-link {
