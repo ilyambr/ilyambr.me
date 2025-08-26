@@ -1455,9 +1455,9 @@
 					<h4>Discord Settings</h4>
 					<div class="admin-setting">
 						<label for="discordLink">Discord Invite Link:</label>
-						<input type="url" id="discordLink" placeholder="https://discord.gg/YourInviteCode">
+						<input type="url" id="discordLink" placeholder="https://discord.gg/YourInviteCode or any link">
 						<button onclick="updateDiscordLink()">Update</button>
-						<small>Enter your Discord server invite link</small>
+						<small>Enter any Discord link or URL</small>
 					</div>
 				</div>
 				
@@ -1483,13 +1483,13 @@
 				<div class="admin-section">
 					<h4>Current Settings</h4>
 					<div class="current-settings">
-						<p><strong>Display Name:</strong> <span id="currentDisplayName">ilyambr</span></p>
-						<p><strong>Username:</strong> <span id="currentUsername">@ilyambrr</span></p>
+						<p><strong>Display Name:</strong> <span id="currentDisplayName">N/A</span></p>
+						<p><strong>Username:</strong> <span id="currentUsername">N/A</span></p>
 						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
-						<p><strong>Discord Link:</strong> <span id="currentDiscordLink">Default</span></p>
-						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">Default</span></p>
-						<p><strong>Background:</strong> <span id="currentBackground">Default</span></p>
-						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">Auto-Latest</span></p>
+						<p><strong>Discord Link:</strong> <span id="currentDiscordLink">N/A</span></p>
+						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">N/A</span></p>
+						<p><strong>Background:</strong> <span id="currentBackground">N/A</span></p>
+						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">N/A</span></p>
 					</div>
 					<div class="admin-setting" style="margin-top: 15px;">
 						<button onclick="resetToDefaults()" style="background: linear-gradient(90deg, #ff4757, #ff3838); border-color: rgba(255, 71, 87, 0.3);">
@@ -1920,7 +1920,7 @@
 			console.log('📺 Global YouTube video:', savedVideo);
 			
 			// Apply saved names
-			if (savedDisplayName) {
+			if (savedDisplayName && savedDisplayName !== 'N/A') {
 				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
 				nameElements.forEach(element => {
 					if (element.textContent.includes('ilyambr') || element.textContent === 'ilyambr') {
@@ -1930,7 +1930,7 @@
 				document.title = savedDisplayName;
 			}
 			
-			if (savedUsername) {
+			if (savedUsername && savedUsername !== 'N/A') {
 				const usernameElements = document.querySelectorAll('.username, .handle, .user-handle');
 				usernameElements.forEach(element => {
 					element.textContent = savedUsername;
@@ -1963,7 +1963,7 @@
 			}
 			
 			// Apply saved Discord link
-			if (savedDiscordLink) {
+			if (savedDiscordLink && savedDiscordLink !== 'N/A') {
 				console.log('💬 Applying global Discord link to ALL visitors:', savedDiscordLink);
 				const discordLinks = document.querySelectorAll('a[href*="discord"]');
 				discordLinks.forEach(link => {
@@ -1996,7 +1996,7 @@
 			const avatarImg = document.querySelector('.avatar img');
 			const avatar = document.querySelector('.avatar');
 			if (avatarImg && avatar) {
-				if (savedPic && savedPic !== 'Default') {
+				if (savedPic && savedPic !== 'N/A') {
 					console.log('✅ Applying global profile picture to ALL visitors');
 					avatarImg.src = savedPic;
 					avatarImg.onload = function() {
@@ -2009,7 +2009,7 @@
 						this.src = 'https://ilyambr.me/img/avatar.webp';
 						avatar.classList.add('loaded');
 						avatarLoaded = true;
-						saveGlobalSetting('profile-pic', 'Default');
+						saveGlobalSetting('profile-pic', 'N/A');
 						checkContentLoaded();
 					};
 				} else {
@@ -2026,7 +2026,7 @@
 			}
 			
 			// Handle background
-			if (savedBg && savedBg !== 'Default') {
+			if (savedBg && savedBg !== 'N/A') {
 				console.log('✅ Applying global background to ALL visitors');
 				const img = new Image();
 				img.onload = function() {
@@ -2050,7 +2050,7 @@
 				checkContentLoaded();
 			}
 			
-			if (savedVideo && savedVideo !== 'Auto-Latest') {
+			if (savedVideo && savedVideo !== 'N/A') {
 				// Apply custom YouTube video for ALL visitors
 				console.log('✅ Applying global YouTube video to ALL visitors');
 				updateYouTubeEmbed(savedVideo);
@@ -2098,25 +2098,25 @@
 			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name}`;
 			
 			// Load current GLOBAL settings
-			const currentDisplayName = await loadGlobalSetting('display-name') || 'ilyambr';
-			const currentUsername = await loadGlobalSetting('username') || '@ilyambrr';
+			const currentDisplayName = await loadGlobalSetting('display-name') || 'N/A';
+			const currentUsername = await loadGlobalSetting('username') || 'N/A';
 			const currentTwitchStatus = await loadGlobalSetting('twitchStatus') || '';
-			const currentDiscordLink = await loadGlobalSetting('discordLink') || 'Default';
-			const currentPic = await loadGlobalSetting('profile-pic') || 'Default';
-			const currentBg = await loadGlobalSetting('background') || 'Default';
-			const currentVideo = await loadGlobalSetting('youtube-video') || 'Auto-Latest';
+			const currentDiscordLink = await loadGlobalSetting('discordLink') || 'N/A';
+			const currentPic = await loadGlobalSetting('profile-pic') || 'N/A';
+			const currentBg = await loadGlobalSetting('background') || 'N/A';
+			const currentVideo = await loadGlobalSetting('youtube-video') || 'N/A';
 			
-			document.getElementById('currentDisplayName').textContent = currentDisplayName;
-			document.getElementById('currentUsername').textContent = currentUsername;
+			document.getElementById('currentDisplayName').textContent = currentDisplayName === 'N/A' ? 'N/A' : currentDisplayName;
+			document.getElementById('currentUsername').textContent = currentUsername === 'N/A' ? 'N/A' : currentUsername;
 			document.getElementById('currentTwitchStatus').textContent = currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None';
 			document.getElementById('twitchStatus').value = currentTwitchStatus; // Set the selector value
-			document.getElementById('currentDiscordLink').textContent = currentDiscordLink === 'Default' ? 'Default' : (currentDiscordLink.length > 30 ? currentDiscordLink.substring(0, 30) + '...' : currentDiscordLink);
-			document.getElementById('currentProfilePic').textContent = currentPic === 'Default' ? 'Default' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
-			document.getElementById('currentBackground').textContent = currentBg === 'Default' ? 'Default' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
+			document.getElementById('currentDiscordLink').textContent = currentDiscordLink === 'N/A' ? 'N/A' : (currentDiscordLink.length > 30 ? currentDiscordLink.substring(0, 30) + '...' : currentDiscordLink);
+			document.getElementById('currentProfilePic').textContent = currentPic === 'N/A' ? 'N/A' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
+			document.getElementById('currentBackground').textContent = currentBg === 'N/A' ? 'N/A' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
 		}
 			
-		if (savedVideo && savedVideo !== 'Auto-Latest') {
+		if (savedVideo && savedVideo !== 'N/A') {
 			// Apply custom YouTube video
 			updateYouTubeEmbed(savedVideo);
 		} else {
@@ -2272,13 +2272,7 @@
 		async function updateDiscordLink() {
 			const discordUrl = document.getElementById('discordLink').value.trim();
 			if (!discordUrl) {
-				alert('Please enter a Discord invite link');
-				return;
-			}
-
-			// Basic validation for Discord URLs
-			if (!discordUrl.includes('discord.gg/') && !discordUrl.includes('discord.com/invite/')) {
-				alert('Please enter a valid Discord invite link (should contain discord.gg/ or discord.com/invite/)');
+				alert('Please enter a Discord link');
 				return;
 			}
 
@@ -2330,13 +2324,13 @@
 		async function resetToDefaults() {
 			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
 				// Clear GLOBAL settings
-				await saveGlobalSetting('display-name', 'Default');
-				await saveGlobalSetting('username', 'Default');
+				await saveGlobalSetting('display-name', 'N/A');
+				await saveGlobalSetting('username', 'N/A');
 				await saveGlobalSetting('twitchStatus', ''); // Clear Twitch status
-				await saveGlobalSetting('discordLink', 'Default'); // Reset Discord link
-				await saveGlobalSetting('profile-pic', 'Default');
-				await saveGlobalSetting('background', 'Default');
-				await saveGlobalSetting('youtube-video', 'Auto-Latest');
+				await saveGlobalSetting('discordLink', 'N/A'); // Reset Discord link
+				await saveGlobalSetting('profile-pic', 'N/A');
+				await saveGlobalSetting('background', 'N/A');
+				await saveGlobalSetting('youtube-video', 'N/A');
 				
 				// Reset names to defaults immediately
 				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
@@ -2382,14 +2376,14 @@
 				});
 				
 				// Update display
-				document.getElementById('currentDisplayName').textContent = 'ilyambr';
-				document.getElementById('currentUsername').textContent = '@ilyambrr';
+				document.getElementById('currentDisplayName').textContent = 'N/A';
+				document.getElementById('currentUsername').textContent = 'N/A';
 				document.getElementById('currentTwitchStatus').textContent = 'None';
 				document.getElementById('twitchStatus').value = ''; // Reset selector
-				document.getElementById('currentDiscordLink').textContent = 'Default';
-				document.getElementById('currentProfilePic').textContent = 'Default';
-				document.getElementById('currentBackground').textContent = 'Default';
-				document.getElementById('currentYouTubeVideo').textContent = 'Auto-Latest';
+				document.getElementById('currentDiscordLink').textContent = 'N/A';
+				document.getElementById('currentProfilePic').textContent = 'N/A';
+				document.getElementById('currentBackground').textContent = 'N/A';
+				document.getElementById('currentYouTubeVideo').textContent = 'N/A';
 				
 				alert('All settings have been reset to defaults GLOBALLY!');
 			}
