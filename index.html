@@ -695,6 +695,22 @@
 			box-shadow: 0 0 0 2px rgba(145, 70, 255, 0.1);
 		}
 
+		.admin-setting select {
+			padding: 10px 14px;
+			background: rgba(255,255,255,0.05);
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			color: var(--text);
+			font-size: 14px;
+			cursor: pointer;
+		}
+
+		.admin-setting select:focus {
+			outline: none;
+			border-color: rgba(145, 70, 255, 0.5);
+			box-shadow: 0 0 0 2px rgba(145, 70, 255, 0.1);
+		}
+
 		.admin-setting button {
 			padding: 10px 20px;
 			background: linear-gradient(90deg, var(--twitch), var(--twitch-2));
@@ -853,7 +869,7 @@
 				</div>
 				<div class="bio">just give me a year max.....</div>
 				<div class="badges">
-					<div class="badge">Affiliate</div>
+					<div class="badge twitch-status-badge" id="twitchStatusBadge" style="display: none;">Affiliate</div>
 				</div>
 				<div class="stats">
 					<div class="stat">
@@ -1422,6 +1438,20 @@
 				</div>
 				
 				<div class="admin-section">
+					<h4>Twitch Status</h4>
+					<div class="admin-setting">
+						<label for="twitchStatus">Twitch Status:</label>
+						<select id="twitchStatus" onchange="updateTwitchStatus()">
+							<option value="">None</option>
+							<option value="affiliate">Affiliate</option>
+							<option value="partner">Partner</option>
+							<option value="verified">Verified</option>
+						</select>
+						<small>Choose your Twitch account status</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
 					<h4>Background Settings</h4>
 					<div class="admin-setting">
 						<label for="backgroundImage">Background Image URL:</label>
@@ -1445,6 +1475,7 @@
 					<div class="current-settings">
 						<p><strong>Display Name:</strong> <span id="currentDisplayName">ilyambr</span></p>
 						<p><strong>Username:</strong> <span id="currentUsername">@ilyambrr</span></p>
+						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">Default</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">Default</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">Auto-Latest</span></p>
@@ -1865,6 +1896,7 @@
 			// Apply saved GLOBAL settings on page load - visible to ALL users
 			const savedDisplayName = await loadGlobalSetting('display-name');
 			const savedUsername = await loadGlobalSetting('username');
+			const savedTwitchStatus = await loadGlobalSetting('twitchStatus');
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
@@ -1899,6 +1931,19 @@
 						element.textContent = element.textContent.replace('@ilyambrr', savedUsername);
 					}
 				});
+			}
+			
+			// Apply saved Twitch status
+			if (savedTwitchStatus) {
+				console.log('💜 Applying global Twitch status to ALL visitors:', savedTwitchStatus);
+				const statusBadge = document.getElementById('twitchStatusBadge');
+				if (statusBadge) {
+					statusBadge.textContent = savedTwitchStatus.charAt(0).toUpperCase() + savedTwitchStatus.slice(1);
+					statusBadge.style.display = 'block'; // Show the badge
+					console.log('✅ Twitch status badge shown:', savedTwitchStatus);
+				}
+			} else {
+				console.log('💜 No Twitch status set, badge remains hidden');
 			}
 			
 			// Track loading state for simple coordination
@@ -2029,12 +2074,15 @@
 			// Load current GLOBAL settings
 			const currentDisplayName = await loadGlobalSetting('display-name') || 'ilyambr';
 			const currentUsername = await loadGlobalSetting('username') || '@ilyambrr';
+			const currentTwitchStatus = await loadGlobalSetting('twitchStatus') || '';
 			const currentPic = await loadGlobalSetting('profile-pic') || 'Default';
 			const currentBg = await loadGlobalSetting('background') || 'Default';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'Auto-Latest';
 			
 			document.getElementById('currentDisplayName').textContent = currentDisplayName;
 			document.getElementById('currentUsername').textContent = currentUsername;
+			document.getElementById('currentTwitchStatus').textContent = currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None';
+			document.getElementById('twitchStatus').value = currentTwitchStatus; // Set the selector value
 			document.getElementById('currentProfilePic').textContent = currentPic === 'Default' ? 'Default' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
 			document.getElementById('currentBackground').textContent = currentBg === 'Default' ? 'Default' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
@@ -2164,6 +2212,31 @@
 			alert('Username updated GLOBALLY! All visitors will see this change.');
 		}
 
+		async function updateTwitchStatus() {
+			const status = document.getElementById('twitchStatus').value;
+			const statusText = status || 'None';
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('twitchStatus', status);
+			
+			// Update the badge display immediately
+			const statusBadge = document.getElementById('twitchStatusBadge');
+			if (statusBadge) {
+				if (status) {
+					statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+					statusBadge.style.display = 'block'; // Show the badge
+				} else {
+					statusBadge.style.display = 'none'; // Hide the badge
+				}
+			}
+			
+			// Update current settings display
+			document.getElementById('currentTwitchStatus').textContent = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+			
+			console.log(`Twitch status updated to: ${statusText}`);
+			alert(`Twitch status updated GLOBALLY to: ${statusText}! All visitors will see this change.`);
+		}
+
 		async function updateYouTubeVideo() {
 			const videoId = document.getElementById('youtubeVideoId').value.trim();
 			if (!videoId) {
@@ -2196,6 +2269,7 @@
 				// Clear GLOBAL settings
 				await saveGlobalSetting('display-name', 'Default');
 				await saveGlobalSetting('username', 'Default');
+				await saveGlobalSetting('twitchStatus', ''); // Clear Twitch status
 				await saveGlobalSetting('profile-pic', 'Default');
 				await saveGlobalSetting('background', 'Default');
 				await saveGlobalSetting('youtube-video', 'Auto-Latest');
@@ -2227,9 +2301,17 @@
 				// Reset YouTube to auto-latest
 				loadLatestYouTubeVideo();
 				
+				// Hide Twitch status badge
+				const statusBadge = document.getElementById('twitchStatusBadge');
+				if (statusBadge) {
+					statusBadge.style.display = 'none';
+				}
+				
 				// Update display
 				document.getElementById('currentDisplayName').textContent = 'ilyambr';
 				document.getElementById('currentUsername').textContent = '@ilyambrr';
+				document.getElementById('currentTwitchStatus').textContent = 'None';
+				document.getElementById('twitchStatus').value = ''; // Reset selector
 				document.getElementById('currentProfilePic').textContent = 'Default';
 				document.getElementById('currentBackground').textContent = 'Default';
 				document.getElementById('currentYouTubeVideo').textContent = 'Auto-Latest';
