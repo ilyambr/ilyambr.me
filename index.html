@@ -2017,7 +2017,7 @@
 		setTimeout(() => {
 			const loadingOverlay = document.getElementById('loadingOverlay');
 			if (loadingOverlay && !loadingOverlay.classList.contains('hide')) {
-				console.log('⚠️ Failsafe triggered - hiding loading screen');
+				console.log('⚠️ failsafe triggered - hiding loading screen');
 				loadingOverlay.classList.add('hide');
 				setTimeout(() => {
 					loadingOverlay.style.display = 'none';
