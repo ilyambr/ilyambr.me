@@ -862,8 +862,14 @@
 				</div>
 				<h3 style="margin-top:18px">Schedule</h3>
 				<div class="schedule">
-					<div class="slot"><span class="day">TBD</span><span class="time">TBD</span></div>
-					<div class="slot"><span class="day">TBD</span><span class="time">TBD</span></div>
+					<div class="slot">
+						<span class="day">Saturday, 5:00PM</span>
+						<span class="time" id="nextSaturday">Loading...</span>
+					</div>
+					<div class="slot">
+						<span class="day">Sunday, 6:00PM</span>
+						<span class="time" id="nextSunday">Loading...</span>
+					</div>
 				</div>
 			</aside>
 		</div>
@@ -921,7 +927,57 @@
 			
 			document.getElementById('counter').innerHTML = html;
 		}
-		
+
+		// Schedule calculation functions
+		function getNextWeekdayDate(targetDay) {
+			const today = new Date();
+			const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+			
+			let daysUntilTarget;
+			
+			if (targetDay === 6) { // Saturday
+				daysUntilTarget = (6 - currentDay + 7) % 7;
+				if (daysUntilTarget === 0) daysUntilTarget = 7; // If today is Saturday, get next Saturday
+			} else if (targetDay === 0) { // Sunday
+				daysUntilTarget = (7 - currentDay) % 7;
+				if (daysUntilTarget === 0) daysUntilTarget = 7; // If today is Sunday, get next Sunday
+			}
+			
+			const nextDate = new Date(today);
+			nextDate.setDate(today.getDate() + daysUntilTarget);
+			
+			return nextDate;
+		}
+
+		function formatScheduleDate(date) {
+			const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+							'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			
+			const month = months[date.getMonth()];
+			const day = date.getDate();
+			
+			// Add ordinal suffix (st, nd, rd, th)
+			let suffix = 'th';
+			if (day % 10 === 1 && day !== 11) suffix = 'st';
+			else if (day % 10 === 2 && day !== 12) suffix = 'nd';
+			else if (day % 10 === 3 && day !== 13) suffix = 'rd';
+			
+			return `${month} ${day}${suffix}`;
+		}
+
+		function updateScheduleDates() {
+			const nextSaturday = getNextWeekdayDate(6); // 6 = Saturday
+			const nextSunday = getNextWeekdayDate(0);   // 0 = Sunday
+			
+			document.getElementById('nextSaturday').textContent = formatScheduleDate(nextSaturday);
+			document.getElementById('nextSunday').textContent = formatScheduleDate(nextSunday);
+			
+			console.log('📅 Schedule updated:', {
+				saturday: formatScheduleDate(nextSaturday),
+				sunday: formatScheduleDate(nextSunday)
+			});
+		}
+
 		// Base64 utility functions
 		function base64Encode(str) {
 			return btoa(str);
@@ -1155,6 +1211,7 @@
 		
 		// Run all functions on page load
 		updateCounter();
+		updateScheduleDates();
 		updateTwitchFollowers();
 		updateYouTubeSubscribers();
 	</script>
