@@ -87,9 +87,23 @@
 			pointer-events:none;
 			z-index:0;
 		}
-		.bg-glass{position:fixed; inset:0; z-index:0; pointer-events:none; background:rgba(10,10,15,0.18); backdrop-filter: blur(10px) saturate(115%); -webkit-backdrop-filter: blur(10px) saturate(115%)}
+		.bg-glass{
+			position:fixed;
+			top:0; left:0; right:0; bottom:0; /* explicit to ensure full coverage */
+			z-index:0; /* below content (.container z-index:1), above page background */
+			pointer-events:none;
+			background:rgba(10,10,15,0.18);
+			backdrop-filter: blur(10px) saturate(115%);
+			-webkit-backdrop-filter: blur(10px) saturate(115%);
+		}
 		/* Background tint overlay (for solid/gradient theme colors) */
-		.bg-tint{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.35;}
+		.bg-tint{
+			position:fixed;
+			top:0; left:0; right:0; bottom:0; /* explicit to ensure full coverage */
+			z-index:0;
+			pointer-events:none;
+			opacity:0.35;
+		}
 		.bg-tint.hidden{display:none}
 		@keyframes drift{
 			0%{transform:translate3d(-3%, -2%, 0) rotate(0deg) scale(1)}
@@ -1886,8 +1900,19 @@
 					<div class="admin-setting">
 						<h3>🔥 Firebase Database Settings</h3>
 						<label for="firebaseDatabaseUrl">Database URL:</label>
-						<input type="text" id="firebaseDatabaseUrl" placeholder="https://your-project-default-rtdb.firebaseapp.com/" />
-						<button onclick="updateFirebaseDatabase()">Switch Database</button>
+						<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+							<input type="text" id="firebaseDatabaseUrl" placeholder="https://your-project-default-rtdb.firebaseio.com" style="flex:2; min-width:260px;" />
+							<select id="firebaseSiteName" style="flex:1; min-width:180px; max-width:240px;">
+								<option value="auto">Auto (this host)</option>
+								<option value="ilyambr.me">ilyambr.me</option>
+								<option value="behindthebonnet.me">behindthebonnet.me</option>
+								<option value="localhost">localhost</option>
+								<option value="custom">Custom…</option>
+							</select>
+							<input type="text" id="firebaseSiteCustom" placeholder="example.com" style="flex:1; min-width:180px; max-width:240px; display:none;" />
+							<button onclick="updateFirebaseDatabase()">Switch Database</button>
+						</div>
+						<div id="firebaseDbHistory" style="margin-top:8px;"></div>
 						<div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; font-size: 12px;">
 							<strong>⚠️ Warning:</strong> Switching database will reload the page and use the new Firebase project for all settings.<br>
 							<strong>🔐 Security:</strong> Database URLs are encrypted before storage.
@@ -2407,6 +2432,16 @@
 			} catch (error) {
 				console.error('❌ Error loading settings:', error);
 			}
+
+			// Init Firebase DB UI helpers
+			try {
+				const siteSel = document.getElementById('firebaseSiteName');
+				if (siteSel) {
+					siteSel.addEventListener('change', onFirebaseSiteChange);
+					onFirebaseSiteChange();
+				}
+				renderFirebaseHistory();
+			} catch (e) { console.warn('DB UI init failed:', e); }
 			
 			// Do not force any default effects here; loadGlobalEffects() will apply saved state
 		};
@@ -3956,6 +3991,7 @@
 
 		async function updateFirebaseDatabase() {
 			const newDatabaseUrl = document.getElementById('firebaseDatabaseUrl').value.trim();
+			const siteName = getSelectedSiteLabel();
 			
 			if (!newDatabaseUrl) {
 				alert('Please enter a Firebase database URL');
@@ -3970,12 +4006,16 @@
 			try {
 				// Save GLOBALLY in the CURRENT DB (for users already on it)
 				await saveGlobalSetting('firebaseDatabaseUrl', newDatabaseUrl);
+				// Append to global history list
+				await appendFirebaseHistoryEntry({ url: newDatabaseUrl, site: siteName, by: adminUser?.email || 'unknown', at: Date.now() });
 				// Also write the override to the DEFAULT DB so new visitors (who start on default) can discover it
 				if (typeof firebase !== 'undefined') {
 					const defaultAppName = 'defaultProbeWrite';
 					const existing = firebase.apps?.find(a => a.name === defaultAppName);
 					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
 					await defaultApp.database().ref('siteSettings/firebaseDatabaseUrl').set(newDatabaseUrl);
+					// Mirror history to default DB too
+					await mirrorHistoryToDefaultDb(defaultApp.database(), { url: newDatabaseUrl, site: siteName, by: adminUser?.email || 'unknown', at: Date.now() });
 				}
 				// Store encrypted locally so this browser uses it immediately on reload
 				const encryptedUrl = encryptUrl(newDatabaseUrl);
@@ -3986,6 +4026,80 @@
 			} catch (error) {
 				console.error('Error updating Firebase database:', error);
 				alert('Error updating Firebase database. Please try again.');
+			}
+		}
+
+		function onFirebaseSiteChange() {
+			const sel = document.getElementById('firebaseSiteName');
+			const custom = document.getElementById('firebaseSiteCustom');
+			if (!sel || !custom) return;
+			custom.style.display = sel.value === 'custom' ? 'inline-block' : 'none';
+		}
+
+		function getSelectedSiteLabel() {
+			const sel = document.getElementById('firebaseSiteName');
+			const custom = document.getElementById('firebaseSiteCustom');
+			if (!sel) return window.location.hostname || 'auto';
+			if (sel.value === 'auto') return window.location.hostname || 'auto';
+			if (sel.value === 'custom') return (custom?.value?.trim() || 'custom');
+			return sel.value;
+		}
+
+		async function appendFirebaseHistoryEntry(entry) {
+			try {
+				// Load existing list
+				let listRaw = await loadGlobalSetting('firebaseDbHistory');
+				let list = [];
+				try { if (listRaw && listRaw !== 'N/A') list = JSON.parse(listRaw); } catch(e) {}
+				list.unshift(entry);
+				// Cap to last 10 entries
+				list = list.slice(0, 10);
+				await saveGlobalSetting('firebaseDbHistory', JSON.stringify(list));
+				renderFirebaseHistory(list);
+			} catch(e) {
+				console.warn('Failed to append history:', e);
+			}
+		}
+
+		async function mirrorHistoryToDefaultDb(defaultDb, entry) {
+			try {
+				const snap = await defaultDb.ref('siteSettings/firebaseDbHistory').once('value');
+				let list = snap.val();
+				if (!Array.isArray(list)) {
+					try { list = JSON.parse(list); } catch { list = []; }
+				}
+				list.unshift(entry);
+				list = list.slice(0, 10);
+				await defaultDb.ref('siteSettings/firebaseDbHistory').set(list);
+			} catch(e) {
+				console.warn('Failed to mirror history to default DB:', e);
+			}
+		}
+
+		async function renderFirebaseHistory(existingList) {
+			const container = document.getElementById('firebaseDbHistory');
+			if (!container) return;
+			try {
+				let list = existingList;
+				if (!list) {
+					const raw = await loadGlobalSetting('firebaseDbHistory');
+					if (raw && raw !== 'N/A') {
+						try { list = JSON.parse(raw); } catch { list = []; }
+					} else list = [];
+				}
+				if (!Array.isArray(list)) list = [];
+				if (list.length === 0) { container.innerHTML = '<small>No previous database selections.</small>'; return; }
+				const fmt = ts => new Date(ts).toLocaleString();
+				container.innerHTML = list.map(item => {
+					const site = (item.site || 'auto');
+					const by = item.by ? ` · by ${item.by}` : '';
+					return `<div style="display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; padding:8px 10px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; margin-top:6px;">
+						<span style="word-break:break-all;">${item.url}<br><small style="opacity:.7;">${fmt(item.at)}${by}</small></span>
+						<span style="padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:rgba(255,255,255,0.06);">${site}</span>
+					</div>`;
+				}).join('');
+			} catch(e) {
+				container.innerHTML = '<small>Failed to load history.</small>';
 			}
 		}
 
@@ -4472,4 +4586,3 @@
 	</div> <!-- End page-content -->
 </body>
 </html>
-
