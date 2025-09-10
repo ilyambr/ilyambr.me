@@ -2059,6 +2059,62 @@
 		function setCssVar(key, value) {
 			document.documentElement.style.setProperty(key, value);
 		}
+
+		// --- Color helpers ---
+		function clampByte(n){ n = Number(n); if (isNaN(n)) return 0; return Math.max(0, Math.min(255, Math.round(n))); }
+		function clampAlpha(a){ a = Number(a); if (isNaN(a)) return 1; return Math.max(0, Math.min(1, a)); }
+		function rgbToHex(r,g,b){
+			const toHex = (x) => x.toString(16).padStart(2,'0');
+			return '#' + toHex(clampByte(r)) + toHex(clampByte(g)) + toHex(clampByte(b));
+		}
+		function hexToRgb(hex){
+			if (!hex) return {r:0,g:0,b:0,a:1};
+			hex = hex.trim();
+			if (hex[0] === '#') hex = hex.slice(1);
+			if (hex.length === 3){
+				const r = parseInt(hex[0]+hex[0],16);
+				const g = parseInt(hex[1]+hex[1],16);
+				const b = parseInt(hex[2]+hex[2],16);
+				return {r,g,b,a:1};
+			}
+			if (hex.length >= 6){
+				const r = parseInt(hex.slice(0,2),16);
+				const g = parseInt(hex.slice(2,4),16);
+				const b = parseInt(hex.slice(4,6),16);
+				return {r,g,b,a:1};
+			}
+			return {r:0,g:0,b:0,a:1};
+		}
+		function parseCssColor(val){
+			if (!val) return {r:0,g:0,b:0,a:1};
+			val = (''+val).trim();
+			if (val.startsWith('#')) return hexToRgb(val);
+			const mRgba = val.match(/^rgba\(([^)]+)\)$/i);
+			if (mRgba){
+				const parts = mRgba[1].split(',').map(s=>s.trim());
+				return { r: clampByte(parts[0]), g: clampByte(parts[1]), b: clampByte(parts[2]), a: clampAlpha(parts[3]) };
+			}
+			const mRgb = val.match(/^rgb\(([^)]+)\)$/i);
+			if (mRgb){
+				const parts = mRgb[1].split(',').map(s=>s.trim());
+				return { r: clampByte(parts[0]), g: clampByte(parts[1]), b: clampByte(parts[2]), a: 1 };
+			}
+			return hexToRgb(val);
+		}
+		function buildCssFromType(type, hexOrRgb, keepAlphaFrom){
+			if (type === 'rgba'){
+				const rgb = typeof hexOrRgb === 'string' ? hexToRgb(hexOrRgb) : hexOrRgb;
+				let a = 1;
+				if (keepAlphaFrom){
+					const p = parseCssColor(keepAlphaFrom);
+					a = clampAlpha(p.a);
+				}
+				return `rgba(${clampByte(rgb.r)}, ${clampByte(rgb.g)}, ${clampByte(rgb.b)}, ${a})`;
+			}
+			// hex
+			if (typeof hexOrRgb === 'string') return hexOrRgb;
+			return rgbToHex(hexOrRgb.r, hexOrRgb.g, hexOrRgb.b);
+		}
 		function openColorsPopup() {
 			const list = document.getElementById('colorsList');
 			if (!list) return;
@@ -2066,7 +2122,7 @@
 			COLOR_VARS.forEach(v => {
 				const row = document.createElement('div');
 				row.style.display = 'grid';
-				row.style.gridTemplateColumns = '160px 1fr 90px';
+				row.style.gridTemplateColumns = '160px 1fr 110px';
 				row.style.gap = '10px';
 				const label = document.createElement('label');
 				label.textContent = v.key;
@@ -2080,15 +2136,56 @@
 				input.style.borderRadius = '8px';
 				input.oninput = (e) => {
 					setCssVar(v.key, e.target.value);
+					// keep color input in sync if user types a value
+					const typed = (e.target.value || '').trim();
+					try {
+						const rgb = parseCssColor(typed);
+						color.value = rgbToHex(rgb.r, rgb.g, rgb.b);
+						preview.style.background = typed;
+					} catch {}
 				};
 				const preview = document.createElement('div');
 				preview.style.height = '34px';
 				preview.style.border = '1px solid var(--border)';
 				preview.style.borderRadius = '6px';
 				preview.style.background = getCssVar(v.key);
+				preview.style.cursor = 'pointer';
+				preview.title = 'Click to pick color';
+
+				// hidden color input to open the native picker
+				const color = document.createElement('input');
+				color.type = 'color';
+				color.style.position = 'absolute';
+				color.style.opacity = '0';
+				color.style.pointerEvents = 'none';
+				// initialize color input from current value (convert to hex, ignore alpha)
+				try {
+					const rgb = parseCssColor(input.value);
+					color.value = rgbToHex(rgb.r, rgb.g, rgb.b);
+				} catch { color.value = '#ffffff'; }
+
+				preview.addEventListener('click', () => {
+					color.click();
+				});
+				color.addEventListener('input', () => {
+					const pickedHex = color.value; // #rrggbb
+					if (v.type === 'hex') {
+						setCssVar(v.key, pickedHex);
+						input.value = pickedHex;
+						preview.style.background = pickedHex;
+					} else {
+						// rgba: preserve current alpha, update rgb
+						const current = (input.value || getCssVar(v.key) || '').trim();
+						const newCss = buildCssFromType('rgba', pickedHex, current);
+						setCssVar(v.key, newCss);
+						input.value = newCss;
+						preview.style.background = newCss;
+					}
+				});
 				const syncPreview = () => { preview.style.background = input.value; };
 				input.addEventListener('input', syncPreview);
 				row.appendChild(label); row.appendChild(input); row.appendChild(preview);
+				row.appendChild(color);
 				list.appendChild(row);
 			});
 			openPopup('colorsPopup');
