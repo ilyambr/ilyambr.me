@@ -26,6 +26,7 @@
 			--card:#121226cc;
 			--glass:rgba(18,18,38,0.55);
 			--border:rgba(255,255,255,0.08);
+			--button-glow: rgba(145,70,255,0.35);
 			--shadow:0 10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
 			--radius:18px;
 			--radius-sm:12px;
@@ -253,7 +254,7 @@
 			padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.12);
 			color:#fff; text-decoration:none; font-weight:700;
 			background:linear-gradient(90deg, var(--c1), var(--c2));
-			box-shadow:0 10px 34px rgba(145,70,255,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+			box-shadow:0 10px 34px var(--button-glow), 0 0 0 1px rgba(255,255,255,0.08) inset;
 			transition:transform .15s ease, box-shadow .2s ease, filter .2s ease;
 		}
 		.button.secondary{
@@ -2050,7 +2051,8 @@
 			{ key: '--muted', type: 'hex' },
 			{ key: '--card', type: 'hex' },
 			{ key: '--glass', type: 'rgba' },
-			{ key: '--border', type: 'rgba' }
+			{ key: '--border', type: 'rgba' },
+			{ key: '--button-glow', type: 'rgba' }
 		];
 
 		function getCssVar(key) {
@@ -2203,7 +2205,8 @@
 			// defaults align with current CSS at top
 			const defaults = {
 				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
-				'--text':'#e8e8f0','--muted':'#b8b8c7','--card':'#121226cc','--glass':'rgba(18,18,38,0.55)','--border':'rgba(255,255,255,0.08)'
+				'--text':'#e8e8f0','--muted':'#b8b8c7','--card':'#121226cc','--glass':'rgba(18,18,38,0.55)','--border':'rgba(255,255,255,0.08)',
+				'--button-glow':'rgba(145,70,255,0.35)'
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
@@ -3306,8 +3309,12 @@
 			// Load and apply theme tint if saved
 			const savedTint = await loadGlobalSetting('themeTint');
 			if (savedTint && savedTint !== 'N/A') {
+				let tint = null;
 				try {
-					const tint = JSON.parse(savedTint);
+					tint = (typeof savedTint === 'string') ? JSON.parse(savedTint) : savedTint;
+				} catch(e) { console.warn('Failed to parse themeTint (string):', e, savedTint); }
+				if (tint && typeof tint === 'object') {
+					console.log('🎨 Applying saved themeTint:', tint);
 					applyThemeTint(tint);
 					// also update controls if present
 					if (document.getElementById('tintMode')) {
@@ -3315,8 +3322,8 @@
 						updateTintRows();
 						if (tint.mode === 'solid') {
 							document.getElementById('tintColor1').value = tint.color1 || '#9146ff';
-								const op1 = (typeof tint.opacity === 'number' && tint.opacity > 1) ? tint.opacity : Math.round((tint.opacity ?? 0.35) * 100);
-								document.getElementById('tintOpacity').value = op1;
+							const op1 = (typeof tint.opacity === 'number' && tint.opacity > 1) ? tint.opacity : Math.round((tint.opacity ?? 0.35) * 100);
+							document.getElementById('tintOpacity').value = op1;
 						} else if (tint.mode === 'gradient') {
 							document.getElementById('tintColorG1').value = tint.color1 || '#9146ff';
 							document.getElementById('tintColorG2').value = tint.color2 || '#3a86ff';
@@ -3325,18 +3332,20 @@
 							document.getElementById('tintOpacityG').value = op2;
 						}
 					}
-				} catch(e) { console.warn('Failed to parse themeTint:', e); }
+				}
 			}
 
 			// Load site colors (CSS variables)
 			const savedColors = await loadGlobalSetting('siteColors');
 			if (savedColors && savedColors !== 'N/A') {
 				try {
-					const colors = JSON.parse(savedColors);
-					Object.entries(colors).forEach(([k,v])=>{
-						document.documentElement.style.setProperty(k, v);
-					});
-					console.log('🎨 Applied site colors from DB');
+					const colors = (typeof savedColors === 'string') ? JSON.parse(savedColors) : savedColors;
+					if (colors && typeof colors === 'object') {
+						Object.entries(colors).forEach(([k,v])=>{
+							document.documentElement.style.setProperty(k, v);
+						});
+						console.log('🎨 Applied site colors from DB');
+					}
 				} catch(e) { console.warn('Failed to parse siteColors:', e); }
 			}
 
@@ -4383,13 +4392,21 @@
 			overlay.classList.remove('hidden');
 			if (mode==='solid') {
 				const c1 = preset?.color1 || document.getElementById('tintColor1')?.value || '#9146ff';
-				const op = (preset?.opacity ?? (document.getElementById('tintOpacity')?.value || 35))/100;
+				let op = preset?.opacity;
+				if (op === undefined || op === null) {
+					const raw = Number(document.getElementById('tintOpacity')?.value || 35);
+					op = raw > 1 ? raw/100 : raw;
+				}
 				overlay.style.background = hexToRgba(c1, op);
 			} else if (mode==='gradient') {
 				const c1 = preset?.color1 || document.getElementById('tintColorG1')?.value || '#9146ff';
 				const c2 = preset?.color2 || document.getElementById('tintColorG2')?.value || '#3a86ff';
 				const dir = preset?.direction || document.getElementById('tintDirection')?.value || 'to bottom';
-				const op = (preset?.opacity ?? (document.getElementById('tintOpacityG')?.value || 35))/100;
+				let op = preset?.opacity;
+				if (op === undefined || op === null) {
+					const raw = Number(document.getElementById('tintOpacityG')?.value || 35);
+					op = raw > 1 ? raw/100 : raw;
+				}
 				overlay.style.background = `linear-gradient(${dir}, ${hexToRgba(c1, op)}, ${hexToRgba(c2, op)})`;
 			}
 		}
@@ -4397,18 +4414,18 @@
 			const mode = document.getElementById('tintMode')?.value || 'none';
 			const payload = { mode };
 			if (mode==='solid') {
-					payload.color1 = document.getElementById('tintColor1').value;
-					const raw = Number(document.getElementById('tintOpacity').value);
-					payload.opacity = raw > 1 ? raw/100 : raw;
+				payload.color1 = document.getElementById('tintColor1').value;
+				const raw = Number(document.getElementById('tintOpacity').value);
+				payload.opacity = raw > 1 ? raw/100 : raw; // store as 0..1
 			} else if (mode==='gradient') {
 				payload.color1 = document.getElementById('tintColorG1').value;
 				payload.color2 = document.getElementById('tintColorG2').value;
 				payload.direction = document.getElementById('tintDirection').value;
-					const raw = Number(document.getElementById('tintOpacityG').value);
-					payload.opacity = raw > 1 ? raw/100 : raw;
+				const raw = Number(document.getElementById('tintOpacityG').value);
+				payload.opacity = raw > 1 ? raw/100 : raw; // store as 0..1
 			}
 			await saveGlobalSetting('themeTint', JSON.stringify(payload));
-			applyThemeTint(payload);
+			applyThemeTint(payload); // keep local tint applied after save
 			alert('Theme tint saved GLOBALLY!');
 		}
 
