@@ -2248,36 +2248,37 @@
 			console.log('Firebase not available, using localStorage fallback');
 		}
 
-		// If admins set a global DB URL in siteSettings/firebaseDatabaseUrl, use it for all visitors.
-		// We probe the DEFAULT database as the source of truth, falling back to the currently-connected DB.
+		// Use an explicitly selected (active) DB from history for all visitors.
+		// Probe the DEFAULT database as the source of truth; if an active entry exists there, apply it.
 		async function ensureGlobalDatabaseUrl() {
 			try {
 				if (!firebase) return;
-				// 1) Read from DEFAULT DB (canonical).
-				let defaultDesired = null;
+				const hostKey = normalizeHost(window.location.hostname || '');
+				// 1) Read ACTIVE MAP from DEFAULT DB (canonical).
+				let defaultMap = null;
 				try {
 					const defaultAppName = 'defaultProbe';
 					const existing = firebase.apps?.find(a => a.name === defaultAppName);
 					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
 					const defaultDb = defaultApp.database();
-					const snap = await defaultDb.ref('siteSettings/firebaseDatabaseUrl').once('value');
-					defaultDesired = snap.val();
+					const snap = await defaultDb.ref('siteSettings/firebaseDbActiveMap').once('value');
+					defaultMap = parseMaybeJson(snap.val());
 				} catch (e) {
 					console.warn('Default DB probe failed:', e);
 				}
 
-				// 2) Read from CURRENT DB as fallback
-				let currentDesired = null;
+				// 2) Read ACTIVE MAP from CURRENT DB as fallback
+				let currentMap = null;
 				try {
 					if (database) {
-						const snap2 = await database.ref('siteSettings/firebaseDatabaseUrl').once('value');
-						currentDesired = snap2.val();
+						const snap2 = await database.ref('siteSettings/firebaseDbActiveMap').once('value');
+						currentMap = parseMaybeJson(snap2.val());
 					}
 				} catch (e) {
 					console.warn('Current DB probe failed:', e);
 				}
 
-				const desiredUrl = defaultDesired || currentDesired;
+				const desiredUrl = getUrlForHostFromMap(defaultMap, hostKey) || getUrlForHostFromMap(currentMap, hostKey);
 				if (desiredUrl && desiredUrl !== firebaseConfig.databaseURL) {
 					console.log('🌍 Applying global Firebase DB override:', desiredUrl);
 					localStorage.setItem('encryptedFirebaseUrl', encryptUrl(desiredUrl));
@@ -2286,6 +2287,20 @@
 			} catch (e) {
 				console.warn('Could not check/apply global database URL override:', e);
 			}
+		}
+
+		function normalizeHost(h){
+			try { return (h||'').toLowerCase().replace(/^www\./,''); } catch { return h || ''; }
+		}
+		function parseMaybeJson(val){
+			if (!val) return null;
+			if (typeof val === 'object') return val;
+			try { return JSON.parse(val); } catch { return null; }
+		}
+		function getUrlForHostFromMap(map, host){
+			if (!map) return null;
+			const key = host || normalizeHost(window.location.hostname||'');
+			return (map[key]?.url) || (map['*']?.url) || (map['auto']?.url) || null;
 		}
 
 		// Admin Console Functionality (moved here to be available immediately)
@@ -4004,24 +4019,25 @@
 			if (!confirmed) return;
 			
 			try {
-				// Save GLOBALLY in the CURRENT DB (for users already on it)
-				await saveGlobalSetting('firebaseDatabaseUrl', newDatabaseUrl);
-				// Append to global history list
-				await appendFirebaseHistoryEntry({ url: newDatabaseUrl, site: siteName, by: adminUser?.email || 'unknown', at: Date.now() });
-				// Also write the override to the DEFAULT DB so new visitors (who start on default) can discover it
+				// Build entry
+				const hostKey = normalizeHost(siteName === 'auto' ? (window.location.hostname || '') : siteName);
+				const entry = { url: newDatabaseUrl, site: hostKey || 'auto', by: adminUser?.email || 'unknown', at: Date.now() };
+				// Append to global history list in CURRENT DB
+				await appendFirebaseHistoryEntry(entry);
+				// Mark ACTIVE globally in CURRENT DB (map by host)
+				await upsertActiveMap(entry);
+				// Mirror to DEFAULT DB for discoverability by new visitors
 				if (typeof firebase !== 'undefined') {
 					const defaultAppName = 'defaultProbeWrite';
 					const existing = firebase.apps?.find(a => a.name === defaultAppName);
 					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
-					await defaultApp.database().ref('siteSettings/firebaseDatabaseUrl').set(newDatabaseUrl);
-					// Mirror history to default DB too
-					await mirrorHistoryToDefaultDb(defaultApp.database(), { url: newDatabaseUrl, site: siteName, by: adminUser?.email || 'unknown', at: Date.now() });
+					await mirrorHistoryToDefaultDb(defaultApp.database(), entry);
+					await mirrorActiveMapToDefaultDb(defaultApp.database(), entry);
 				}
 				// Store encrypted locally so this browser uses it immediately on reload
-				const encryptedUrl = encryptUrl(newDatabaseUrl);
-				localStorage.setItem('encryptedFirebaseUrl', encryptedUrl);
+				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(newDatabaseUrl));
 				localStorage.removeItem('customFirebaseUrl');
-				alert('Firebase database URL saved GLOBALLY! Reloading to apply now.');
+				alert('Active database updated! Reloading to apply now.');
 				window.location.reload();
 			} catch (error) {
 				console.error('Error updating Firebase database:', error);
@@ -4061,6 +4077,30 @@
 			}
 		}
 
+		async function upsertActiveMap(entry){
+			try {
+				let raw = await loadGlobalSetting('firebaseDbActiveMap');
+				let map = {};
+				try { if (raw && raw !== 'N/A') map = JSON.parse(raw); } catch {}
+				const key = normalizeHost(entry.site || window.location.hostname || '');
+				map[key || 'auto'] = { url: entry.url, by: entry.by, at: entry.at };
+				await saveGlobalSetting('firebaseDbActiveMap', JSON.stringify(map));
+			} catch(e) { console.warn('Failed to upsert active map:', e); }
+		}
+
+		async function mirrorActiveMapToDefaultDb(defaultDb, entry){
+			try {
+				const snap = await defaultDb.ref('siteSettings/firebaseDbActiveMap').once('value');
+				let map = snap.val();
+				if (!map || typeof map !== 'object') {
+					try { map = JSON.parse(map); } catch { map = {}; }
+				}
+				const key = normalizeHost(entry.site || window.location.hostname || '');
+				map[key || 'auto'] = { url: entry.url, by: entry.by, at: entry.at };
+				await defaultDb.ref('siteSettings/firebaseDbActiveMap').set(map);
+			} catch(e) { console.warn('Failed to mirror active map:', e); }
+		}
+
 		async function mirrorHistoryToDefaultDb(defaultDb, entry) {
 			try {
 				const snap = await defaultDb.ref('siteSettings/firebaseDbHistory').once('value');
@@ -4089,17 +4129,52 @@
 				}
 				if (!Array.isArray(list)) list = [];
 				if (list.length === 0) { container.innerHTML = '<small>No previous database selections.</small>'; return; }
+				// Load current ACTIVE for highlighting
+				let active = null;
+				try {
+					const rawA = await loadGlobalSetting('firebaseDbActive');
+					active = rawA && rawA !== 'N/A' ? JSON.parse(rawA) : null;
+				} catch {}
 				const fmt = ts => new Date(ts).toLocaleString();
-				container.innerHTML = list.map(item => {
+				container.innerHTML = list.map((item, idx) => {
 					const site = (item.site || 'auto');
 					const by = item.by ? ` · by ${item.by}` : '';
-					return `<div style="display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; padding:8px 10px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; margin-top:6px;">
-						<span style="word-break:break-all;">${item.url}<br><small style="opacity:.7;">${fmt(item.at)}${by}</small></span>
-						<span style="padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:rgba(255,255,255,0.06);">${site}</span>
+					const isActive = active && active.url === item.url;
+					return `<div style=\"display:grid; grid-template-columns: 1fr auto auto; gap:10px; align-items:center; padding:8px 10px; background: ${isActive ? 'rgba(0,200,83,0.12)' : 'rgba(255,255,255,0.05)'}; border:1px solid var(--border); border-radius:8px; margin-top:6px;\">
+						<span style=\"word-break:break-all;\">${item.url}<br><small style=\"opacity:.7;\">${fmt(item.at)}${by}</small></span>
+						<span style=\"padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:rgba(255,255,255,0.06);\">${site}${isActive ? ' · Active' : ''}</span>
+						<button style=\"padding:6px 10px;\" onclick=\"activateFirebaseDb(${idx})\">Activate</button>
 					</div>`;
 				}).join('');
 			} catch(e) {
 				container.innerHTML = '<small>Failed to load history.</small>';
+			}
+		}
+
+		async function activateFirebaseDb(index) {
+			try {
+				let raw = await loadGlobalSetting('firebaseDbHistory');
+				if (!raw || raw === 'N/A') return alert('No history found');
+				let list = [];
+				try { list = JSON.parse(raw); } catch { return alert('Invalid history'); }
+				const entry = list[index];
+				if (!entry || !entry.url) return alert('Invalid entry');
+				// Set active per-site map
+				await upsertActiveMap(entry);
+				// Mirror to default DB
+				if (typeof firebase !== 'undefined') {
+					const defaultAppName = 'defaultProbeWrite';
+					const existing = firebase.apps?.find(a => a.name === defaultAppName);
+					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
+					await mirrorActiveMapToDefaultDb(defaultApp.database(), entry);
+				}
+				// Update UI and reload with the selected DB
+				await renderFirebaseHistory(list);
+				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(entry.url));
+				alert('Activated database. Reloading...');
+				window.location.reload();
+			} catch (e) {
+				alert('Failed to activate database');
 			}
 		}
 
