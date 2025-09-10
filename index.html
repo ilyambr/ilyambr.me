@@ -1585,7 +1585,13 @@
 					<h4>Profile Settings</h4>
 					<div class="admin-setting">
 						<label for="profilePicture">Profile Picture URL:</label>
-						<input type="url" id="profilePicture" placeholder="https://example.com/image.jpg">
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="url" id="profilePicture" placeholder="https://example.com/image.jpg" style="flex:1;">
+							<div role="button" title="Upload image" onclick="triggerProfileUpload()" style="width:42px; height:42px; min-width:42px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background: rgba(255,255,255,0.05); border-radius:8px; cursor:pointer;">
+								<img src="https://raw.githubusercontent.com/themesberg/flowbite-icons/refs/heads/main/src/outline/general/upload.svg" alt="Upload" style="width:22px; height:22px; filter: invert(1); opacity:0.9;" />
+							</div>
+							<input type="file" id="profilePictureUploadFile" accept="image/*" style="display:none" onchange="handleProfileUploadFile(this)">
+						</div>
 					</div>
 				</div>
 				
@@ -1818,8 +1824,14 @@
 					<h4>Background Settings</h4>
 					<div class="admin-setting">
 						<label for="backgroundImage">Background Image URL:</label>
-						<input type="url" id="backgroundImage" placeholder="https://example.com/background.jpg">
-						<button onclick="updateBackgroundImage()">Update</button>
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="url" id="backgroundImage" placeholder="https://example.com/background.jpg" style="flex:1;">
+							<div role="button" title="Upload image" onclick="triggerBackgroundUpload()" style="width:42px; height:42px; min-width:42px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background: rgba(255,255,255,0.05); border-radius:8px; cursor:pointer;">
+								<img src="https://raw.githubusercontent.com/themesberg/flowbite-icons/refs/heads/main/src/outline/general/upload.svg" alt="Upload" style="width:22px; height:22px; filter: invert(1); opacity:0.9;" />
+							</div>
+							<button onclick="updateBackgroundImage()">Update</button>
+							<input type="file" id="backgroundImageUploadFile" accept="image/*" style="display:none" onchange="handleBackgroundUploadFile(this)">
+						</div>
 					</div>
 				</div>
 
@@ -1910,12 +1922,12 @@
 								<option value="custom">Custom…</option>
 							</select>
 							<input type="text" id="firebaseSiteCustom" placeholder="example.com" style="flex:1; min-width:180px; max-width:240px; display:none;" />
-							<button onclick="updateFirebaseDatabase()">Switch Database</button>
+							<button onclick="updateFirebaseDatabase()">Add to History</button>
 						</div>
 						<div id="firebaseDbHistory" style="margin-top:8px;"></div>
 						<div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; font-size: 12px;">
-							<strong>⚠️ Warning:</strong> Switching database will reload the page and use the new Firebase project for all settings.<br>
-							<strong>🔐 Security:</strong> Database URLs are encrypted before storage.
+							<strong>ℹ️ Note:</strong> Adding to history does NOT switch immediately. Click "Activate" on an entry below to apply it for everyone. Activation reloads the page.<br>
+							<strong>🔐 Security:</strong> History and active selection are stored in Firebase; your browser stores only an encrypted copy of the active URL after activation.
 						</div>
 					</div>
 					
@@ -1997,6 +2009,10 @@
 						<img id="actionLogoPreview" alt="Logo preview" style="width:40px; height:40px; object-fit:contain; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:8px;" />
 						<small>Preview</small>
 					</div>
+					<label style="display:flex; align-items:center; gap:8px; user-select:none;">
+						<input type="checkbox" id="actionLogoInvert" />
+						<span>Invert logo in popup</span>
+					</label>
 					<label for="actionLinkName">Name:</label>
 					<input type="text" id="actionLinkName" placeholder="Follow on Twitch" maxlength="40">
 					<label for="actionLinkUrl">Link URL:</label>
@@ -2656,7 +2672,7 @@
 		// Admin Panel Functions
 		// ---- Action Links (Follow/Subscribe) ----
 		let actionLinkContext = 'follow'; // current context for add/edit
-		let followLinks = []; // {name, url, img}
+		let followLinks = []; // {name, url, img, invert}
 		let subscribeLinks = [];
 
 		function openAddActionLinkPopup(context) {
@@ -2666,6 +2682,8 @@
 			document.getElementById('actionLogoPreviewWrap').style.display = 'none';
 			document.getElementById('actionLinkName').value = '';
 			document.getElementById('actionLinkUrl').value = '';
+			const inv = document.getElementById('actionLogoInvert');
+			if (inv) inv.checked = false;
 			openPopup('actionLinkPopup');
 		}
 
@@ -2684,8 +2702,9 @@
 			const name = (document.getElementById('actionLinkName').value || '').trim();
 			const url = (document.getElementById('actionLinkUrl').value || '').trim();
 			const img = document.getElementById('actionLogoPreview').src || '';
+			const invert = !!document.getElementById('actionLogoInvert').checked;
 			if (!name || !url || !img) { alert('Please provide logo, name, and URL'); return; }
-			const entry = { name, url, img };
+			const entry = { name, url, img, invert };
 			if (actionLinkContext === 'follow') {
 				followLinks.push(entry);
 				await saveGlobalSetting('followLinks', JSON.stringify(followLinks));
@@ -2710,7 +2729,7 @@
 				div.className = 'collab-item';
 				div.innerHTML = `
 					<div style="display:flex; align-items:center; gap:10px;">
-						<img src="${item.img}" alt="logo" style="width:20px; height:20px; object-fit:contain; border-radius:4px; background:rgba(255,255,255,0.08)"/>
+						<img src="${item.img}" alt="logo" style="width:20px; height:20px; object-fit:contain; border-radius:4px; background:rgba(255,255,255,0.08); ${item.invert ? 'filter: invert(1);' : ''}"/>
 						<span class="collab-email">${item.name} — ${item.url}</span>
 					</div>
 				`;
@@ -2773,12 +2792,19 @@
 				const img = document.createElement('img');
 				img.src = item.img;
 				img.alt = 'Logo';
+				if (item.invert) img.style.filter = 'invert(1)';
 				a.appendChild(img);
 				// text node
 				a.appendChild(document.createTextNode(item.name));
 				container.appendChild(a);
 			});
 		}
+
+		// Upload handlers for Profile Picture and Background
+		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
+		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
+		function handleProfileUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('profilePicture').value = dataUrl; await saveGlobalSetting('profile-pic', dataUrl); const avatarImgs = document.querySelectorAll('.avatar img'); avatarImgs.forEach(img => img.src = dataUrl); document.getElementById('currentProfilePic').textContent = 'uploaded image'; alert('Profile image uploaded and applied globally'); }; r.readAsDataURL(file); }
+		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; alert('Background image uploaded and applied globally'); }; r.readAsDataURL(file); }
 
 		async function openFollowPopup() {
 			renderActionPopupButtons('follow');
@@ -2809,11 +2835,18 @@
 			// Load follow/subscribe links
 			try {
 				const f = await loadGlobalSetting('followLinks');
-				if (f && f !== 'N/A') followLinks = JSON.parse(f);
+				if (f && f !== 'N/A') {
+					followLinks = JSON.parse(f);
+					// backfill invert flag
+					followLinks = (Array.isArray(followLinks) ? followLinks : []).map(x => ({...x, invert: !!x.invert}));
+				}
 			} catch(e) { followLinks = []; }
 			try {
 				const s = await loadGlobalSetting('subscribeLinks');
-				if (s && s !== 'N/A') subscribeLinks = JSON.parse(s);
+				if (s && s !== 'N/A') {
+					subscribeLinks = JSON.parse(s);
+					subscribeLinks = (Array.isArray(subscribeLinks) ? subscribeLinks : []).map(x => ({...x, invert: !!x.invert}));
+				}
 			} catch(e) { subscribeLinks = []; }
 			renderActionLinksList('follow');
 			renderActionLinksList('subscribe');
@@ -4019,29 +4052,23 @@
 			if (!confirmed) return;
 			
 			try {
-				// Build entry
+				// Build entry and save ONLY to history (no activation, no reload)
 				const hostKey = normalizeHost(siteName === 'auto' ? (window.location.hostname || '') : siteName);
 				const entry = { url: newDatabaseUrl, site: hostKey || 'auto', by: adminUser?.email || 'unknown', at: Date.now() };
-				// Append to global history list in CURRENT DB
 				await appendFirebaseHistoryEntry(entry);
-				// Mark ACTIVE globally in CURRENT DB (map by host)
-				await upsertActiveMap(entry);
-				// Mirror to DEFAULT DB for discoverability by new visitors
 				if (typeof firebase !== 'undefined') {
 					const defaultAppName = 'defaultProbeWrite';
 					const existing = firebase.apps?.find(a => a.name === defaultAppName);
 					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
 					await mirrorHistoryToDefaultDb(defaultApp.database(), entry);
-					await mirrorActiveMapToDefaultDb(defaultApp.database(), entry);
 				}
-				// Store encrypted locally so this browser uses it immediately on reload
-				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(newDatabaseUrl));
-				localStorage.removeItem('customFirebaseUrl');
-				alert('Active database updated! Reloading to apply now.');
-				window.location.reload();
+				// Clear input and re-render history so user can click Activate
+				document.getElementById('firebaseDatabaseUrl').value = '';
+				renderFirebaseHistory();
+				alert('Added to history. Click Activate to switch for everyone.');
 			} catch (error) {
 				console.error('Error updating Firebase database:', error);
-				alert('Error updating Firebase database. Please try again.');
+				alert('Error adding to history. Please try again.');
 			}
 		}
 
@@ -4166,12 +4193,14 @@
 					const defaultAppName = 'defaultProbeWrite';
 					const existing = firebase.apps?.find(a => a.name === defaultAppName);
 					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
+					// Ensure entry exists in default history as well for consistency
+					await mirrorHistoryToDefaultDb(defaultApp.database(), entry);
 					await mirrorActiveMapToDefaultDb(defaultApp.database(), entry);
 				}
 				// Update UI and reload with the selected DB
 				await renderFirebaseHistory(list);
 				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(entry.url));
-				alert('Activated database. Reloading...');
+				alert('Activated database for this site. Reloading...');
 				window.location.reload();
 			} catch (e) {
 				alert('Failed to activate database');
