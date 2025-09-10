@@ -33,9 +33,9 @@
 
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
 		html,body{height:100%}
-		html{-webkit-filter:grayscale(100%); filter:grayscale(100%)}
+		html{padding:0; margin:0; background:#1a1a2e; overflow-x:hidden}
 		body{
-			margin:0;
+			margin:0; padding:0;
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
 			background: #1a1a2e;
@@ -88,6 +88,9 @@
 			z-index:0;
 		}
 		.bg-glass{position:fixed; inset:0; z-index:0; pointer-events:none; background:rgba(10,10,15,0.18); backdrop-filter: blur(10px) saturate(115%); -webkit-backdrop-filter: blur(10px) saturate(115%)}
+		/* Background tint overlay (for solid/gradient theme colors) */
+		.bg-tint{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.35;}
+		.bg-tint.hidden{display:none}
 		@keyframes drift{
 			0%{transform:translate3d(-3%, -2%, 0) rotate(0deg) scale(1)}
 			100%{transform:translate3d(3%, 2%, 0) rotate(4deg) scale(1.05)}
@@ -117,7 +120,7 @@
 		}
 		.page-logo{
 			position:fixed;
-			top:2px;
+			top:0;
 			left:60px;
 			width:135px;
 			height:135px;
@@ -130,6 +133,8 @@
 			border-radius:6px;
 			filter:invert(1);
 		}
+		/* Allow disabling inversion via body class */
+		.logo-no-invert .page-logo img{ filter:none !important; }
 		.social-bar{
 			position:fixed;
 			top:57px;
@@ -349,6 +354,9 @@
 			align-items: center;
 			z-index: 1000;
 		}
+
+		/* Ensure Colors Editor sits above Admin Panel */
+		#colorsPopup { z-index: 1101; }
 
 		.popup-content {
 			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)), var(--card);
@@ -602,6 +610,13 @@
 			background: rgba(255, 59, 107, 0.3);
 		}
 
+		/* Collaborators list */
+		.collab-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; margin-top:8px}
+		.collab-email{color:var(--text); font-size:14px;}
+		.collab-remove{background:transparent; border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:6px; cursor:pointer}
+		.collab-remove:hover{color:var(--text); border-color: rgba(255,255,255,0.2)}
+		.collab-owner{opacity:0.6}
+
 		.google-signin-container {
 			display: flex;
 			justify-content: center;
@@ -776,13 +791,13 @@
 				position: absolute; /* Change from fixed to absolute so it scrolls */
 				width: 100px; /* Bigger logo */
 				height: 100px;
-				top: 10px;
+				top: 0; /* Align to very top */
 				left: 20px; /* Keep it on the left like desktop */
 			}
 			
 			.social-bar {
 				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 50px; /* Align with middle of logo (10px + 100px/2 - social bar height/2) */
+				top: 0; /* Align level with logo */
 				right: 20px; /* Keep it on the right like desktop */
 				left: auto;
 				gap: 6px;
@@ -805,11 +820,12 @@
 				width: 80px; /* Bigger on mobile too */
 				height: 80px;
 				left: 15px;
+				top: 0; /* Align to very top */
 			}
 			
 			.social-bar {
 				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 40px; /* Align with middle of smaller logo */
+				top: 0; /* Align level with logo */
 				right: 15px;
 			}
 			
@@ -818,44 +834,169 @@
 				height: 18px;
 			}
 		}
+
+		/* Hide elements until database loads */
+		.db-loading .name,
+		.db-loading .bio,
+		.db-loading .username,
+		.db-loading .handle,
+		.db-loading .user-handle,
+		.db-loading .about,
+		.db-loading .stat,
+		.db-loading .badge,
+		.db-loading .page-logo,
+		.db-loading .social-bar,
+		.db-loading .button,
+		.db-loading .schedule .slot {
+			opacity: 0.3;
+			pointer-events: none;
+		}
+
+		.db-loaded .name,
+		.db-loaded .bio,
+		.db-loaded .username,
+		.db-loaded .handle,
+		.db-loaded .user-handle,
+		.db-loaded .about,
+		.db-loaded .stat,
+		.db-loaded .badge,
+		.db-loaded .page-logo,
+		.db-loaded .social-bar,
+		.db-loaded .button,
+		.db-loaded .schedule .slot {
+			opacity: 1;
+			pointer-events: auto;
+			transition: opacity 0.5s ease;
+		}
+
+		/* Website Effects */
+		.effect-color {
+			/* Base class kept for compatibility; dynamic hue is applied via JS */
+			filter: hue-rotate(45deg) saturate(1.5);
+		}
+		
+		.effect-grayscale {
+			filter: grayscale(100%);
+		}
+		
+		.effect-sepia {
+			filter: sepia(70%);
+		}
+		
+		.effect-invert {
+			filter: invert(1);
+		}
+		
+		.effect-brightness {
+			filter: brightness(1.3);
+		}
+		
+		.effect-blur-bg {
+			/* Deprecated: blur is now controlled via the .bg-glass overlay */
+			backdrop-filter: blur(8px);
+		}
+		
+		.effect-blur-bg .container {
+			/* Deprecated: see note above */
+			background: rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(10px);
+		}
+
+		/* Helper state to hide the global glass overlay (used by Blur toggle) */
+		.bg-glass.hidden { display: none; }
+		
+		/* Combined effects support */
+		.effect-color.effect-grayscale {
+			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%);
+		}
+		
+		.effect-color.effect-sepia {
+			filter: hue-rotate(45deg) saturate(1.5) sepia(70%);
+		}
+		
+		.effect-grayscale.effect-sepia {
+			filter: grayscale(100%) sepia(70%);
+		}
+		
+		.effect-color.effect-brightness {
+			filter: hue-rotate(45deg) saturate(1.5) brightness(1.3);
+		}
+		
+		.effect-grayscale.effect-brightness {
+			filter: grayscale(100%) brightness(1.3);
+		}
+		
+		.effect-sepia.effect-brightness {
+			filter: sepia(70%) brightness(1.3);
+		}
+		
+		.effect-invert.effect-color {
+			filter: invert(1) hue-rotate(45deg) saturate(1.5);
+		}
+		
+		.effect-invert.effect-grayscale {
+			filter: invert(1) grayscale(100%);
+		}
+		
+		.effect-invert.effect-sepia {
+			filter: invert(1) sepia(70%);
+		}
+		
+		.effect-invert.effect-brightness {
+			filter: invert(1) brightness(1.3);
+		}
+		
+		/* Triple+ effect combinations */
+		.effect-color.effect-grayscale.effect-brightness {
+			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%) brightness(1.3);
+		}
+		
+		.effect-color.effect-sepia.effect-brightness {
+			filter: hue-rotate(45deg) saturate(1.5) sepia(70%) brightness(1.3);
+		}
+		
+		.effect-grayscale.effect-sepia.effect-brightness {
+			filter: grayscale(100%) sepia(70%) brightness(1.3);
+		}
 	</style>
 </head>
-<body>
+<body class="db-loading">
 	<!-- Simple loading screen -->
 	<div class="loading-overlay" id="loadingOverlay">
 		<div class="loading-spinner"></div>
 	</div>
 
 	<div class="page-logo">
-		<img src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
+		<img id="pageLogoImg" src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
 	</div>
 	
 	<ul class="social-bar" aria-label="Social Bar">
-		<li><a href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
+		<li><a id="twitchSocialLink" href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
 			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
 		</a></li>
-		<li><a href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
+		<li><a id="youtubeSocialLink" href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
 			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
 		</a></li>
-		<li><a href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
+		<li><a id="tiktokSocialLink" href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
 			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
 		</a></li>
-		<li><a href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
+		<li><a id="discordSocialLink" href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
 			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
 		</a></li>
-		<li><a href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
+		<li><a id="instagramSocialLink" href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
 			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
 		</a></li>
-		<li><a href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
+		<li><a id="xSocialLink" href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
 			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
 		</a></li>
-		<li><a href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
+		<li><a id="redditSocialLink" href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
 			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
 		</a></li>
 	</ul>
 	
 	<div class="aurora" aria-hidden="true"></div>
 	<div class="bg-glass" aria-hidden="true"></div>
+	<div class="bg-tint hidden" id="bgTint" aria-hidden="true"></div>
 
 	<div class="container">
 		<header class="header">
@@ -867,30 +1008,30 @@
 					<div class="name">ilyambr</div>
 					<div class="username">@ilyambrr</div>
 				</div>
-				<div class="bio">just give me a year max.....</div>
+				<div class="bio" id="bioText">just give me a year max.....</div>
 				<div class="badges">
 					<div class="badge twitch-status-badge" id="twitchStatusBadge" style="display: none;">Affiliate</div>
 				</div>
 				<div class="stats">
-					<div class="stat">
+					<div class="stat" id="twitchFollowersStat">
 						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
 						N/A followers
 					</div>
-					<div class="stat">
+					<div class="stat" id="youtubeSubscribersStat">
 						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
 						N/A subs
 					</div>
-					<div class="stat">Streaming since 2024</div>
+					<div class="stat" id="streamingYearStat">Streaming since 2024</div>
 				</div>
 			</div>
 			<div class="actions">
-				<a class="button" href="javascript:void(0)" onclick="openPopup('followPopup')">
+				<a class="button" id="followButton" href="javascript:void(0)" onclick="openFollowPopup()">
 					<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
 						<path d="M12 21s-8-4.5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.5-10 11-10 11z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 					</svg>
 					Follow
 				</a>
-				<a class="button secondary" href="javascript:void(0)" onclick="openPopup('subscribePopup')">
+				<a class="button secondary" id="subscribeButton" href="javascript:void(0)" onclick="openSubscribePopup()">
 					<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
 						<path d="M4 12h16M12 4v16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
 					</svg>
@@ -914,7 +1055,7 @@
 						radial-gradient(140% 140% at 90% 100%, rgba(100,100,100,0.24), transparent 60%),
 						linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));">
 						<div class="embed-container">
-							<iframe id="twitch-embed" class="embed-frame" src="https://player.twitch.tv/?channel=ilyambrr&parent=ilyambr.me" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
+							<iframe id="twitch-embed" class="embed-frame" src="https://player.twitch.tv/?channel=ilyambrr&parent=bilyambr.me" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
 							<iframe id="youtube-embed" class="embed-frame hidden" src="" frameborder="0" allowfullscreen></iframe>
 						</div>
 					</div>
@@ -923,8 +1064,8 @@
 
 			<aside class="card">
 				<h3>About</h3>
-				<div class="about">
-					i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶
+				<div class="about" id="aboutSection">
+					<span id="aboutTextContent">i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶</span>
 					<a class="discord-link discord-about-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
@@ -933,11 +1074,11 @@
 				<h3 style="margin-top:18px">Schedule</h3>
 				<div class="schedule">
 					<div class="slot">
-						<span class="day">Saturday, 5:00PM</span>
+						<span class="day" id="saturdaySchedule">Saturday, 5:00PM</span>
 						<span class="time" id="nextSaturday">Loading...</span>
 					</div>
 					<div class="slot">
-						<span class="day">Sunday, 6:00PM</span>
+						<span class="day" id="sundaySchedule">Sunday, 6:00PM</span>
 						<span class="time" id="nextSunday">Loading...</span>
 					</div>
 				</div>
@@ -1060,6 +1201,7 @@
 				console.error('Base64 decode error:', e);
 				return null;
 			}
+
 		}
 
 		// Get decoded Twitch credentials
@@ -1169,11 +1311,20 @@
 					return;
 				}
 
+				// Get the saved username from settings, fallback to default
+				const savedUsername = await loadGlobalSetting('username');
+				let usernameForAPI = twitchConfig.username; // default fallback
+				
+				if (savedUsername && savedUsername !== 'N/A') {
+					// Clean the username (remove @ if present)
+					usernameForAPI = savedUsername.replace('@', '');
+				}
+
 				console.log('🔄 Fetching Twitch followers using official API...');
-				console.log('👤 Username:', twitchConfig.username);
+				console.log('👤 Username:', usernameForAPI);
 				
 				// Get user ID first
-				const userId = await getTwitchUserId(twitchConfig.username);
+				const userId = await getTwitchUserId(usernameForAPI);
 				console.log('👤 Twitch User ID:', userId);
 				
 				// Get follower count
@@ -1213,6 +1364,7 @@
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
 				} else {
+							const email = (input.value || '').trim().toLowerCase();
 					console.error('❌ Could not find Twitch followers element');
 				}
 				
@@ -1253,7 +1405,6 @@
 					if (data && data.items && data.items.length > 0) {
 						const subscribers = data.items[0].statistics.subscriberCount;
 						const formattedSubs = formatNumber(subscribers);
-						
 						// Update the subscribers display
 						const subsElement = document.querySelector('.stat img[alt="YouTube"]').parentElement;
 						subsElement.innerHTML = `
@@ -1267,7 +1418,6 @@
 					// Keep the current static value if API fails
 				});
 		}
-		
 		// Format number function (e.g., 58200 -> "58.2k")
 		function formatNumber(num) {
 			if (num >= 1000000) {
@@ -1308,6 +1458,7 @@
 		document.addEventListener('click', function(event) {
 			var followPopup = document.getElementById('followPopup');
 			var subscribePopup = document.getElementById('subscribePopup');
+			var colorsPopup = document.getElementById('colorsPopup');
 			
 			if (event.target === followPopup) {
 				closePopup('followPopup');
@@ -1315,13 +1466,17 @@
 			if (event.target === subscribePopup) {
 				closePopup('subscribePopup');
 			}
+			if (event.target === colorsPopup) {
+				closePopup('colorsPopup');
+			}
 		});
 
 		// Close popup with Escape key
-		document.addEventListener('keydown', function(event) {
+			document.addEventListener('keydown', function(event) {
 			if (event.key === 'Escape') {
 				closePopup('followPopup');
 				closePopup('subscribePopup');
+					closePopup('colorsPopup');
 			}
 		});
 	</script>
@@ -1330,29 +1485,12 @@
 	<div id="followPopup" class="popup-overlay">
 		<div class="popup-content">
 			<div class="popup-header">
-				<h3>Follow ilyambr</h3>
+				<h3 id="followPopupTitle">Follow ilyambr</h3>
 				<button class="close-btn" onclick="closePopup('followPopup')">&times;</button>
 			</div>
 			<div class="popup-body">
 				<p>Choose where you'd like to follow:</p>
-				<div class="popup-buttons">
-					<a href="https://twitch.tv/ilyambrr" target="_blank" class="popup-button twitch">
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
-						Follow on Twitch
-					</a>
-					<a href="https://www.youtube.com/@ilyambr?sub_confirmation=1" target="_blank" class="popup-button youtube">
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
-						Subscribe to YouTube
-					</a>
-					<a href="https://www.tiktok.com/@ilyambr_" target="_blank" class="popup-button tiktok">
-						<img src="https://logos-world.net/wp-content/uploads/2020/04/TikTok-Logo-2016-present.png" alt="TikTok"/>
-						Follow on TikTok
-					</a>
-					<a href="https://guns.lol/ilyambr" target="_blank" class="popup-button guns">
-						<img src="https://img.icons8.com/?size=100&id=7867&format=png&color=FFFFFF" alt="More Links"/>
-						More Links
-					</a>
-				</div>
+				<div class="popup-buttons" id="followPopupButtons"></div>
 			</div>
 		</div>
 	</div>
@@ -1361,20 +1499,30 @@
 	<div id="subscribePopup" class="popup-overlay">
 		<div class="popup-content">
 			<div class="popup-header">
-				<h3>Subscribe to ilyambr</h3>
+				<h3 id="subscribePopupTitle">Subscribe to ilyambr</h3>
 				<button class="close-btn" onclick="closePopup('subscribePopup')">&times;</button>
 			</div>
 			<div class="popup-body">
 				<p>Choose where you'd like to subscribe:</p>
-				<div class="popup-buttons">
-					<a href="https://subs.twitch.tv/ilyambrr" target="_blank" class="popup-button twitch">
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
-						Subscribe on Twitch
-					</a>
-					<a href="https://ko-fi.com/ilyambr" target="_blank" class="popup-button kofi">
-						<img src="https://storage.ko-fi.com/cdn/nav-logo-stroke.png" alt="Ko-fi"/>
-						Support on Ko-fi
-					</a>
+				<div class="popup-buttons" id="subscribePopupButtons"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Colors Editor Popup -->
+	<div id="colorsPopup" class="popup-overlay">
+		<div class="popup-content">
+			<div class="popup-header">
+				<h3>Edit Site Colors</h3>
+				<button class="close-btn" onclick="closePopup('colorsPopup')">&times;</button>
+			</div>
+			<div class="popup-body">
+				<div class="admin-setting">
+					<div id="colorsList" style="display:grid; gap:10px;"></div>
+					<div style="display:flex; gap:10px; margin-top:12px;">
+						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
+						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1407,7 +1555,14 @@
 				<h3>Admin Panel</h3>
 				<div class="admin-user-info">
 					<span id="adminUserName">Welcome, Admin</span>
-					<button class="admin-logout-btn" onclick="signOut()">Logout</button>
+					<div style="margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+						<button class="admin-logout-btn" onclick="signOut()">Logout</button>
+						<button onclick="openColorsPopup()" style="background: linear-gradient(90deg, #6a11cb, #2575fc);">Edit Colors</button>
+						<small>Edit global CSS theme variables</small>
+					</div>
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+						<div id="colorEffectCell" style="display:none;"></div>
+					</div>
 				</div>
 				<button class="close-btn" onclick="closeAdminPopup('adminPanelPopup')">&times;</button>
 			</div>
@@ -1417,7 +1572,6 @@
 					<div class="admin-setting">
 						<label for="profilePicture">Profile Picture URL:</label>
 						<input type="url" id="profilePicture" placeholder="https://example.com/image.jpg">
-						<button onclick="updateProfilePicture()">Update</button>
 					</div>
 				</div>
 				
@@ -1436,6 +1590,8 @@
 						<small>This is your handle/username (include @ if desired)</small>
 					</div>
 				</div>
+
+
 				
 				<div class="admin-section">
 					<h4>Twitch Status</h4>
@@ -1448,6 +1604,189 @@
 							<option value="verified">Verified <img src="https://ilyambr.me/img/checkmark.svg" style="width: 12px; height: 12px; margin-left: 4px; filter: invert(1); vertical-align: middle;" alt="✓"></option>
 						</select>
 						<small>Choose your Twitch account status</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Page Logo Settings</h4>
+					<div class="admin-setting">
+						<label for="pageLogo">Page Logo:</label>
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="url" id="pageLogo" placeholder="https://example.com/logo.svg" style="flex:2;">
+							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1;" title="Enter source resolution (e.g., 1920x1080)">
+							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1;" title="Displayed size (widthxheight in px)">
+						</div>
+						<button onclick="updatePageLogo()">Update</button>
+						<small>URL and optional source resolution; the logo is scaled consistently to fit the box.</small>
+					</div>
+					<div class="admin-setting">
+						<label style="display:flex; align-items:center; gap:8px;">
+							<input type="checkbox" id="logoInvertToggle" checked onchange="updateLogoInvert()">
+							<span>Invert Logo (white on dark background)</span>
+						</label>
+						<small>Uncheck if your logo is already dark or you want the original colors</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Bio & About Settings</h4>
+					<div class="admin-setting">
+						<label for="bioTextInput">Bio:</label>
+						<input type="text" id="bioTextInput" placeholder="just give me a year max....." maxlength="100">
+						<button onclick="updateBio()">Update</button>
+						<small>Short bio text under your name</small>
+					</div>
+					<div class="admin-setting">
+						<label for="aboutText">About Me:</label>
+						<textarea id="aboutText" placeholder="i make stuff, i stream, that's it really..." maxlength="500" rows="3"></textarea>
+						<button onclick="updateAboutText()">Update</button>
+						<small>About section description</small>
+					</div>
+					<div class="admin-setting">
+						<label for="streamingYear">Started Streaming Year:</label>
+						<input type="number" id="streamingYear" placeholder="2024" min="2000" max="2030">
+						<button onclick="updateStreamingYear()">Update</button>
+						<small>Year you started streaming</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Stats Settings</h4>
+					<div class="admin-setting">
+						<label for="followerCount">Twitch Followers:</label>
+						<input type="number" id="followerCount" placeholder="1234" min="0">
+						<button onclick="updateFollowerCount()">Update</button>
+						<small>Custom follower count (leave empty for API)</small>
+					</div>
+					<div class="admin-setting">
+						<label for="subscriberCount">YouTube Subscribers:</label>
+						<input type="number" id="subscriberCount" placeholder="5678" min="0">
+						<button onclick="updateSubscriberCount()">Update</button>
+						<small>Custom subscriber count (leave empty for API)</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Social Links</h4>
+					<div class="admin-setting">
+						<label for="twitchLink">Twitch URL:</label>
+						<input type="url" id="twitchLink" placeholder="https://twitch.tv/ilyambrr">
+						<button onclick="updateTwitchLink()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="youtubeLink">YouTube URL:</label>
+						<input type="url" id="youtubeLink" placeholder="https://www.youtube.com/@ilyambr">
+						<button onclick="updateYouTubeLink()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="tiktokLink">TikTok URL:</label>
+						<input type="url" id="tiktokLink" placeholder="https://www.tiktok.com/@ilyambr_">
+						<button onclick="updateTikTokLink()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="instagramLink">Instagram URL:</label>
+						<input type="url" id="instagramLink" placeholder="https://www.instagram.com/ilyambr">
+						<button onclick="updateInstagramLink()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="xLink">X (Twitter) URL:</label>
+						<input type="url" id="xLink" placeholder="https://x.com/ilyambr">
+						<button onclick="updateXLink()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="redditLink">Reddit URL:</label>
+						<input type="url" id="redditLink" placeholder="https://reddit.com/u/ilyambr">
+						<button onclick="updateRedditLink()">Update</button>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Action Buttons</h4>
+					<div class="admin-setting">
+						<label for="followButtonText">Follow Button Text:</label>
+						<input type="text" id="followButtonText" placeholder="Follow" maxlength="20">
+						<button onclick="updateFollowButton()">Update</button>
+					</div>
+					<div class="admin-setting">
+						<label for="subscribeButtonText">Subscribe Button Text:</label>
+						<input type="text" id="subscribeButtonText" placeholder="Subscribe" maxlength="20">
+						<button onclick="updateSubscribeButton()">Update</button>
+					</div>
+				</div>
+
+				<!-- Follow popup links management (inside panel) -->
+				<div class="admin-section">
+					<h4>Follow Popup Links</h4>
+					<div class="admin-setting">
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="text" id="followAddHelper" placeholder="Use Add to choose logo, name, and link" disabled style="flex:1; opacity:.7;">
+							<button onclick="openAddActionLinkPopup('follow')">Add</button>
+							<button style="background: rgba(255,59,107,0.2); border-color: rgba(255,59,107,0.3);" onclick="clearActionLinks('follow')">Clear All</button>
+						</div>
+						<div id="followLinksList" style="margin-top:8px;"></div>
+						<small>Manage the links shown in the Follow popup.</small>
+					</div>
+				</div>
+
+				<!-- Subscribe popup links management (inside panel) -->
+				<div class="admin-section">
+					<h4>Subscribe Popup Links</h4>
+					<div class="admin-setting">
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="text" id="subscribeAddHelper" placeholder="Use Add to choose logo, name, and link" disabled style="flex:1; opacity:.7;">
+							<button onclick="openAddActionLinkPopup('subscribe')">Add</button>
+							<button style="background: rgba(255,59,107,0.2); border-color: rgba(255,59,107,0.3);" onclick="clearActionLinks('subscribe')">Clear All</button>
+						</div>
+						<div id="subscribeLinksList" style="margin-top:8px;"></div>
+						<small>Manage the links shown in the Subscribe popup.</small>
+					</div>
+				</div>
+				
+				<div class="admin-section">
+					<h4>Schedule Settings</h4>
+					<div class="admin-setting">
+						<label for="streamDay1">First Stream Day:</label>
+						<div style="display: flex; gap: 10px; align-items: center;">
+							<select id="streamDay1" style="flex: 1;">
+								<option value="0">Sunday</option>
+								<option value="1">Monday</option>
+								<option value="2">Tuesday</option>
+								<option value="3">Wednesday</option>
+								<option value="4">Thursday</option>
+								<option value="5">Friday</option>
+								<option value="6" selected>Saturday</option>
+							</select>
+							<input type="text" id="streamTime1" placeholder="5:00PM" style="flex: 1;">
+							<select id="streamDateMode1" style="flex: 1;">
+								<option value="auto">Auto (Next Week)</option>
+								<option value="custom">Custom Date</option>
+							</select>
+							<input type="date" id="streamCustomDate1" style="flex: 1; display: none;">
+						</div>
+						<button onclick="updateStreamSchedule(1)">Update</button>
+						<small>Choose day of week, time (e.g., 5:00PM), and date mode</small>
+					</div>
+					<div class="admin-setting">
+						<label for="streamDay2">Second Stream Day:</label>
+						<div style="display: flex; gap: 10px; align-items: center;">
+							<select id="streamDay2" style="flex: 1;">
+								<option value="0" selected>Sunday</option>
+								<option value="1">Monday</option>
+								<option value="2">Tuesday</option>
+								<option value="3">Wednesday</option>
+								<option value="4">Thursday</option>
+								<option value="5">Friday</option>
+								<option value="6">Saturday</option>
+							</select>
+							<input type="text" id="streamTime2" placeholder="6:00PM" style="flex: 1;">
+							<select id="streamDateMode2" style="flex: 1;">
+								<option value="auto">Auto (Next Week)</option>
+								<option value="custom">Custom Date</option>
+							</select>
+							<input type="date" id="streamCustomDate2" style="flex: 1; display: none;">
+						</div>
+						<button onclick="updateStreamSchedule(2)">Update</button>
+						<small>Choose day of week, time (e.g., 6:00PM), and date mode</small>
 					</div>
 				</div>
 				
@@ -1469,6 +1808,51 @@
 						<button onclick="updateBackgroundImage()">Update</button>
 					</div>
 				</div>
+
+				<div class="admin-section">
+					<h4>Theme Tint</h4>
+					<div class="admin-setting">
+						<label>Background Tint:</label>
+						<div style="display:grid; gap:10px;">
+							<select id="tintMode" style="max-width:220px;">
+								<option value="none">None</option>
+								<option value="solid">Solid Color</option>
+								<option value="gradient">Gradient</option>
+							</select>
+							<div id="tintSolidRow" style="display:none; gap:10px; align-items:center;">
+								<input type="color" id="tintColor1" value="#9146ff">
+								<input type="range" id="tintOpacity" min="0" max="100" value="35" title="Opacity %">
+							</div>
+							<div id="tintGradientRow" style="display:none; gap:10px; align-items:center;">
+								<input type="color" id="tintColorG1" value="#9146ff">
+								<input type="color" id="tintColorG2" value="#3a86ff">
+								<select id="tintDirection" style="max-width:140px;">
+									<option value="to bottom">To Bottom</option>
+									<option value="to right">To Right</option>
+									<option value="135deg">135°</option>
+									<option value="225deg">225°</option>
+								</select>
+								<input type="range" id="tintOpacityG" min="0" max="100" value="35" title="Opacity %">
+							</div>
+							<button onclick="applyThemeTint()">Apply Tint</button>
+							<button onclick="saveThemeTint()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Tint Globally</button>
+						</div>
+						<small>Applies a color overlay on top of the background image (tints the image too).</small>
+					</div>
+				</div>
+
+				<div class="admin-section">
+					<h4>Collaborators</h4>
+					<div class="admin-setting">
+						<label for="collabEmail">Add collaborator email:</label>
+						<div style="display:flex; gap:10px; align-items:center;">
+							<input type="email" id="collabEmail" placeholder="user@example.com" style="flex:1;">
+							<button onclick="addCollaborator()">Add</button>
+						</div>
+						<div id="collabList" style="margin-top:8px;"></div>
+						<small>Collaborators can access the admin panel with Google Sign-In. Owner email is fixed.</small>
+					</div>
+				</div>
 				
 				<div class="admin-section">
 					<h4>YouTube Settings</h4>
@@ -1485,16 +1869,116 @@
 					<div class="current-settings">
 						<p><strong>Display Name:</strong> <span id="currentDisplayName">N/A</span></p>
 						<p><strong>Username:</strong> <span id="currentUsername">N/A</span></p>
+						<p><strong>Bio:</strong> <span id="currentBio">N/A</span></p>
+						<p><strong>About Text:</strong> <span id="currentAboutText">N/A</span></p>
+						<p><strong>Streaming Year:</strong> <span id="currentStreamingYear">N/A</span></p>
+						<p><strong>Page Logo:</strong> <span id="currentPageLogo">N/A</span></p>
 						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
+						<p><strong>Follower Count:</strong> <span id="currentFollowerCount">API</span></p>
+						<p><strong>Subscriber Count:</strong> <span id="currentSubscriberCount">API</span></p>
 						<p><strong>Discord Link:</strong> <span id="currentDiscordLink">N/A</span></p>
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">N/A</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">N/A</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">N/A</span></p>
+						<p><strong>Firebase Database:</strong> <span id="currentFirebaseUrl">Loading...</span></p>
 					</div>
+					
+					<div class="admin-setting">
+						<h3>🔥 Firebase Database Settings</h3>
+						<label for="firebaseDatabaseUrl">Database URL:</label>
+						<input type="text" id="firebaseDatabaseUrl" placeholder="https://your-project-default-rtdb.firebaseapp.com/" />
+						<button onclick="updateFirebaseDatabase()">Switch Database</button>
+						<div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; font-size: 12px;">
+							<strong>⚠️ Warning:</strong> Switching database will reload the page and use the new Firebase project for all settings.<br>
+							<strong>🔐 Security:</strong> Database URLs are encrypted before storage.
+						</div>
+					</div>
+					
+					<div class="admin-setting">
+						<h3>🎨 Website Effects</h3>
+						<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="colorEffectToggle" onchange="toggleColorEffect()">
+									<span>🌈 Color Effect</span>
+								</label>
+								<div id="colorHueRow" style="display:flex; align-items:center; gap:8px; margin-top:8px; padding-left:26px;">
+									<input type="range" id="colorHueSlider" min="0" max="360" value="45" oninput="updateColorHue(this.value)" style="flex:1;">
+									<input type="number" id="colorHueInput" min="0" max="360" value="45" oninput="updateColorHue(this.value)" style="width:70px; padding:6px 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); border-radius: 8px;">
+								</div>
+							</div>
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="grayscaleToggle" onchange="toggleGrayscale()">
+									<span>⚫ Grayscale</span>
+								</label>
+							</div>
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="blurToggle" checked onchange="toggleBlur()">
+									<span>🌫️ Blur Background</span>
+								</label>
+							</div>
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="sepiaToggle" onchange="toggleSepia()">
+									<span>📸 Sepia Effect</span>
+								</label>
+							</div>
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="invertToggle" onchange="toggleInvert()">
+									<span>🔄 Invert Colors</span>
+								</label>
+							</div>
+							<div>
+								<label style="display: flex; align-items: center; gap: 8px;">
+									<input type="checkbox" id="brightnessToggle" onchange="toggleBrightness()">
+									<span>☀️ High Brightness</span>
+								</label>
+							</div>
+						</div>
+						<div style="display: flex; gap: 10px;">
+							<button onclick="resetAllEffects()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24); flex: 1;">
+								Reset All Effects
+							</button>
+							<button onclick="saveEffectsGlobally()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff); flex: 1;">
+								Save Effects Globally
+							</button>
+						</div>
+					</div>
+					
 					<div class="admin-setting" style="margin-top: 15px;">
 						<button onclick="resetToDefaults()" style="background: linear-gradient(90deg, #ff4757, #ff3838); border-color: rgba(255, 71, 87, 0.3);">
 							Reset All to Defaults
 						</button>
+					</div>
+					</div>
+				</div>
+			</div>
+
+	<!-- Add Action Link Popup -->
+	<div id="actionLinkPopup" class="popup-overlay">
+		<div class="popup-content">
+			<div class="popup-header">
+				<h3 id="actionLinkPopupTitle">Add Link</h3>
+				<button class="close-btn" onclick="closePopup('actionLinkPopup')">&times;</button>
+			</div>
+			<div class="popup-body">
+				<div class="admin-setting" style="gap:12px;">
+					<label>Logo image:</label>
+					<input type="file" id="actionLogoFile" accept="image/*" onchange="handleActionLogoFile(this)">
+					<div id="actionLogoPreviewWrap" style="display:none; align-items:center; gap:10px;">
+						<img id="actionLogoPreview" alt="Logo preview" style="width:40px; height:40px; object-fit:contain; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:8px;" />
+						<small>Preview</small>
+					</div>
+					<label for="actionLinkName">Name:</label>
+					<input type="text" id="actionLinkName" placeholder="Follow on Twitch" maxlength="40">
+					<label for="actionLinkUrl">Link URL:</label>
+					<input type="url" id="actionLinkUrl" placeholder="https://example.com/your-link">
+					<div style="display:flex; gap:10px; margin-top:10px;">
+						<button onclick="saveActionLinkFromPopup()">Save</button>
+						<button style="background:rgba(255,255,255,0.08)" onclick="closePopup('actionLinkPopup')">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -1510,6 +1994,81 @@
 		function closePopup(popupId) {
 			document.getElementById(popupId).style.display = 'none';
 			document.body.style.overflow = 'auto';
+		}
+
+		// Colors Editor
+		const COLOR_VARS = [
+			{ key: '--bg-1', type: 'hex' },
+			{ key: '--bg-2', type: 'hex' },
+			{ key: '--twitch', type: 'hex' },
+			{ key: '--twitch-2', type: 'hex' },
+			{ key: '--pink', type: 'hex' },
+			{ key: '--cyan', type: 'hex' },
+			{ key: '--glow', type: 'hex' },
+			{ key: '--text', type: 'hex' },
+			{ key: '--muted', type: 'hex' },
+			{ key: '--card', type: 'hex' },
+			{ key: '--glass', type: 'rgba' },
+			{ key: '--border', type: 'rgba' }
+		];
+
+		function getCssVar(key) {
+			return getComputedStyle(document.documentElement).getPropertyValue(key).trim();
+		}
+		function setCssVar(key, value) {
+			document.documentElement.style.setProperty(key, value);
+		}
+		function openColorsPopup() {
+			const list = document.getElementById('colorsList');
+			if (!list) return;
+			list.innerHTML = '';
+			COLOR_VARS.forEach(v => {
+				const row = document.createElement('div');
+				row.style.display = 'grid';
+				row.style.gridTemplateColumns = '160px 1fr 90px';
+				row.style.gap = '10px';
+				const label = document.createElement('label');
+				label.textContent = v.key;
+				label.style.color = 'var(--muted)';
+				const input = document.createElement('input');
+				input.type = 'text';
+				input.value = getCssVar(v.key);
+				input.style.background = 'rgba(255,255,255,0.05)';
+				input.style.border = '1px solid var(--border)';
+				input.style.color = 'var(--text)';
+				input.style.borderRadius = '8px';
+				input.oninput = (e) => {
+					setCssVar(v.key, e.target.value);
+				};
+				const preview = document.createElement('div');
+				preview.style.height = '34px';
+				preview.style.border = '1px solid var(--border)';
+				preview.style.borderRadius = '6px';
+				preview.style.background = getCssVar(v.key);
+				const syncPreview = () => { preview.style.background = input.value; };
+				input.addEventListener('input', syncPreview);
+				row.appendChild(label); row.appendChild(input); row.appendChild(preview);
+				list.appendChild(row);
+			});
+			openPopup('colorsPopup');
+		}
+
+		async function saveColorsToDb() {
+			const payload = {};
+			COLOR_VARS.forEach(v => { payload[v.key] = getCssVar(v.key); });
+			await saveGlobalSetting('siteColors', JSON.stringify(payload));
+			alert('Colors saved GLOBALLY!');
+		}
+
+		async function resetColorsToDefaults() {
+			if (!confirm('Reset colors to defaults?')) return;
+			// defaults align with current CSS at top
+			const defaults = {
+				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
+				'--text':'#e8e8f0','--muted':'#b8b8c7','--card':'#121226cc','--glass':'rgba(18,18,38,0.55)','--border':'rgba(255,255,255,0.08)'
+			};
+			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
+			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
 		}
 
 		// Close popup when clicking outside
@@ -1529,6 +2088,7 @@
 			if (event.key === 'Escape') {
 				closePopup('followPopup');
 				closePopup('subscribePopup');
+				closePopup('actionLinkPopup');
 			}
 		});
 	</script>
@@ -1614,16 +2174,40 @@
 	</script>
 
 	<script>
+		// Simple encryption/decryption functions for Firebase URL
+		function encryptUrl(url) {
+			// Simple Base64 encoding with additional obfuscation
+			const encoded = btoa(url);
+			return encoded.split('').reverse().join('') + 'fb_enc';
+		}
+		
+		function decryptUrl(encryptedUrl) {
+			try {
+				if (!encryptedUrl.endsWith('fb_enc')) return null;
+				const reversed = encryptedUrl.slice(0, -6).split('').reverse().join('');
+				return atob(reversed);
+			} catch (e) {
+				return null;
+			}
+		}
+		
 		// Firebase Configuration (from your Firebase project)
+		// Check for encrypted custom database URL in localStorage
+		const encryptedUrl = localStorage.getItem('encryptedFirebaseUrl');
+		const customDatabaseUrl = encryptedUrl ? decryptUrl(encryptedUrl) : null;
+		const defaultDatabaseUrl = "https://ilyambr-45403-default-rtdb.firebaseio.com";
+		
 		const firebaseConfig = {
 			apiKey: "AIzaSyCTyk_sZYCXFsFOQK_faVQ5KQiQNtK1Q0",
 			authDomain: "ilyambr-45403.firebaseapp.com",
-			databaseURL: "https://ilyambr-45403-default-rtdb.firebaseio.com",
+			databaseURL: customDatabaseUrl || defaultDatabaseUrl,
 			projectId: "ilyambr-45403",
 			storageBucket: "ilyambr-45403.firebasestorage.app",
 			messagingSenderId: "826687105713",
 			appId: "1:826687105713:web:a5e0b97818a2bf91da5098"
 		};
+
+		console.log('🔥 Using Firebase database:', firebaseConfig.databaseURL);
 
 		// Initialize Firebase
 		let database = null;
@@ -1632,9 +2216,51 @@
 				firebase.initializeApp(firebaseConfig);
 				database = firebase.database();
 				console.log('🔥 Firebase initialized successfully!');
+				// After initial init, check if there's a globally configured DB override and switch for everyone
+				ensureGlobalDatabaseUrl();
 			}
 		} catch (error) {
 			console.log('Firebase not available, using localStorage fallback');
+		}
+
+		// If admins set a global DB URL in siteSettings/firebaseDatabaseUrl, use it for all visitors.
+		// We probe the DEFAULT database as the source of truth, falling back to the currently-connected DB.
+		async function ensureGlobalDatabaseUrl() {
+			try {
+				if (!firebase) return;
+				// 1) Read from DEFAULT DB (canonical).
+				let defaultDesired = null;
+				try {
+					const defaultAppName = 'defaultProbe';
+					const existing = firebase.apps?.find(a => a.name === defaultAppName);
+					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
+					const defaultDb = defaultApp.database();
+					const snap = await defaultDb.ref('siteSettings/firebaseDatabaseUrl').once('value');
+					defaultDesired = snap.val();
+				} catch (e) {
+					console.warn('Default DB probe failed:', e);
+				}
+
+				// 2) Read from CURRENT DB as fallback
+				let currentDesired = null;
+				try {
+					if (database) {
+						const snap2 = await database.ref('siteSettings/firebaseDatabaseUrl').once('value');
+						currentDesired = snap2.val();
+					}
+				} catch (e) {
+					console.warn('Current DB probe failed:', e);
+				}
+
+				const desiredUrl = defaultDesired || currentDesired;
+				if (desiredUrl && desiredUrl !== firebaseConfig.databaseURL) {
+					console.log('🌍 Applying global Firebase DB override:', desiredUrl);
+					localStorage.setItem('encryptedFirebaseUrl', encryptUrl(desiredUrl));
+					window.location.reload();
+				}
+			} catch (e) {
+				console.warn('Could not check/apply global database URL override:', e);
+			}
 		}
 
 		// Admin Console Functionality (moved here to be available immediately)
@@ -1642,6 +2268,8 @@
 		let adminUser = null;
 		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
 		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
+		// Collaborators list (hoisted early to avoid TDZ)
+		let collaborators = [];
 
 		function openAdminLogin() {
 			console.log('🔧 Admin button clicked!');
@@ -1650,6 +2278,12 @@
 			if (isAdminLoggedIn) {
 				console.log('✅ User is logged in, opening admin panel');
 				loadCurrentSettings();
+				// Render collaborators list and ensure tint rows state
+				renderCollaborators();
+				updateTintRows();
+				// Ensure action links lists are rendered inside panel
+				renderActionLinksList('follow');
+				renderActionLinksList('subscribe');
 				document.getElementById('adminPanelPopup').style.display = 'flex';
 				document.body.style.overflow = 'hidden';
 			} else {
@@ -1712,34 +2346,60 @@
 
 		// Initialize Google Sign-In when the page loads
 		window.onload = async function() {
+			console.log('🔑 Initializing OAuth system...');
+			
 			// Check for existing valid session first
 			checkExistingSession();
 			
-			// Now we have a valid Google Client ID, so use proper Google OAuth
-			if (typeof google !== 'undefined' && google.accounts) {
-				google.accounts.id.initialize({
-					client_id: GOOGLE_CLIENT_ID,
-					callback: handleCredentialResponse
-				});
+			// Wait a bit for Google API to fully load
+			setTimeout(() => {
+				console.log('🔍 Checking Google API availability...');
+				console.log('Google object exists:', typeof google !== 'undefined');
+				console.log('Google accounts exists:', typeof google !== 'undefined' && google.accounts);
+				
+				// Now we have a valid Google Client ID, so use proper Google OAuth
+				if (typeof google !== 'undefined' && google.accounts) {
+					console.log('✅ Google API loaded successfully, initializing OAuth...');
+					
+					try {
+						google.accounts.id.initialize({
+							client_id: GOOGLE_CLIENT_ID,
+							callback: handleCredentialResponse,
+							auto_select: false,
+							cancel_on_tap_outside: false
+						});
 
-				google.accounts.id.renderButton(
-					document.getElementById("googleSignIn"),
-					{ 
-						theme: "outline", 
-						size: "large",
-						text: "sign_in_with",
-						width: 250
+						console.log('✅ Google OAuth initialized successfully');
+
+						const signInElement = document.getElementById("googleSignIn");
+						if (signInElement) {
+							google.accounts.id.renderButton(
+								signInElement,
+								{ 
+									theme: "outline", 
+									size: "large",
+									text: "sign_in_with",
+									width: 250
+								}
+							);
+							console.log('✅ Google Sign-In button rendered');
+						} else {
+							console.error('❌ Google Sign-In element not found');
+						}
+					} catch (error) {
+						console.error('❌ Error initializing Google OAuth:', error);
+						setupFallbackAuth();
 					}
-				);
-			} else {
-				// Fallback for when Google API isn't loaded
-				document.getElementById("googleSignIn").onclick = fallbackGoogleSignIn;
-				document.getElementById("googleSignIn").innerHTML = `
-					<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google"/>
-					Sign in with Google (Fallback)
-				`;
-			}
+				} else {
+					console.warn('⚠️ Google API not available, using fallback');
+					setupFallbackAuth();
+				}
+			}, 1000); // Wait 1 second for Google API to load
 			
+			// Bind tint mode change
+			const tm = document.getElementById('tintMode');
+			if (tm) tm.addEventListener('change', updateTintRows);
+
 			// Load existing settings from Firebase/localStorage (now properly awaited)
 			try {
 				await loadExistingSettings();
@@ -1747,7 +2407,31 @@
 			} catch (error) {
 				console.error('❌ Error loading settings:', error);
 			}
+			
+			// Do not force any default effects here; loadGlobalEffects() will apply saved state
 		};
+
+		function setupFallbackAuth() {
+			console.log('🔄 Setting up fallback authentication...');
+			const signInElement = document.getElementById("googleSignIn");
+			if (signInElement) {
+				signInElement.onclick = fallbackGoogleSignIn;
+				signInElement.innerHTML = `
+					<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style="width: 20px; height: 20px; margin-right: 8px;"/>
+					Sign in with Google (Fallback)
+				`;
+				signInElement.style.display = 'flex';
+				signInElement.style.alignItems = 'center';
+				signInElement.style.justifyContent = 'center';
+				signInElement.style.padding = '10px 20px';
+				signInElement.style.border = '1px solid #dadce0';
+				signInElement.style.borderRadius = '4px';
+				signInElement.style.backgroundColor = '#fff';
+				signInElement.style.color = '#3c4043';
+				signInElement.style.cursor = 'pointer';
+				console.log('✅ Fallback auth button set up');
+			}
+		}
 
 		function checkExistingSession() {
 			const sessionData = sessionStorage.getItem('admin-session');
@@ -1782,23 +2466,53 @@
 			return false;
 		}
 
-		function fallbackGoogleSignIn() {
-			// Simple email verification for demonstration
-			const email = prompt("Enter your email for admin access:");
-			if (email === AUTHORIZED_EMAIL) {
-				adminUser = { email: email, name: "Admin User" };
+		async function fallbackGoogleSignIn() {
+			console.log('🔄 Attempting fallback Google Sign-In...');
+			
+			// For file:// protocol, show a message about domain restrictions
+			if (window.location.protocol === 'file:') {
+				const useDemo = confirm(`⚠️ OAuth Limitation Detected\n\nGoogle OAuth doesn't work with file:// protocol for security reasons.\n\nTo test OAuth:\n1. Host this file on a web server (localhost:8000, behindthebonnet.me, etc.)\n2. Add your domain to Google Cloud Console authorized origins\n\nWould you like to use demo admin access for testing?\n\nClick OK for demo access, Cancel to try manual email entry.`);
+				
+				if (useDemo) {
+					// Simulate successful admin login for testing
+					const simulatedUser = {
+						name: 'Admin (Demo)',
+						email: AUTHORIZED_EMAIL,
+						picture: 'https://via.placeholder.com/40'
+					};
+					
+					console.log('🔧 Using simulated admin login for testing');
+					adminUser = simulatedUser;
+					isAdminLoggedIn = true;
+					showLoginSuccess();
+					setTimeout(() => {
+						closeAdminPopup('adminLoginPopup');
+						openAdminLogin(); // This will now open the admin panel
+					}, 1000);
+					return;
+				}
+			}
+			
+			// Manual email verification for demonstration/testing
+			const currentDomain = window.location.origin || window.location.protocol + '//' + window.location.host;
+			const email = prompt(`Enter your email for admin access:\n\nNote: Only ${AUTHORIZED_EMAIL} is authorized.\n\nCurrent domain: ${currentDomain}\n\nIf OAuth isn't working, this might be due to:\n• Domain not authorized in Google Cloud Console\n• Missing HTTPS (required for OAuth)\n• CORS restrictions\n\nFor behindthebonnet.me: Make sure to add the domain to Google Cloud Console authorized origins.`);
+			
+			// Load collaborators before checking
+			await loadCollaborators();
+			if (email && isAuthorizedEmail(email)) {
+				adminUser = { email: email, name: "Admin User (Manual)" };
 				isAdminLoggedIn = true;
 				showLoginSuccess();
 				setTimeout(() => {
 					closeAdminPopup('adminLoginPopup');
 					openAdminLogin(); // This will now open the admin panel
 				}, 1000);
-			} else {
-				showLoginError("Unauthorized email address");
+			} else if (email) {
+				showLoginError(`Unauthorized email address.`);
 			}
 		}
 
-		function handleCredentialResponse(response) {
+		async function handleCredentialResponse(response) {
 			// More secure client-side verification
 			try {
 				// Verify token structure
@@ -1830,8 +2544,9 @@
 					throw new Error('Email not verified');
 				}
 
-				// Check authorized email
-				if (payload.email === AUTHORIZED_EMAIL) {
+				// Check authorized email or collaborator
+				await loadCollaborators();
+				if (isAuthorizedEmail(payload.email)) {
 					adminUser = {
 						email: payload.email,
 						name: payload.name,
@@ -1889,6 +2604,140 @@
 		}
 
 		// Admin Panel Functions
+		// ---- Action Links (Follow/Subscribe) ----
+		let actionLinkContext = 'follow'; // current context for add/edit
+		let followLinks = []; // {name, url, img}
+		let subscribeLinks = [];
+
+		function openAddActionLinkPopup(context) {
+			actionLinkContext = context;
+			document.getElementById('actionLinkPopupTitle').textContent = context === 'follow' ? 'Add Follow Link' : 'Add Subscribe Link';
+			document.getElementById('actionLogoFile').value = '';
+			document.getElementById('actionLogoPreviewWrap').style.display = 'none';
+			document.getElementById('actionLinkName').value = '';
+			document.getElementById('actionLinkUrl').value = '';
+			openPopup('actionLinkPopup');
+		}
+
+		function handleActionLogoFile(input) {
+			const file = input.files && input.files[0];
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = () => {
+				document.getElementById('actionLogoPreview').src = reader.result;
+				document.getElementById('actionLogoPreviewWrap').style.display = 'flex';
+			};
+			reader.readAsDataURL(file); // store as data URL
+		}
+
+		async function saveActionLinkFromPopup() {
+			const name = (document.getElementById('actionLinkName').value || '').trim();
+			const url = (document.getElementById('actionLinkUrl').value || '').trim();
+			const img = document.getElementById('actionLogoPreview').src || '';
+			if (!name || !url || !img) { alert('Please provide logo, name, and URL'); return; }
+			const entry = { name, url, img };
+			if (actionLinkContext === 'follow') {
+				followLinks.push(entry);
+				await saveGlobalSetting('followLinks', JSON.stringify(followLinks));
+				renderActionLinksList('follow');
+				renderActionPopupButtons('follow');
+			} else {
+				subscribeLinks.push(entry);
+				await saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
+				renderActionLinksList('subscribe');
+				renderActionPopupButtons('subscribe');
+			}
+			closePopup('actionLinkPopup');
+		}
+
+		function renderActionLinksList(context) {
+			const data = context === 'follow' ? followLinks : subscribeLinks;
+			const container = document.getElementById(context === 'follow' ? 'followLinksList' : 'subscribeLinksList');
+			if (!container) return;
+			container.innerHTML = '';
+			data.forEach((item, idx) => {
+				const div = document.createElement('div');
+				div.className = 'collab-item';
+				div.innerHTML = `
+					<div style="display:flex; align-items:center; gap:10px;">
+						<img src="${item.img}" alt="logo" style="width:20px; height:20px; object-fit:contain; border-radius:4px; background:rgba(255,255,255,0.08)"/>
+						<span class="collab-email">${item.name} — ${item.url}</span>
+					</div>
+				`;
+				const btn = document.createElement('button');
+				btn.className = 'collab-remove';
+				btn.textContent = 'Remove';
+				btn.onclick = async () => {
+					if (context === 'follow') {
+						followLinks.splice(idx, 1);
+						await saveGlobalSetting('followLinks', JSON.stringify(followLinks));
+						renderActionLinksList('follow');
+						renderActionPopupButtons('follow');
+					} else {
+						subscribeLinks.splice(idx, 1);
+						await saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
+						renderActionLinksList('subscribe');
+						renderActionPopupButtons('subscribe');
+					}
+				};
+				div.appendChild(btn);
+				container.appendChild(div);
+			});
+		}
+
+		function clearActionLinks(context) {
+			if (!confirm('Clear all links in this list?')) return;
+			if (context === 'follow') {
+				followLinks = [];
+				saveGlobalSetting('followLinks', JSON.stringify(followLinks));
+				renderActionLinksList('follow');
+				renderActionPopupButtons('follow');
+			} else {
+				subscribeLinks = [];
+				saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
+				renderActionLinksList('subscribe');
+				renderActionPopupButtons('subscribe');
+			}
+		}
+
+		function setPopupTitles(displayName) {
+			const name = displayName && displayName !== 'N/A' ? displayName : 'ilyambr';
+			const fTitle = document.getElementById('followPopupTitle');
+			if (fTitle) fTitle.textContent = `Follow ${name}`;
+			const sTitle = document.getElementById('subscribePopupTitle');
+			if (sTitle) sTitle.textContent = `Subscribe to ${name}`;
+		}
+
+		function renderActionPopupButtons(context) {
+			const data = context === 'follow' ? followLinks : subscribeLinks;
+			const container = document.getElementById(context === 'follow' ? 'followPopupButtons' : 'subscribePopupButtons');
+			if (!container) return;
+			container.innerHTML = '';
+			data.forEach(item => {
+				const a = document.createElement('a');
+				a.href = item.url;
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.className = 'popup-button';
+				// logo
+				const img = document.createElement('img');
+				img.src = item.img;
+				img.alt = 'Logo';
+				a.appendChild(img);
+				// text node
+				a.appendChild(document.createTextNode(item.name));
+				container.appendChild(a);
+			});
+		}
+
+		async function openFollowPopup() {
+			renderActionPopupButtons('follow');
+			openPopup('followPopup');
+		}
+		async function openSubscribePopup() {
+			renderActionPopupButtons('subscribe');
+			openPopup('subscribePopup');
+		}
 		function loadCurrentSettings() {
 			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name}`;
 			
@@ -1907,11 +2756,45 @@
 			// Apply saved GLOBAL settings on page load - visible to ALL users
 			const savedDisplayName = await loadGlobalSetting('display-name');
 			const savedUsername = await loadGlobalSetting('username');
+			// Load follow/subscribe links
+			try {
+				const f = await loadGlobalSetting('followLinks');
+				if (f && f !== 'N/A') followLinks = JSON.parse(f);
+			} catch(e) { followLinks = []; }
+			try {
+				const s = await loadGlobalSetting('subscribeLinks');
+				if (s && s !== 'N/A') subscribeLinks = JSON.parse(s);
+			} catch(e) { subscribeLinks = []; }
+			renderActionLinksList('follow');
+			renderActionLinksList('subscribe');
+			renderActionPopupButtons('follow');
+			renderActionPopupButtons('subscribe');
+
+			// Update popup titles with current display name
+			setPopupTitles(savedDisplayName);
 			const savedTwitchStatus = await loadGlobalSetting('twitchStatus');
 			const savedDiscordLink = await loadGlobalSetting('discordLink');
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
+			const savedPageLogo = await loadGlobalSetting('pageLogo');
+			const savedLogoInvert = await loadGlobalSetting('logoInvert');
+			const savedLogoSize = await loadGlobalSetting('pageLogoSize');
+			const savedBio = await loadGlobalSetting('bioText');
+			const savedAboutText = await loadGlobalSetting('aboutText');
+			const savedStreamingYear = await loadGlobalSetting('streamingYear');
+			const savedFollowerCount = await loadGlobalSetting('followerCount');
+			const savedSubscriberCount = await loadGlobalSetting('subscriberCount');
+			const savedTwitchLink = await loadGlobalSetting('twitchLink');
+			const savedYouTubeLink = await loadGlobalSetting('youtubeLink');
+			const savedTikTokLink = await loadGlobalSetting('tiktokLink');
+			const savedInstagramLink = await loadGlobalSetting('instagramLink');
+			const savedXLink = await loadGlobalSetting('xLink');
+			const savedRedditLink = await loadGlobalSetting('redditLink');
+			const savedFollowButtonText = await loadGlobalSetting('followButtonText');
+			const savedSubscribeButtonText = await loadGlobalSetting('subscribeButtonText');
+			const savedSaturdayTime = await loadGlobalSetting('saturdayTime');
+			const savedSundayTime = await loadGlobalSetting('sundayTime');
 			
 			console.log('� Global display name:', savedDisplayName);
 			console.log('📧 Global username:', savedUsername);
@@ -1936,11 +2819,15 @@
 					element.textContent = savedUsername;
 				});
 				
-				// Also look for any elements that contain @ilyambrr and update them
-				const allElements = document.querySelectorAll('*');
-				allElements.forEach(element => {
-					if (element.textContent && element.textContent.includes('@ilyambrr')) {
-						element.textContent = element.textContent.replace('@ilyambrr', savedUsername);
+				// SAFE way to update specific content without breaking JavaScript
+				// Only target visible content elements, exclude script/style/head
+				const contentElements = document.querySelectorAll('div.username, span.username, p.username, .bio, .title');
+				contentElements.forEach(element => {
+					// Only update if it's not inside a script or style tag
+					if (!element.closest('script') && !element.closest('style') && !element.closest('head')) {
+						if (element.textContent && element.textContent.includes('@ilyambrr')) {
+							element.textContent = element.textContent.replace('@ilyambrr', savedUsername);
+						}
 					}
 				});
 			}
@@ -1965,11 +2852,184 @@
 			// Apply saved Discord link
 			if (savedDiscordLink && savedDiscordLink !== 'N/A') {
 				console.log('💬 Applying global Discord link to ALL visitors:', savedDiscordLink);
-				const discordLinks = document.querySelectorAll('a[href*="discord"]');
-				discordLinks.forEach(link => {
-					link.href = savedDiscordLink;
-				});
-				console.log('✅ Discord links updated:', discordLinks.length, 'links updated');
+				const discordLink = document.getElementById('discordSocialLink');
+				if (discordLink) {
+					discordLink.href = savedDiscordLink;
+				}
+				console.log('✅ Discord link updated');
+			}
+			
+			// Apply saved page logo
+			if (savedPageLogo && savedPageLogo !== 'N/A') {
+				console.log('🖼️ Applying global page logo to ALL visitors:', savedPageLogo);
+				const logoElement = document.getElementById('pageLogoImg');
+				if (logoElement) {
+					logoElement.src = savedPageLogo;
+				}
+			}
+			// Apply saved page logo size (widthxheight)
+			if (savedLogoSize && /^\d{2,5}x\d{2,5}$/i.test(savedLogoSize)) {
+				const [w, h] = savedLogoSize.toLowerCase().split('x');
+				const logoBox = document.querySelector('.page-logo');
+				if (logoBox) {
+					logoBox.style.width = w + 'px';
+					logoBox.style.height = h + 'px';
+				}
+			}
+			// Apply saved logo inversion state (default true)
+			{
+				const useInvert = (savedLogoInvert === null || savedLogoInvert === undefined) ? true : !!savedLogoInvert;
+				const toggle = document.getElementById('logoInvertToggle');
+				if (toggle) toggle.checked = useInvert;
+				if (useInvert) {
+					document.body.classList.remove('logo-no-invert');
+				} else {
+					document.body.classList.add('logo-no-invert');
+				}
+			}
+			
+			// Apply saved bio
+			if (savedBio && savedBio !== 'N/A') {
+				console.log('📝 Applying global bio to ALL visitors:', savedBio);
+				const bioElement = document.querySelector('.bio');
+				if (bioElement) {
+					bioElement.textContent = savedBio;
+				}
+			}
+			
+			// Apply saved about text
+			if (savedAboutText && savedAboutText !== 'N/A') {
+				console.log('📄 Applying global about text to ALL visitors:', savedAboutText);
+				const aboutElement = document.getElementById('aboutTextContent');
+				if (aboutElement) {
+					aboutElement.textContent = savedAboutText;
+				}
+			}
+			
+			// Apply saved streaming year
+			if (savedStreamingYear && savedStreamingYear !== 'N/A') {
+				console.log('📅 Applying global streaming year to ALL visitors:', savedStreamingYear);
+				const yearElement = document.getElementById('streamingYearStat');
+				if (yearElement) {
+					yearElement.textContent = `Streaming since ${savedStreamingYear}`;
+				}
+			}
+			
+			// Apply saved follower count
+			if (savedFollowerCount && savedFollowerCount !== 'N/A') {
+				console.log('👥 Applying global follower count to ALL visitors:', savedFollowerCount);
+				const followerElement = document.getElementById('twitchFollowersStat');
+				if (followerElement) {
+					followerElement.innerHTML = `
+						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						${formatNumber(parseInt(savedFollowerCount))} followers
+					`;
+				}
+			}
+			
+			// Apply saved subscriber count
+			if (savedSubscriberCount && savedSubscriberCount !== 'N/A') {
+				console.log('📺 Applying global subscriber count to ALL visitors:', savedSubscriberCount);
+				const subscriberElement = document.getElementById('youtubeSubscribersStat');
+				if (subscriberElement) {
+					subscriberElement.innerHTML = `
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						${formatNumber(parseInt(savedSubscriberCount))} subs
+					`;
+				}
+			}
+			
+			// Apply saved social links
+			if (savedTwitchLink && savedTwitchLink !== 'N/A') {
+				updateSocialLink('twitch', savedTwitchLink);
+			}
+			if (savedYouTubeLink && savedYouTubeLink !== 'N/A') {
+				updateSocialLink('youtube', savedYouTubeLink);
+			}
+			if (savedTikTokLink && savedTikTokLink !== 'N/A') {
+				updateSocialLink('tiktok', savedTikTokLink);
+			}
+			if (savedInstagramLink && savedInstagramLink !== 'N/A') {
+				updateSocialLink('instagram', savedInstagramLink);
+			}
+			if (savedXLink && savedXLink !== 'N/A') {
+				updateSocialLink('x', savedXLink);
+			}
+			if (savedRedditLink && savedRedditLink !== 'N/A') {
+				updateSocialLink('reddit', savedRedditLink);
+			}
+			
+			// Apply saved button text
+			if (savedFollowButtonText && savedFollowButtonText !== 'N/A') {
+				const followButton = document.getElementById('followButton');
+				if (followButton) {
+					followButton.innerHTML = `
+						<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="m19 8 2 2-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="m21 10-7.5 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+						${savedFollowButtonText}
+					`;
+				}
+			}
+			if (savedSubscribeButtonText && savedSubscribeButtonText !== 'N/A') {
+				const subscribeButton = document.getElementById('subscribeButton');
+				if (subscribeButton) {
+					subscribeButton.innerHTML = `
+						<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="m19 8 2 2-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="m21 10-7.5 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+						${savedSubscribeButtonText}
+					`;
+				}
+			}
+			
+			// Apply saved schedule with new flexible format (with fallback to old format)
+			const stream1Day = await loadGlobalSetting('stream1Day') || 6; // Default Saturday
+			const stream1Time = await loadGlobalSetting('stream1Time') || savedSaturdayTime;
+			const stream1DateMode = await loadGlobalSetting('stream1DateMode') || 'auto';
+			const stream1CustomDate = await loadGlobalSetting('stream1CustomDate') || '';
+			
+			const stream2Day = await loadGlobalSetting('stream2Day') || 0; // Default Sunday
+			const stream2Time = await loadGlobalSetting('stream2Time') || savedSundayTime;
+			const stream2DateMode = await loadGlobalSetting('stream2DateMode') || 'auto';
+			const stream2CustomDate = await loadGlobalSetting('stream2CustomDate') || '';
+			
+			if (stream1Time && stream1Time !== 'N/A') {
+				const saturdayElement = document.getElementById('saturdaySchedule');
+				if (saturdayElement) {
+					let displayDate;
+					if (stream1DateMode === 'custom' && stream1CustomDate) {
+						const customDateObj = new Date(stream1CustomDate);
+						displayDate = formatScheduleDate(customDateObj);
+					} else {
+						// Auto mode - next occurrence of selected day
+						const nextDate = getNextWeekdayDate(parseInt(stream1Day));
+						displayDate = formatScheduleDate(nextDate);
+					}
+					saturdayElement.textContent = `${displayDate}, ${stream1Time}`;
+				}
+			}
+			
+			if (stream2Time && stream2Time !== 'N/A') {
+				const sundayElement = document.getElementById('sundaySchedule');
+				if (sundayElement) {
+					let displayDate;
+					if (stream2DateMode === 'custom' && stream2CustomDate) {
+						const customDateObj = new Date(stream2CustomDate);
+						displayDate = formatScheduleDate(customDateObj);
+					} else {
+						// Auto mode - next occurrence of selected day
+						const nextDate = getNextWeekdayDate(parseInt(stream2Day));
+						displayDate = formatScheduleDate(nextDate);
+					}
+					sundayElement.textContent = `${displayDate}, ${stream2Time}`;
+				}
 			}
 			
 			// Track loading state for simple coordination
@@ -1986,6 +3046,9 @@
 							loadingOverlay.classList.add('hide');
 							setTimeout(() => {
 								loadingOverlay.style.display = 'none';
+								// Show all database-dependent content
+								document.body.classList.remove('db-loading');
+								document.body.classList.add('db-loaded');
 							}, 600);
 						}
 					}, 300);
@@ -2059,6 +3122,46 @@
 				// Use auto-latest for ALL visitors
 				loadLatestYouTubeVideo();
 			}
+			
+			// Load and apply theme tint if saved
+			const savedTint = await loadGlobalSetting('themeTint');
+			if (savedTint && savedTint !== 'N/A') {
+				try {
+					const tint = JSON.parse(savedTint);
+					applyThemeTint(tint);
+					// also update controls if present
+					if (document.getElementById('tintMode')) {
+						document.getElementById('tintMode').value = tint.mode || 'none';
+						updateTintRows();
+						if (tint.mode === 'solid') {
+							document.getElementById('tintColor1').value = tint.color1 || '#9146ff';
+								const op1 = (typeof tint.opacity === 'number' && tint.opacity > 1) ? tint.opacity : Math.round((tint.opacity ?? 0.35) * 100);
+								document.getElementById('tintOpacity').value = op1;
+						} else if (tint.mode === 'gradient') {
+							document.getElementById('tintColorG1').value = tint.color1 || '#9146ff';
+							document.getElementById('tintColorG2').value = tint.color2 || '#3a86ff';
+							document.getElementById('tintDirection').value = tint.direction || 'to bottom';
+							const op2 = (typeof tint.opacity === 'number' && tint.opacity > 1) ? tint.opacity : Math.round((tint.opacity ?? 0.35) * 100);
+							document.getElementById('tintOpacityG').value = op2;
+						}
+					}
+				} catch(e) { console.warn('Failed to parse themeTint:', e); }
+			}
+
+			// Load site colors (CSS variables)
+			const savedColors = await loadGlobalSetting('siteColors');
+			if (savedColors && savedColors !== 'N/A') {
+				try {
+					const colors = JSON.parse(savedColors);
+					Object.entries(colors).forEach(([k,v])=>{
+						document.documentElement.style.setProperty(k, v);
+					});
+					console.log('🎨 Applied site colors from DB');
+				} catch(e) { console.warn('Failed to parse siteColors:', e); }
+			}
+
+			// Load and apply global website effects
+			loadGlobalEffects();
 		}
 
 		function updateYouTubeEmbed(videoId) {
@@ -2105,7 +3208,36 @@
 			const currentPic = await loadGlobalSetting('profile-pic') || 'N/A';
 			const currentBg = await loadGlobalSetting('background') || 'N/A';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'N/A';
+			const currentPageLogo = await loadGlobalSetting('pageLogo') || '';
+			const currentPageLogoResolution = await loadGlobalSetting('pageLogoResolution') || '';
+			const currentPageLogoSize = await loadGlobalSetting('pageLogoSize') || '';
+			const currentLogoInvert = await loadGlobalSetting('logoInvert');
+			const currentBio = await loadGlobalSetting('bioText') || '';
+			const currentAboutText = await loadGlobalSetting('aboutText') || '';
+			const currentStreamingYear = await loadGlobalSetting('streamingYear') || '';
+			const currentFollowerCount = await loadGlobalSetting('followerCount') || '';
+			const currentSubscriberCount = await loadGlobalSetting('subscriberCount') || '';
+			const currentTwitchLink = await loadGlobalSetting('twitchLink') || '';
+			const currentYouTubeLink = await loadGlobalSetting('youtubeLink') || '';
+			const currentTikTokLink = await loadGlobalSetting('tiktokLink') || '';
+			const currentInstagramLink = await loadGlobalSetting('instagramLink') || '';
+			const currentXLink = await loadGlobalSetting('xLink') || '';
+			const currentRedditLink = await loadGlobalSetting('redditLink') || '';
+			const currentFollowButtonText = await loadGlobalSetting('followButtonText') || '';
+			const currentSubscribeButtonText = await loadGlobalSetting('subscribeButtonText') || '';
 			
+			// Load new schedule format (with fallback to old format)
+			const stream1Day = await loadGlobalSetting('stream1Day') || 6; // Default Saturday
+			const stream1Time = await loadGlobalSetting('stream1Time') || await loadGlobalSetting('saturdayTime') || '';
+			const stream1DateMode = await loadGlobalSetting('stream1DateMode') || 'auto';
+			const stream1CustomDate = await loadGlobalSetting('stream1CustomDate') || '';
+			
+			const stream2Day = await loadGlobalSetting('stream2Day') || 0; // Default Sunday  
+			const stream2Time = await loadGlobalSetting('stream2Time') || await loadGlobalSetting('sundayTime') || '';
+			const stream2DateMode = await loadGlobalSetting('stream2DateMode') || 'auto';
+			const stream2CustomDate = await loadGlobalSetting('stream2CustomDate') || '';
+			
+			// Display current settings
 			document.getElementById('currentDisplayName').textContent = currentDisplayName === 'N/A' ? 'N/A' : currentDisplayName;
 			document.getElementById('currentUsername').textContent = currentUsername === 'N/A' ? 'N/A' : currentUsername;
 			document.getElementById('currentTwitchStatus').textContent = currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None';
@@ -2114,6 +3246,60 @@
 			document.getElementById('currentProfilePic').textContent = currentPic === 'N/A' ? 'N/A' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
 			document.getElementById('currentBackground').textContent = currentBg === 'N/A' ? 'N/A' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
+			document.getElementById('currentPageLogo').textContent = currentPageLogo ? (currentPageLogo.length > 30 ? currentPageLogo.substring(0, 30) + '...' : currentPageLogo) : 'Default';
+			const resInput = document.getElementById('pageLogoResolution');
+			if (resInput) resInput.value = currentPageLogoResolution;
+			const sizeInput = document.getElementById('pageLogoSize');
+			if (sizeInput) sizeInput.value = currentPageLogoSize || '135x135';
+			const invToggle = document.getElementById('logoInvertToggle');
+			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
+			document.getElementById('currentBio').textContent = currentBio ? (currentBio.length > 30 ? currentBio.substring(0, 30) + '...' : currentBio) : 'N/A';
+			document.getElementById('currentAboutText').textContent = currentAboutText ? (currentAboutText.length > 30 ? currentAboutText.substring(0, 30) + '...' : currentAboutText) : 'N/A';
+			document.getElementById('currentStreamingYear').textContent = currentStreamingYear || 'N/A';
+			document.getElementById('currentFollowerCount').textContent = currentFollowerCount || 'API';
+			document.getElementById('currentSubscriberCount').textContent = currentSubscriberCount || 'API';
+			document.getElementById('currentTwitchLink').textContent = currentTwitchLink ? (currentTwitchLink.length > 30 ? currentTwitchLink.substring(0, 30) + '...' : currentTwitchLink) : 'N/A';
+			document.getElementById('currentYouTubeLink').textContent = currentYouTubeLink ? (currentYouTubeLink.length > 30 ? currentYouTubeLink.substring(0, 30) + '...' : currentYouTubeLink) : 'N/A';
+			document.getElementById('currentTikTokLink').textContent = currentTikTokLink ? (currentTikTokLink.length > 30 ? currentTikTokLink.substring(0, 30) + '...' : currentTikTokLink) : 'N/A';
+			document.getElementById('currentInstagramLink').textContent = currentInstagramLink ? (currentInstagramLink.length > 30 ? currentInstagramLink.substring(0, 30) + '...' : currentInstagramLink) : 'N/A';
+			document.getElementById('currentXLink').textContent = currentXLink ? (currentXLink.length > 30 ? currentXLink.substring(0, 30) + '...' : currentXLink) : 'N/A';
+			document.getElementById('currentRedditLink').textContent = currentRedditLink ? (currentRedditLink.length > 30 ? currentRedditLink.substring(0, 30) + '...' : currentRedditLink) : 'N/A';
+			document.getElementById('currentFollowButtonText').textContent = currentFollowButtonText || 'Follow';
+			document.getElementById('currentSubscribeButtonText').textContent = currentSubscribeButtonText || 'Subscribe';
+			
+			// Set schedule selector values
+			const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			
+			const streamDay1Select = document.getElementById('streamDay1');
+			const streamTime1Input = document.getElementById('streamTime1');
+			const streamDateMode1Select = document.getElementById('streamDateMode1');
+			const streamCustomDate1Input = document.getElementById('streamCustomDate1');
+			
+			const streamDay2Select = document.getElementById('streamDay2');
+			const streamTime2Input = document.getElementById('streamTime2');
+			const streamDateMode2Select = document.getElementById('streamDateMode2');
+			const streamCustomDate2Input = document.getElementById('streamCustomDate2');
+			
+			if (streamDay1Select) {
+				streamDay1Select.value = stream1Day;
+				streamDateMode1Select.value = stream1DateMode;
+				if (stream1DateMode === 'custom') {
+					streamCustomDate1Input.style.display = 'block';
+					streamCustomDate1Input.value = stream1CustomDate;
+				}
+			}
+			
+			if (streamDay2Select) {
+				streamDay2Select.value = stream2Day;
+				streamDateMode2Select.value = stream2DateMode;
+				if (stream2DateMode === 'custom') {
+					streamCustomDate2Input.style.display = 'block';
+					streamCustomDate2Input.value = stream2CustomDate;
+				}
+			}
+			
+			// Display current Firebase database URL
+			document.getElementById('currentFirebaseUrl').textContent = firebaseConfig.databaseURL;
 		}
 			
 		if (savedVideo && savedVideo !== 'N/A') {
@@ -2201,6 +3387,8 @@
 			
 			// Also update the page title
 			document.title = displayName;
+			// Update popup titles
+			setPopupTitles(displayName);
 			
 			// Update current settings display
 			document.getElementById('currentDisplayName').textContent = displayName;
@@ -2225,17 +3413,25 @@
 				element.textContent = username;
 			});
 			
-			// Also look for any elements that contain @ilyambrr and update them
-			const allElements = document.querySelectorAll('*');
-			allElements.forEach(element => {
-				if (element.textContent && element.textContent.includes('@ilyambrr')) {
-					element.textContent = element.textContent.replace('@ilyambrr', username);
+			// SAFE way to update @ilyambrr in content only
+			// Only target visible content elements, exclude script/style/head
+			const contentElements = document.querySelectorAll('div.username, span.username, p.username, .bio, .title');
+			contentElements.forEach(element => {
+				// Only update if it's not inside a script or style tag
+				if (!element.closest('script') && !element.closest('style') && !element.closest('head')) {
+					if (element.textContent && element.textContent.includes('@ilyambrr')) {
+						element.textContent = element.textContent.replace('@ilyambrr', username);
+					}
 				}
 			});
 			
 			// Update current settings display
 			document.getElementById('currentUsername').textContent = username;
 			document.getElementById('username').value = '';
+			
+			// Refresh Twitch followers with new username
+			console.log('🔄 Username changed, refreshing Twitch followers...');
+			updateTwitchFollowers();
 			
 			alert('Username updated GLOBALLY! All visitors will see this change.');
 		}
@@ -2294,6 +3490,444 @@
 			alert(`Discord link updated GLOBALLY! All visitors will see this change.`);
 		}
 
+		async function updatePageLogo() {
+			const logoUrl = document.getElementById('pageLogo').value.trim();
+			const resolution = (document.getElementById('pageLogoResolution').value || '').trim();
+			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
+
+			if (!logoUrl && !resolution && !sizeStr) {
+				alert('Please enter at least one field: URL, Resolution, or Size');
+				return;
+			}
+
+			// Optional: basic validation of resolution (WxH)
+			if (resolution && !/^\d{2,5}x\d{2,5}$/i.test(resolution)) {
+				alert('Resolution must be in the format 1920x1080');
+				return;
+			}
+			// Optional: basic validation of size (WxH)
+			if (sizeStr && !/^\d{2,5}x\d{2,5}$/i.test(sizeStr)) {
+				alert('Size must be in the format 135x135');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			if (logoUrl) {
+				await saveGlobalSetting('pageLogo', logoUrl);
+			}
+			if (resolution) {
+				await saveGlobalSetting('pageLogoResolution', resolution);
+			}
+			if (sizeStr) {
+				await saveGlobalSetting('pageLogoSize', sizeStr);
+			}
+			
+			// Update logo immediately
+			const logoElement = document.getElementById('pageLogoImg');
+			if (logoElement && logoUrl) {
+				logoElement.src = logoUrl;
+			}
+			if (sizeStr) {
+				const [w, h] = sizeStr.toLowerCase().split('x');
+				const logoBox = document.querySelector('.page-logo');
+				if (logoBox) { logoBox.style.width = w + 'px'; logoBox.style.height = h + 'px'; }
+			}
+			
+			// Update current settings display
+			const shortUrl = logoUrl.length > 30 ? logoUrl.substring(0, 30) + '...' : logoUrl;
+			document.getElementById('currentPageLogo').textContent = shortUrl;
+			document.getElementById('pageLogo').value = '';
+			document.getElementById('pageLogoResolution').value = '';
+			document.getElementById('pageLogoSize').value = '';
+			
+			alert('Page logo updated GLOBALLY! All visitors will see this change.');
+		}
+
+		async function updateLogoInvert() {
+			const checked = document.getElementById('logoInvertToggle').checked;
+			await saveGlobalSetting('logoInvert', checked);
+			if (checked) {
+				document.body.classList.remove('logo-no-invert');
+			} else {
+				document.body.classList.add('logo-no-invert');
+			}
+			console.log('Logo invert set to:', checked);
+		}
+
+		async function updateBio() {
+			const bio = document.getElementById('bioTextInput').value.trim();
+			if (!bio) {
+				alert('Please enter a bio');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('bioText', bio);
+			
+			// Update bio immediately
+			const bioElement = document.querySelector('.bio');
+			if (bioElement) {
+				bioElement.textContent = bio;
+			}
+			
+			// Update current settings display
+			document.getElementById('currentBio').textContent = bio.length > 30 ? bio.substring(0, 30) + '...' : bio;
+			document.getElementById('bioTextInput').value = '';
+			
+			alert('Bio updated GLOBALLY! All visitors will see this change.');
+		}
+
+		async function updateAboutText() {
+			const aboutText = document.getElementById('aboutText').value.trim();
+			if (!aboutText) {
+				alert('Please enter about text');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('aboutText', aboutText);
+			
+			// Update about text immediately
+			const aboutElement = document.getElementById('aboutTextContent');
+			if (aboutElement) {
+				aboutElement.textContent = aboutText;
+			}
+			
+			// Update current settings display
+			document.getElementById('currentAboutText').textContent = aboutText.length > 30 ? aboutText.substring(0, 30) + '...' : aboutText;
+			document.getElementById('aboutText').value = '';
+			
+			alert('About text updated GLOBALLY! All visitors will see this change.');
+		}
+
+		async function updateStreamingYear() {
+			const year = document.getElementById('streamingYear').value.trim();
+			if (!year) {
+				alert('Please enter a streaming year');
+				return;
+			}
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('streamingYear', year);
+			
+			// Update streaming year immediately
+			const yearElement = document.getElementById('streamingYearStat');
+			if (yearElement) {
+				yearElement.textContent = `Streaming since ${year}`;
+			}
+			
+			// Update current settings display
+			document.getElementById('currentStreamingYear').textContent = year;
+			document.getElementById('streamingYear').value = '';
+			
+			alert('Streaming year updated GLOBALLY! All visitors will see this change.');
+		}
+
+		async function updateFollowerCount() {
+			const count = document.getElementById('followerCount').value.trim();
+			
+			// Save GLOBALLY for ALL users (empty string for API mode)
+			await saveGlobalSetting('followerCount', count);
+			
+			// Update followers immediately
+			const followerElement = document.getElementById('twitchFollowersStat');
+			if (followerElement) {
+				if (count) {
+					followerElement.innerHTML = `
+						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						${formatNumber(parseInt(count))} followers
+					`;
+				} else {
+					// Use API
+					updateTwitchFollowers();
+				}
+			}
+			
+			// Update current settings display
+			document.getElementById('currentFollowerCount').textContent = count || 'API';
+			document.getElementById('followerCount').value = '';
+			
+			alert(count ? 'Follower count updated GLOBALLY!' : 'Follower count set to use API GLOBALLY!');
+		}
+
+		async function updateSubscriberCount() {
+			const count = document.getElementById('subscriberCount').value.trim();
+			
+			// Save GLOBALLY for ALL users (empty string for API mode)
+			await saveGlobalSetting('subscriberCount', count);
+			
+			// Update subscribers immediately
+			const subscriberElement = document.getElementById('youtubeSubscribersStat');
+			if (subscriberElement) {
+				if (count) {
+					subscriberElement.innerHTML = `
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						${formatNumber(parseInt(count))} subs
+					`;
+				} else {
+					// Use API
+					updateYouTubeSubscribers();
+				}
+			}
+			
+			// Update current settings display
+			document.getElementById('currentSubscriberCount').textContent = count || 'API';
+			document.getElementById('subscriberCount').value = '';
+			
+			alert(count ? 'Subscriber count updated GLOBALLY!' : 'Subscriber count set to use API GLOBALLY!');
+		}
+
+		async function updateTwitchLink() {
+			const url = document.getElementById('twitchLink').value.trim();
+			if (!url) {
+				alert('Please enter a Twitch URL');
+				return;
+			}
+
+			await saveGlobalSetting('twitchLink', url);
+			updateSocialLink('twitch', url);
+			document.getElementById('twitchLink').value = '';
+			alert('Twitch link updated GLOBALLY!');
+		}
+
+		async function updateYouTubeLink() {
+			const url = document.getElementById('youtubeLink').value.trim();
+			if (!url) {
+				alert('Please enter a YouTube URL');
+				return;
+			}
+
+			await saveGlobalSetting('youtubeLink', url);
+			updateSocialLink('youtube', url);
+			document.getElementById('youtubeLink').value = '';
+			alert('YouTube link updated GLOBALLY!');
+		}
+
+		async function updateTikTokLink() {
+			const url = document.getElementById('tiktokLink').value.trim();
+			if (!url) {
+				alert('Please enter a TikTok URL');
+				return;
+			}
+
+			await saveGlobalSetting('tiktokLink', url);
+			updateSocialLink('tiktok', url);
+			document.getElementById('tiktokLink').value = '';
+			alert('TikTok link updated GLOBALLY!');
+		}
+
+		async function updateInstagramLink() {
+			const url = document.getElementById('instagramLink').value.trim();
+			if (!url) {
+				alert('Please enter an Instagram URL');
+				return;
+			}
+
+			await saveGlobalSetting('instagramLink', url);
+			updateSocialLink('instagram', url);
+			document.getElementById('instagramLink').value = '';
+			alert('Instagram link updated GLOBALLY!');
+		}
+
+		async function updateXLink() {
+			const url = document.getElementById('xLink').value.trim();
+			if (!url) {
+				alert('Please enter an X URL');
+				return;
+			}
+
+			await saveGlobalSetting('xLink', url);
+			updateSocialLink('x', url);
+			document.getElementById('xLink').value = '';
+			alert('X link updated GLOBALLY!');
+		}
+
+		async function updateRedditLink() {
+			const url = document.getElementById('redditLink').value.trim();
+			if (!url) {
+				alert('Please enter a Reddit URL');
+				return;
+			}
+
+			await saveGlobalSetting('redditLink', url);
+			updateSocialLink('reddit', url);
+			document.getElementById('redditLink').value = '';
+			alert('Reddit link updated GLOBALLY!');
+		}
+
+		function updateSocialLink(platform, url) {
+			// Update social bar links using specific IDs
+			const linkMap = {
+				'twitch': 'twitchSocialLink',
+				'youtube': 'youtubeSocialLink',
+				'tiktok': 'tiktokSocialLink',
+				'discord': 'discordSocialLink',
+				'instagram': 'instagramSocialLink',
+				'x': 'xSocialLink',
+				'reddit': 'redditSocialLink'
+			};
+			
+			const linkId = linkMap[platform.toLowerCase()];
+			if (linkId) {
+				const socialLink = document.getElementById(linkId);
+				if (socialLink) {
+					socialLink.href = url;
+				}
+			}
+		}
+
+		async function updateFollowButton() {
+			const text = document.getElementById('followButtonText').value.trim();
+			if (!text) {
+				alert('Please enter follow button text');
+				return;
+			}
+
+			await saveGlobalSetting('followButtonText', text);
+			
+			const followButton = document.getElementById('followButton');
+			if (followButton) {
+				followButton.innerHTML = `
+					<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+						<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="m19 8 2 2-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="m21 10-7.5 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+					${text}
+				`;
+			}
+			
+			document.getElementById('followButtonText').value = '';
+			alert('Follow button updated GLOBALLY!');
+		}
+
+		async function updateSubscribeButton() {
+			const text = document.getElementById('subscribeButtonText').value.trim();
+			if (!text) {
+				alert('Please enter subscribe button text');
+				return;
+			}
+
+			await saveGlobalSetting('subscribeButtonText', text);
+			
+			const subscribeButton = document.getElementById('subscribeButton');
+			if (subscribeButton) {
+				subscribeButton.innerHTML = `
+					<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+						<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="m19 8 2 2-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<path d="m21 10-7.5 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+					${text}
+				`;
+			}
+			
+			document.getElementById('subscribeButtonText').value = '';
+			alert('Subscribe button updated GLOBALLY!');
+		}
+
+		async function updateStreamSchedule(streamNumber) {
+			const daySelect = document.getElementById(`streamDay${streamNumber}`);
+			const timeInput = document.getElementById(`streamTime${streamNumber}`);
+			const dateModeSelect = document.getElementById(`streamDateMode${streamNumber}`);
+			const customDateInput = document.getElementById(`streamCustomDate${streamNumber}`);
+			
+			const selectedDay = parseInt(daySelect.value);
+			const time = timeInput.value.trim();
+			const dateMode = dateModeSelect.value;
+			const customDate = customDateInput.value;
+			
+			if (!time) {
+				alert(`Please enter stream ${streamNumber} time`);
+				return;
+			}
+
+			// Save settings
+			await saveGlobalSetting(`stream${streamNumber}Day`, selectedDay);
+			await saveGlobalSetting(`stream${streamNumber}Time`, time);
+			await saveGlobalSetting(`stream${streamNumber}DateMode`, dateMode);
+			if (dateMode === 'custom' && customDate) {
+				await saveGlobalSetting(`stream${streamNumber}CustomDate`, customDate);
+			}
+			
+			// Update display
+			const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			const scheduleElement = document.getElementById(streamNumber === 1 ? 'saturdaySchedule' : 'sundaySchedule');
+			
+			if (scheduleElement) {
+				let displayDate;
+				if (dateMode === 'custom' && customDate) {
+					const customDateObj = new Date(customDate);
+					displayDate = formatScheduleDate(customDateObj);
+				} else {
+					// Auto mode - next occurrence of selected day
+					const nextDate = getNextWeekdayDate(selectedDay);
+					displayDate = formatScheduleDate(nextDate);
+				}
+				scheduleElement.textContent = `${displayDate}, ${time}`;
+			}
+			
+			timeInput.value = '';
+			alert(`Stream ${streamNumber} schedule updated GLOBALLY!`);
+		}
+
+		// Keep old functions for backward compatibility but make them call the new function
+		async function updateSaturdayTime() {
+			// Try new format first, fallback to old
+			const newTimeInput = document.getElementById('streamTime1');
+			const oldTimeInput = document.getElementById('saturdayTime');
+			
+			if (newTimeInput && newTimeInput.value.trim()) {
+				await updateStreamSchedule(1);
+			} else if (oldTimeInput && oldTimeInput.value.trim()) {
+				// Old format compatibility
+				const time = oldTimeInput.value.trim();
+				await saveGlobalSetting('stream1Day', 6); // Saturday
+				await saveGlobalSetting('stream1Time', time);
+				await saveGlobalSetting('stream1DateMode', 'auto');
+				
+				const saturdayElement = document.getElementById('saturdaySchedule');
+				if (saturdayElement) {
+					const nextSaturday = getNextWeekdayDate(6);
+					const displayDate = formatScheduleDate(nextSaturday);
+					saturdayElement.textContent = `${displayDate}, ${time}`;
+				}
+				oldTimeInput.value = '';
+				alert('Saturday schedule updated GLOBALLY!');
+			} else {
+				alert('Please enter Saturday stream time');
+			}
+		}
+
+		async function updateSundayTime() {
+			// Try new format first, fallback to old
+			const newTimeInput = document.getElementById('streamTime2');
+			const oldTimeInput = document.getElementById('sundayTime');
+			
+			if (newTimeInput && newTimeInput.value.trim()) {
+				await updateStreamSchedule(2);
+			} else if (oldTimeInput && oldTimeInput.value.trim()) {
+				// Old format compatibility
+				const time = oldTimeInput.value.trim();
+				await saveGlobalSetting('stream2Day', 0); // Sunday
+				await saveGlobalSetting('stream2Time', time);
+				await saveGlobalSetting('stream2DateMode', 'auto');
+				
+				const sundayElement = document.getElementById('sundaySchedule');
+				if (sundayElement) {
+					const nextSunday = getNextWeekdayDate(0);
+					const displayDate = formatScheduleDate(nextSunday);
+					sundayElement.textContent = `${displayDate}, ${time}`;
+				}
+				oldTimeInput.value = '';
+				alert('Sunday schedule updated GLOBALLY!');
+			} else {
+				alert('Please enter Sunday stream time');
+			}
+		}
+
 		async function updateYouTubeVideo() {
 			const videoId = document.getElementById('youtubeVideoId').value.trim();
 			if (!videoId) {
@@ -2320,6 +3954,383 @@
 			alert('YouTube video updated GLOBALLY! All visitors will see this video.');
 		}
 
+		async function updateFirebaseDatabase() {
+			const newDatabaseUrl = document.getElementById('firebaseDatabaseUrl').value.trim();
+			
+			if (!newDatabaseUrl) {
+				alert('Please enter a Firebase database URL');
+				return;
+			}
+			
+			// Confirm the change
+			const confirmed = confirm(`⚠️ Are you sure you want to switch to a new Firebase database?\n\nNew URL: ${newDatabaseUrl}\n\nThis will:\n- Save the new database URL\n- Reload the page\n- Use the new Firebase project for all settings\n\nContinue?`);
+			
+			if (!confirmed) return;
+			
+			try {
+				// Save GLOBALLY in the CURRENT DB (for users already on it)
+				await saveGlobalSetting('firebaseDatabaseUrl', newDatabaseUrl);
+				// Also write the override to the DEFAULT DB so new visitors (who start on default) can discover it
+				if (typeof firebase !== 'undefined') {
+					const defaultAppName = 'defaultProbeWrite';
+					const existing = firebase.apps?.find(a => a.name === defaultAppName);
+					const defaultApp = existing || firebase.initializeApp({ ...firebaseConfig, databaseURL: defaultDatabaseUrl }, defaultAppName);
+					await defaultApp.database().ref('siteSettings/firebaseDatabaseUrl').set(newDatabaseUrl);
+				}
+				// Store encrypted locally so this browser uses it immediately on reload
+				const encryptedUrl = encryptUrl(newDatabaseUrl);
+				localStorage.setItem('encryptedFirebaseUrl', encryptedUrl);
+				localStorage.removeItem('customFirebaseUrl');
+				alert('Firebase database URL saved GLOBALLY! Reloading to apply now.');
+				window.location.reload();
+			} catch (error) {
+				console.error('Error updating Firebase database:', error);
+				alert('Error updating Firebase database. Please try again.');
+			}
+		}
+
+		// ===== Collaborators helpers =====
+		async function loadCollaborators() {
+			try {
+				const val = await loadGlobalSetting('collaborators');
+				if (val && val !== 'N/A') {
+					collaborators = Array.isArray(val) ? val : JSON.parse(val);
+				} else { collaborators = []; }
+			} catch(e) { collaborators = []; }
+		}
+		function isAuthorizedEmail(email) {
+			const em = (email||'').toLowerCase();
+			return em === AUTHORIZED_EMAIL || collaborators.includes(em);
+		}
+		async function renderCollaborators() {
+			await loadCollaborators();
+			const list = document.getElementById('collabList');
+			if (!list) return;
+			list.innerHTML = '';
+			// owner first
+			const ownerItem = document.createElement('div');
+			ownerItem.className = 'collab-item collab-owner';
+			ownerItem.innerHTML = `<span class="collab-email">${AUTHORIZED_EMAIL} (owner)</span>`;
+			list.appendChild(ownerItem);
+			// others
+			collaborators.filter(e=>e!==AUTHORIZED_EMAIL).forEach(email=>{
+				const item = document.createElement('div');
+				item.className='collab-item';
+				item.innerHTML = `<span class="collab-email">${email}</span>`;
+				const btn = document.createElement('button');
+				btn.className='collab-remove';
+				btn.textContent='Remove';
+				btn.onclick = async ()=>{ await removeCollaborator(email); };
+				item.appendChild(btn);
+				list.appendChild(item);
+			});
+		}
+		async function addCollaborator() {
+			const input = document.getElementById('collabEmail');
+			const email = (input.value||'').trim().toLowerCase();
+			if (!email) return alert('Enter an email');
+			if (email === AUTHORIZED_EMAIL) return alert('Owner is already authorized.');
+			await loadCollaborators();
+			if (!collaborators.includes(email)) collaborators.push(email);
+			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
+			input.value='';
+			alert('Collaborator added');
+			renderCollaborators();
+		}
+		async function removeCollaborator(email) {
+			await loadCollaborators();
+			collaborators = collaborators.filter(e=>e!==email);
+			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
+			alert('Collaborator removed');
+			renderCollaborators();
+		}
+
+		// ===== Theme Tint helpers =====
+		function hexToRgba(hex, alpha=1) {
+			hex = hex.replace('#','');
+			if (hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+			const num = parseInt(hex,16);
+			const r=(num>>16)&255, g=(num>>8)&255, b=num&255;
+			return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+		}
+		function updateTintRows() {
+			const mode = document.getElementById('tintMode')?.value || 'none';
+			const solidRow = document.getElementById('tintSolidRow');
+			const gradRow = document.getElementById('tintGradientRow');
+			if (solidRow) solidRow.style.display = mode==='solid' ? 'flex' : 'none';
+			if (gradRow) gradRow.style.display = mode==='gradient' ? 'flex' : 'none';
+		}
+		function applyThemeTint(preset) {
+			const mode = preset?.mode || document.getElementById('tintMode')?.value || 'none';
+			const overlay = document.getElementById('bgTint');
+			if (!overlay) return;
+			if (mode==='none') { overlay.classList.add('hidden'); overlay.style.background=''; return; }
+			overlay.classList.remove('hidden');
+			if (mode==='solid') {
+				const c1 = preset?.color1 || document.getElementById('tintColor1')?.value || '#9146ff';
+				const op = (preset?.opacity ?? (document.getElementById('tintOpacity')?.value || 35))/100;
+				overlay.style.background = hexToRgba(c1, op);
+			} else if (mode==='gradient') {
+				const c1 = preset?.color1 || document.getElementById('tintColorG1')?.value || '#9146ff';
+				const c2 = preset?.color2 || document.getElementById('tintColorG2')?.value || '#3a86ff';
+				const dir = preset?.direction || document.getElementById('tintDirection')?.value || 'to bottom';
+				const op = (preset?.opacity ?? (document.getElementById('tintOpacityG')?.value || 35))/100;
+				overlay.style.background = `linear-gradient(${dir}, ${hexToRgba(c1, op)}, ${hexToRgba(c2, op)})`;
+			}
+		}
+		async function saveThemeTint() {
+			const mode = document.getElementById('tintMode')?.value || 'none';
+			const payload = { mode };
+			if (mode==='solid') {
+					payload.color1 = document.getElementById('tintColor1').value;
+					const raw = Number(document.getElementById('tintOpacity').value);
+					payload.opacity = raw > 1 ? raw/100 : raw;
+			} else if (mode==='gradient') {
+				payload.color1 = document.getElementById('tintColorG1').value;
+				payload.color2 = document.getElementById('tintColorG2').value;
+				payload.direction = document.getElementById('tintDirection').value;
+					const raw = Number(document.getElementById('tintOpacityG').value);
+					payload.opacity = raw > 1 ? raw/100 : raw;
+			}
+			await saveGlobalSetting('themeTint', JSON.stringify(payload));
+			applyThemeTint(payload);
+			alert('Theme tint saved GLOBALLY!');
+		}
+
+		// Website Effects Functions
+		function toggleColorEffect() {
+			const isChecked = document.getElementById('colorEffectToggle').checked;
+			if (isChecked) {
+				document.body.classList.add('effect-color');
+			} else {
+				document.body.classList.remove('effect-color');
+			}
+			updateCombinedFilters();
+			scheduleEffectsAutoSave();
+		}
+
+		function toggleGrayscale() {
+			const isChecked = document.getElementById('grayscaleToggle').checked;
+			if (isChecked) {
+				document.body.classList.add('effect-grayscale');
+			} else {
+				document.body.classList.remove('effect-grayscale');
+			}
+			updateCombinedFilters();
+			scheduleEffectsAutoSave();
+		}
+
+		function toggleBlur() {
+			const isChecked = document.getElementById('blurToggle').checked;
+			// Control the dedicated glass overlay element for consistent blur
+			const glass = document.querySelector('.bg-glass');
+			if (glass) {
+				if (isChecked) glass.classList.remove('hidden');
+				else glass.classList.add('hidden');
+			}
+			scheduleEffectsAutoSave();
+		}
+
+		function toggleSepia() {
+			const isChecked = document.getElementById('sepiaToggle').checked;
+			if (isChecked) {
+				document.body.classList.add('effect-sepia');
+			} else {
+				document.body.classList.remove('effect-sepia');
+			}
+			updateCombinedFilters();
+			scheduleEffectsAutoSave();
+		}
+
+		function toggleInvert() {
+			const isChecked = document.getElementById('invertToggle').checked;
+			if (isChecked) {
+				document.body.classList.add('effect-invert');
+			} else {
+				document.body.classList.remove('effect-invert');
+			}
+			updateCombinedFilters();
+			scheduleEffectsAutoSave();
+		}
+
+		function toggleBrightness() {
+			const isChecked = document.getElementById('brightnessToggle').checked;
+			if (isChecked) {
+				document.body.classList.add('effect-brightness');
+			} else {
+				document.body.classList.remove('effect-brightness');
+			}
+			updateCombinedFilters();
+			scheduleEffectsAutoSave();
+		}
+
+		function updateCombinedFilters() {
+			// Build combined filter string for complex combinations
+			const effects = [];
+			
+			if (document.body.classList.contains('effect-invert')) {
+				effects.push('invert(1)');
+			}
+			if (document.body.classList.contains('effect-color')) {
+				// Use dynamic hue from control if available
+				const hue = parseInt(document.getElementById('colorHueInput')?.value || '45', 10);
+				effects.push(`hue-rotate(${isNaN(hue) ? 45 : hue}deg)`);
+				effects.push('saturate(1.5)');
+			}
+			if (document.body.classList.contains('effect-grayscale')) {
+				effects.push('grayscale(100%)');
+			}
+			if (document.body.classList.contains('effect-sepia')) {
+				effects.push('sepia(70%)');
+			}
+			if (document.body.classList.contains('effect-brightness')) {
+				effects.push('brightness(1.3)');
+			}
+
+			// Apply combined filter if we have multiple effects
+			if (effects.length > 1) {
+				document.body.style.filter = effects.join(' ');
+			} else if (effects.length === 1) {
+				document.body.style.filter = effects[0];
+			} else {
+				document.body.style.filter = '';
+			}
+		}
+
+		function setColorFilterFromHue(hue) {
+			const h = Math.min(360, Math.max(0, parseInt(hue || 45, 10)));
+			const slider = document.getElementById('colorHueSlider');
+			const input = document.getElementById('colorHueInput');
+			if (slider) slider.value = h;
+			if (input) input.value = h;
+			if (document.body.classList.contains('effect-color')) {
+				updateCombinedFilters();
+				scheduleEffectsAutoSave();
+			}
+		}
+
+		let effectsSaveTimer = null;
+		function scheduleEffectsAutoSave() {
+			if (effectsSaveTimer) clearTimeout(effectsSaveTimer);
+			effectsSaveTimer = setTimeout(() => {
+				// Reuse saveEffectsGlobally payload builder
+				saveEffectsGlobally();
+			}, 400);
+		}
+
+		function updateColorHue(val) {
+			setColorFilterFromHue(val);
+		}
+
+		function resetAllEffects() {
+			// Reset all checkboxes
+			document.getElementById('colorEffectToggle').checked = false;
+			document.getElementById('grayscaleToggle').checked = false;
+			document.getElementById('blurToggle').checked = false;
+			document.getElementById('sepiaToggle').checked = false;
+			document.getElementById('invertToggle').checked = false;
+			document.getElementById('brightnessToggle').checked = false;
+			// Reset hue controls to default 45
+			setColorFilterFromHue(45);
+			
+			// Remove all effect classes
+			document.body.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
+			document.body.style.filter = '';
+			// Hide the blur overlay
+			const glass = document.querySelector('.bg-glass');
+			if (glass) glass.classList.add('hidden');
+			
+			alert('All visual effects have been reset!');
+		}
+
+		async function saveEffectsGlobally() {
+			const effects = {
+				color: document.getElementById('colorEffectToggle').checked,
+				grayscale: document.getElementById('grayscaleToggle').checked,
+				blur: document.getElementById('blurToggle').checked,
+				sepia: document.getElementById('sepiaToggle').checked,
+				invert: document.getElementById('invertToggle').checked,
+				brightness: document.getElementById('brightnessToggle').checked,
+				hue: parseInt(document.getElementById('colorHueInput')?.value || '45', 10)
+			};
+
+			// Save GLOBALLY for ALL users
+			await saveGlobalSetting('websiteEffects', JSON.stringify(effects));
+			
+			alert('Website effects saved GLOBALLY! All visitors will see these effects.');
+		}
+
+		async function loadGlobalEffects() {
+			const savedEffects = await loadGlobalSetting('websiteEffects');
+			if (savedEffects && savedEffects !== 'N/A') {
+				try {
+					const effects = JSON.parse(savedEffects);
+					
+					// Apply saved effects
+					document.getElementById('colorEffectToggle').checked = effects.color || false;
+					document.getElementById('grayscaleToggle').checked = effects.grayscale || false;
+					document.getElementById('blurToggle').checked = effects.blur || false;
+					document.getElementById('sepiaToggle').checked = effects.sepia || false;
+					document.getElementById('invertToggle').checked = effects.invert || false;
+					document.getElementById('brightnessToggle').checked = effects.brightness || false;
+					setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
+					
+					// Apply the effects to the page
+					if (effects.color) document.body.classList.add('effect-color');
+					if (effects.grayscale) document.body.classList.add('effect-grayscale');
+					// Blur now toggles the .bg-glass overlay
+					const glass = document.querySelector('.bg-glass');
+					if (glass) {
+						if (effects.blur) glass.classList.remove('hidden'); else glass.classList.add('hidden');
+					}
+					if (effects.sepia) document.body.classList.add('effect-sepia');
+					if (effects.invert) document.body.classList.add('effect-invert');
+					if (effects.brightness) document.body.classList.add('effect-brightness');
+					
+					updateCombinedFilters();
+					
+					console.log('🎨 Applied global website effects:', effects);
+				} catch (e) {
+					console.error('Error parsing saved effects:', e);
+				}
+			} else {
+				// If DB is available but no saved effects there, migrate from local cache once
+				try {
+					const cached = localStorage.getItem('admin-websiteEffects');
+					if (database && cached) {
+						await saveGlobalSetting('websiteEffects', cached);
+						const effects = JSON.parse(cached);
+						document.getElementById('colorEffectToggle').checked = !!effects.color;
+						document.getElementById('grayscaleToggle').checked = !!effects.grayscale;
+						document.getElementById('blurToggle').checked = !!effects.blur;
+						document.getElementById('sepiaToggle').checked = !!effects.sepia;
+						document.getElementById('invertToggle').checked = !!effects.invert;
+						document.getElementById('brightnessToggle').checked = !!effects.brightness;
+						setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
+						if (effects.color) document.body.classList.add('effect-color');
+						if (effects.grayscale) document.body.classList.add('effect-grayscale');
+						const glassM = document.querySelector('.bg-glass');
+						if (glassM) { if (effects.blur) glassM.classList.remove('hidden'); else glassM.classList.add('hidden'); }
+						if (effects.sepia) document.body.classList.add('effect-sepia');
+						if (effects.invert) document.body.classList.add('effect-invert');
+						if (effects.brightness) document.body.classList.add('effect-brightness');
+						updateCombinedFilters();
+						console.log('⬆️ Migrated website effects from local cache to Firebase');
+						return;
+					}
+				} catch (e) {
+					console.warn('Effects migration skipped:', e);
+				}
+				// No saved effects: ensure default blur overlay matches toggle (checked by default)
+				const glass = document.querySelector('.bg-glass');
+				const blurChecked = document.getElementById('blurToggle')?.checked;
+				if (glass) {
+					if (blurChecked) glass.classList.remove('hidden'); else glass.classList.add('hidden');
+				}
+				setColorFilterFromHue(45);
+			}
+		}
+
 		// Add reset functions
 		async function resetToDefaults() {
 			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
@@ -2344,11 +4355,15 @@
 					element.textContent = '@ilyambrr';
 				});
 				
-				// Reset all elements that might contain the old username
-				const allElements = document.querySelectorAll('*');
-				allElements.forEach(element => {
-					if (element.textContent && !element.textContent.includes('@ilyambrr') && element.textContent.includes('@')) {
-						element.textContent = element.textContent.replace(/@[a-zA-Z0-9_]+/g, '@ilyambrr');
+				// SAFE reset of usernames in content only
+				// Only target visible content elements, exclude script/style/head
+				const contentElements = document.querySelectorAll('div.username, span.username, p.username, .bio, .title');
+				contentElements.forEach(element => {
+					// Only update if it's not inside a script or style tag
+					if (!element.closest('script') && !element.closest('style') && !element.closest('head')) {
+						if (element.textContent && !element.textContent.includes('@ilyambrr') && element.textContent.includes('@')) {
+							element.textContent = element.textContent.replace(/@[a-zA-Z0-9_]+/g, '@ilyambrr');
+						}
 					}
 				});
 				
@@ -2421,6 +4436,38 @@
 				}, 600);
 			}
 		}, 5000);
+		
+		// Date selector handlers for schedule settings
+		function setupDateSelectors() {
+			const streamDateMode1 = document.getElementById('streamDateMode1');
+			const streamCustomDate1 = document.getElementById('streamCustomDate1');
+			const streamDateMode2 = document.getElementById('streamDateMode2');
+			const streamCustomDate2 = document.getElementById('streamCustomDate2');
+			
+			if (streamDateMode1) {
+				streamDateMode1.addEventListener('change', function() {
+					if (this.value === 'custom') {
+						streamCustomDate1.style.display = 'block';
+					} else {
+						streamCustomDate1.style.display = 'none';
+					}
+				});
+			}
+			
+			if (streamDateMode2) {
+				streamDateMode2.addEventListener('change', function() {
+					if (this.value === 'custom') {
+						streamCustomDate2.style.display = 'block';
+					} else {
+						streamCustomDate2.style.display = 'none';
+					}
+				});
+			}
+		}
+		
+		// Call setup when page loads
+		setTimeout(setupDateSelectors, 100);
+		
 	</script>
 	</div> <!-- End page-content -->
 </body>
