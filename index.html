@@ -798,57 +798,56 @@
 		}
 
 		/* Mobile and Tablet: Header scrolls with page, not fixed */
-		@media (max-width: 1200px) { /* Changed from 980px to include landscape tablets */
+		@media (max-width: 1200px) { /* Tablets & large phones */
 			.container {
-				margin-top: 100px; /* Create space for logo and social bar */
+				margin-top: 200px; /* Reserve vertical space for logo + socials */
 				padding-top: 20px;
 			}
 			
 			.page-logo {
-				position: absolute; /* Change from fixed to absolute so it scrolls */
-				width: 100px; /* Bigger logo */
-				height: 100px;
-				top: 20px; /* Align with social links */
-				left: 20px; /* Keep it on the left like desktop */
+				position: absolute; /* Scrolls with content */
+				top: 30px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 110px;
+				height: 110px;
 			}
 			
 			.social-bar {
-				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 20px; /* Align level with logo */
-				right: 20px; /* Keep it on the right like desktop */
-				left: auto;
-				gap: 6px;
+				position: absolute;
+				top: 150px; /* Sits just beneath the logo */
+				left: 50%;
+				transform: translateX(-50%);
+				display: flex;
+				gap: 10px;
 			}
 			
 			.social-link {
-				width: 20px;
-				height: 20px;
+				width: 22px;
+				height: 22px;
 			}
 		}
 
 		@media (max-width: 640px) {
 			.container {
-				margin-top: 80px; /* Smaller space on phone */
+				margin-top: 170px;
 				padding-top: 15px;
 			}
 			
 			.page-logo {
-				position: absolute; /* Change from fixed to absolute so it scrolls */
-				width: 80px; /* Bigger on mobile too */
-				height: 80px;
-				left: 15px;
-				top: 15px; /* Align to social links */
+				top: 24px;
+				width: 90px;
+				height: 90px;
 			}
 			
 			.social-bar {
-				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 15px; /* Align level with logo */
-				right: 15px;
+				top: 130px;
+				gap: 8px;
 			}
 			
 			.social-link {
-				width: 18px;
-				height: 18px;
+				width: 20px;
+				height: 20px;
 			}
 		}
 
