@@ -1,7 +1,10 @@
 {
   "functions": {
-    "api/**/*.js": {
+    "api/*.js": {
       "runtime": "nodejs20.x"
+    },
+    "api/*.php": {
+      "runtime": "now-php@1.0.0"
     }
   }
 }
