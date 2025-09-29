@@ -35,13 +35,13 @@
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
 		*::-webkit-scrollbar{width:0; height:0;}
 		html,body{height:100%}
-		html{padding:0; margin:0; background:#1a1a2e; overflow-x:hidden}
+		html{padding:0; margin:0; background:#1a1a2e; overflow:hidden}
 		body{
 			margin:0; padding:0;
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
 			background: #1a1a2e;
-			overflow-x:hidden;
+			overflow:hidden;
 		}
 
 		/* Simple loading screen - no backdrop-filter to prevent blur conflicts */
@@ -369,6 +369,7 @@
 			justify-content: center;
 			align-items: center;
 			z-index: 1000;
+			overflow:auto;
 		}
 
 		/* Ensure Colors Editor sits above Admin Panel */
@@ -3429,34 +3430,44 @@
 			const stream2CustomDate = await loadGlobalSetting('stream2CustomDate') || '';
 			
 			// Display current settings
-			document.getElementById('currentDisplayName').textContent = currentDisplayName === 'N/A' ? 'N/A' : currentDisplayName;
-			document.getElementById('currentUsername').textContent = currentUsername === 'N/A' ? 'N/A' : currentUsername;
-			document.getElementById('currentTwitchStatus').textContent = currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None';
-			document.getElementById('twitchStatus').value = currentTwitchStatus; // Set the selector value
-			document.getElementById('currentDiscordLink').textContent = currentDiscordLink === 'N/A' ? 'N/A' : (currentDiscordLink.length > 30 ? currentDiscordLink.substring(0, 30) + '...' : currentDiscordLink);
-			document.getElementById('currentProfilePic').textContent = currentPic === 'N/A' ? 'N/A' : currentPic.substring(0, 50) + (currentPic.length > 50 ? '...' : '');
-			document.getElementById('currentBackground').textContent = currentBg === 'N/A' ? 'N/A' : currentBg.substring(0, 50) + (currentBg.length > 50 ? '...' : '');
-			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
-			document.getElementById('currentPageLogo').textContent = currentPageLogo ? (currentPageLogo.length > 30 ? currentPageLogo.substring(0, 30) + '...' : currentPageLogo) : 'Default';
+			const setCurrentText = (id, value) => {
+				const el = document.getElementById(id);
+				if (el) el.textContent = value;
+			};
+			const shorten = (value, limit = 30, fallback = 'N/A') => {
+				if (!value || value === 'N/A') return fallback;
+				return value.length > limit ? `${value.substring(0, limit)}...` : value;
+			};
+
+			setCurrentText('currentDisplayName', currentDisplayName && currentDisplayName !== 'N/A' ? currentDisplayName : 'N/A');
+			setCurrentText('currentUsername', currentUsername && currentUsername !== 'N/A' ? currentUsername : 'N/A');
+			setCurrentText('currentTwitchStatus', currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None');
+			const twitchStatusSelect = document.getElementById('twitchStatus');
+			if (twitchStatusSelect) twitchStatusSelect.value = currentTwitchStatus;
+			setCurrentText('currentDiscordLink', shorten(currentDiscordLink));
+			setCurrentText('currentProfilePic', shorten(currentPic, 50));
+			setCurrentText('currentBackground', shorten(currentBg, 50));
+			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
+			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
 			const resInput = document.getElementById('pageLogoResolution');
 			if (resInput) resInput.value = currentPageLogoResolution;
 			const sizeInput = document.getElementById('pageLogoSize');
 			if (sizeInput) sizeInput.value = currentPageLogoSize || '135x135';
 			const invToggle = document.getElementById('logoInvertToggle');
 			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
-			document.getElementById('currentBio').textContent = currentBio ? (currentBio.length > 30 ? currentBio.substring(0, 30) + '...' : currentBio) : 'N/A';
-			document.getElementById('currentAboutText').textContent = currentAboutText ? (currentAboutText.length > 30 ? currentAboutText.substring(0, 30) + '...' : currentAboutText) : 'N/A';
-			document.getElementById('currentStreamingYear').textContent = currentStreamingYear || 'N/A';
-			document.getElementById('currentFollowerCount').textContent = currentFollowerCount || 'API';
-			document.getElementById('currentSubscriberCount').textContent = currentSubscriberCount || 'API';
-			document.getElementById('currentTwitchLink').textContent = currentTwitchLink ? (currentTwitchLink.length > 30 ? currentTwitchLink.substring(0, 30) + '...' : currentTwitchLink) : 'N/A';
-			document.getElementById('currentYouTubeLink').textContent = currentYouTubeLink ? (currentYouTubeLink.length > 30 ? currentYouTubeLink.substring(0, 30) + '...' : currentYouTubeLink) : 'N/A';
-			document.getElementById('currentTikTokLink').textContent = currentTikTokLink ? (currentTikTokLink.length > 30 ? currentTikTokLink.substring(0, 30) + '...' : currentTikTokLink) : 'N/A';
-			document.getElementById('currentInstagramLink').textContent = currentInstagramLink ? (currentInstagramLink.length > 30 ? currentInstagramLink.substring(0, 30) + '...' : currentInstagramLink) : 'N/A';
-			document.getElementById('currentXLink').textContent = currentXLink ? (currentXLink.length > 30 ? currentXLink.substring(0, 30) + '...' : currentXLink) : 'N/A';
-			document.getElementById('currentRedditLink').textContent = currentRedditLink ? (currentRedditLink.length > 30 ? currentRedditLink.substring(0, 30) + '...' : currentRedditLink) : 'N/A';
-			document.getElementById('currentFollowButtonText').textContent = currentFollowButtonText || 'Follow';
-			document.getElementById('currentSubscribeButtonText').textContent = currentSubscribeButtonText || 'Subscribe';
+			setCurrentText('currentBio', shorten(currentBio));
+			setCurrentText('currentAboutText', shorten(currentAboutText));
+			setCurrentText('currentStreamingYear', currentStreamingYear || 'N/A');
+			setCurrentText('currentFollowerCount', currentFollowerCount || 'API');
+			setCurrentText('currentSubscriberCount', currentSubscriberCount || 'API');
+			setCurrentText('currentTwitchLink', shorten(currentTwitchLink));
+			setCurrentText('currentYouTubeLink', shorten(currentYouTubeLink));
+			setCurrentText('currentTikTokLink', shorten(currentTikTokLink));
+			setCurrentText('currentInstagramLink', shorten(currentInstagramLink));
+			setCurrentText('currentXLink', shorten(currentXLink));
+			setCurrentText('currentRedditLink', shorten(currentRedditLink));
+			setCurrentText('currentFollowButtonText', currentFollowButtonText || 'Follow');
+			setCurrentText('currentSubscribeButtonText', currentSubscribeButtonText || 'Subscribe');
 			
 			// Set schedule selector values
 			const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -3490,7 +3501,7 @@
 			}
 			
 			// Display current Firebase database URL
-			document.getElementById('currentFirebaseUrl').textContent = firebaseConfig.databaseURL;
+			setCurrentText('currentFirebaseUrl', firebaseConfig.databaseURL || 'N/A');
 		}
 			
 		if (savedVideo && savedVideo !== 'N/A') {
