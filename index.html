@@ -984,7 +984,7 @@
 	</div>
 
 	<div class="page-logo">
-		<img id="pageLogoImg" src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
+		<img id="pageLogoImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" />
 	</div>
 	
 	<ul class="social-bar" aria-label="Social Bar">
@@ -1018,27 +1018,27 @@
 	<div class="container">
 		<header class="header">
 			<div class="avatar" aria-label="Avatar">
-				<img src="https://ilyambr.me/img/avatar.webp" alt="Profile avatar" />
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile avatar" />
 			</div>
 			<div>
 				<div class="title">
-					<div class="name">ilyambr</div>
-					<div class="username">@ilyambrr</div>
+					<div class="name">&nbsp;</div>
+					<div class="username">&nbsp;</div>
 				</div>
-				<div class="bio" id="bioText">just give me a year max.....</div>
+				<div class="bio" id="bioText">&nbsp;</div>
 				<div class="badges">
 					<div class="badge twitch-status-badge" id="twitchStatusBadge" style="display: none;">Affiliate</div>
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
 						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
-						N/A followers
+						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
 						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
-						N/A subs
+						&nbsp;
 					</div>
-					<div class="stat" id="streamingYearStat">Streaming since 2024</div>
+					<div class="stat" id="streamingYearStat">&nbsp;</div>
 				</div>
 			</div>
 			<div class="actions">
@@ -1072,7 +1072,7 @@
 						radial-gradient(140% 140% at 90% 100%, rgba(100,100,100,0.24), transparent 60%),
 						linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));">
 						<div class="embed-container">
-							<iframe id="twitch-embed" class="embed-frame" src="" data-channel="ilyambrr" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
+							<iframe id="twitch-embed" class="embed-frame" src="" data-channel="" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
 							<iframe id="youtube-embed" class="embed-frame hidden" src="" frameborder="0" allowfullscreen></iframe>
 						</div>
 					</div>
@@ -1082,7 +1082,7 @@
 			<aside class="card">
 				<h3>About</h3>
 				<div class="about" id="aboutSection">
-					<span id="aboutTextContent">i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶</span>
+					<span id="aboutTextContent">&nbsp;</span>
 					<a class="discord-link discord-about-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
@@ -1091,12 +1091,12 @@
 				<h3 style="margin-top:18px">Schedule</h3>
 				<div class="schedule">
 					<div class="slot">
-						<span class="day" id="saturdaySchedule">Saturday, 5:00PM</span>
-						<span class="time" id="nextSaturday">Loading...</span>
+						<span class="day" id="saturdaySchedule">&nbsp;</span>
+						<span class="time" id="nextSaturday">&nbsp;</span>
 					</div>
 					<div class="slot">
-						<span class="day" id="sundaySchedule">Sunday, 6:00PM</span>
-						<span class="time" id="nextSunday">Loading...</span>
+						<span class="day" id="sundaySchedule">&nbsp;</span>
+						<span class="time" id="nextSunday">&nbsp;</span>
 					</div>
 				</div>
 			</aside>
@@ -1471,8 +1471,6 @@
 			twitchIframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(finalChannel)}&parent=${twitchHost}`;
 		}
 
-		applyTwitchChannel(twitchIframe?.dataset?.channel);
-
 		// Run all functions on page load
 		updateCounter();
 		updateScheduleDates();
@@ -1601,7 +1599,7 @@
 					<span id="adminUserName">Welcome, Admin</span>
 					<div style="margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
 						<button class="admin-logout-btn" onclick="signOut()">Logout</button>
-						<button onclick="openColorsPopup()" style="background: linear-gradient(90deg, #6a11cb, #2575fc);">Edit Colors</button>
+						<button class="admin-logout-btn" onclick="openColorsPopup()">Edit Colors</button>
 						<small>Edit global CSS theme variables</small>
 					</div>
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
@@ -3031,11 +3029,20 @@
 			if (savedDisplayName && savedDisplayName !== 'N/A') {
 				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
 				nameElements.forEach(element => {
-					if (element.textContent.includes('ilyambr') || element.textContent === 'ilyambr') {
+					if (element.textContent.includes('ilyambr') || element.textContent === 'ilyambr' || !element.textContent.trim()) {
 						element.textContent = savedDisplayName;
 					}
 				});
 				document.title = savedDisplayName;
+			} else {
+				const fallbackName = 'ilyambr';
+				const nameElements = document.querySelectorAll('.name, h1, .profile-name');
+				nameElements.forEach(element => {
+					if (!element.textContent.trim()) {
+						element.textContent = fallbackName;
+					}
+				});
+				document.title = fallbackName;
 			}
 			
 			if (savedUsername && savedUsername !== 'N/A') {
@@ -3053,6 +3060,14 @@
 						if (element.textContent && element.textContent.includes('@ilyambrr')) {
 							element.textContent = element.textContent.replace('@ilyambrr', savedUsername);
 						}
+					}
+				});
+			} else {
+				const fallbackUsername = '@ilyambrr';
+				const usernameElements = document.querySelectorAll('.username, .handle, .user-handle');
+				usernameElements.forEach(element => {
+					if (!element.textContent.trim()) {
+						element.textContent = fallbackUsername;
 					}
 				});
 			}
@@ -3091,6 +3106,11 @@
 				if (logoElement) {
 					logoElement.src = savedPageLogo;
 				}
+			} else {
+				const logoElement = document.getElementById('pageLogoImg');
+				if (logoElement) {
+					logoElement.src = 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
+				}
 			}
 			// Apply saved page logo size (widthxheight)
 			if (savedLogoSize && /^\d{2,5}x\d{2,5}$/i.test(savedLogoSize)) {
@@ -3120,6 +3140,11 @@
 				if (bioElement) {
 					bioElement.textContent = savedBio;
 				}
+			} else {
+				const bioElement = document.querySelector('.bio');
+				if (bioElement && !bioElement.textContent.trim()) {
+					bioElement.textContent = 'just give me a year max.....';
+				}
 			}
 			
 			// Apply saved about text
@@ -3129,6 +3154,11 @@
 				if (aboutElement) {
 					aboutElement.textContent = savedAboutText;
 				}
+			} else {
+				const aboutElement = document.getElementById('aboutTextContent');
+				if (aboutElement && !aboutElement.textContent.trim()) {
+					aboutElement.textContent = "i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶";
+				}
 			}
 			
 			// Apply saved streaming year
@@ -3137,6 +3167,11 @@
 				const yearElement = document.getElementById('streamingYearStat');
 				if (yearElement) {
 					yearElement.textContent = `Streaming since ${savedStreamingYear}`;
+				}
+			} else {
+				const yearElement = document.getElementById('streamingYearStat');
+				if (yearElement && !yearElement.textContent.trim()) {
+					yearElement.textContent = 'Streaming since 2024';
 				}
 			}
 			
@@ -3192,6 +3227,16 @@
 				if (currentChannelEl) currentChannelEl.textContent = sanitizedChannel;
 				const twitchChannelInput = document.getElementById('twitchChannel');
 				if (twitchChannelInput) twitchChannelInput.value = sanitizedChannel;
+			} else {
+				console.log('🎮 No saved Twitch channel found, applying default from config');
+				const defaultChannel = sanitizeTwitchChannel(twitchConfig.username);
+				if (defaultChannel) {
+					applyTwitchChannel(defaultChannel);
+					const currentChannelEl = document.getElementById('currentTwitchChannel');
+					if (currentChannelEl) currentChannelEl.textContent = defaultChannel;
+					const twitchChannelInput = document.getElementById('twitchChannel');
+					if (twitchChannelInput) twitchChannelInput.value = defaultChannel;
+				}
 			}
 			
 			// Apply saved button text
