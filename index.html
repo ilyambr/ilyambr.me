@@ -615,7 +615,7 @@
 		.admin-logout-btn {
 			background: rgba(255, 59, 107, 0.2);
 			border: 1px solid rgba(255, 59, 107, 0.3);
-			color: #ff6b9d;
+			color: #ffffff;
 			padding: 4px 12px;
 			border-radius: 6px;
 			font-size: 12px;
@@ -625,6 +625,17 @@
 
 		.admin-logout-btn:hover {
 			background: rgba(255, 59, 107, 0.3);
+			color: #ffffff;
+		}
+
+		.admin-logout-btn.alt-light {
+			background: #ffffff;
+			border: 1px solid #ffffff;
+			color: #111111;
+		}
+
+		.admin-logout-btn.alt-light:hover {
+			background: rgba(255, 255, 255, 0.85);
 		}
 
 		/* Collaborators list */
@@ -1599,7 +1610,7 @@
 					<span id="adminUserName">Welcome, Admin</span>
 					<div style="margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
 						<button class="admin-logout-btn" onclick="signOut()">Logout</button>
-						<button class="admin-logout-btn" onclick="openColorsPopup()">Edit Colors</button>
+						<button class="admin-logout-btn alt-light" onclick="openColorsPopup()">Edit Colors</button>
 						<small>Edit global CSS theme variables</small>
 					</div>
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
@@ -3280,35 +3291,32 @@
 			const stream2DateMode = await loadGlobalSetting('stream2DateMode') || 'auto';
 			const stream2CustomDate = await loadGlobalSetting('stream2CustomDate') || '';
 			
+			const dayNamesSchedule = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 			if (stream1Time && stream1Time !== 'N/A') {
 				const saturdayElement = document.getElementById('saturdaySchedule');
 				if (saturdayElement) {
-					let displayDate;
+					let dayLabel = dayNamesSchedule[parseInt(stream1Day, 10)] || '';
 					if (stream1DateMode === 'custom' && stream1CustomDate) {
 						const customDateObj = new Date(stream1CustomDate);
-						displayDate = formatScheduleDate(customDateObj);
-					} else {
-						// Auto mode - next occurrence of selected day
-						const nextDate = getNextWeekdayDate(parseInt(stream1Day));
-						displayDate = formatScheduleDate(nextDate);
+						if (!Number.isNaN(customDateObj.getTime())) {
+							dayLabel = dayNamesSchedule[customDateObj.getDay()] || dayLabel;
+						}
 					}
-					saturdayElement.textContent = `${displayDate}, ${stream1Time}`;
+					saturdayElement.textContent = `${dayLabel || 'Saturday'}, ${stream1Time}`;
 				}
 			}
 			
 			if (stream2Time && stream2Time !== 'N/A') {
 				const sundayElement = document.getElementById('sundaySchedule');
 				if (sundayElement) {
-					let displayDate;
+					let dayLabel = dayNamesSchedule[parseInt(stream2Day, 10)] || '';
 					if (stream2DateMode === 'custom' && stream2CustomDate) {
 						const customDateObj = new Date(stream2CustomDate);
-						displayDate = formatScheduleDate(customDateObj);
-					} else {
-						// Auto mode - next occurrence of selected day
-						const nextDate = getNextWeekdayDate(parseInt(stream2Day));
-						displayDate = formatScheduleDate(nextDate);
+						if (!Number.isNaN(customDateObj.getTime())) {
+							dayLabel = dayNamesSchedule[customDateObj.getDay()] || dayLabel;
+						}
 					}
-					sundayElement.textContent = `${displayDate}, ${stream2Time}`;
+					sundayElement.textContent = `${dayLabel || 'Sunday'}, ${stream2Time}`;
 				}
 			}
 			
@@ -4184,16 +4192,14 @@
 			const scheduleElement = document.getElementById(streamNumber === 1 ? 'saturdaySchedule' : 'sundaySchedule');
 			
 			if (scheduleElement) {
-				let displayDate;
+				let dayLabel = dayNames[selectedDay] || '';
 				if (dateMode === 'custom' && customDate) {
 					const customDateObj = new Date(customDate);
-					displayDate = formatScheduleDate(customDateObj);
-				} else {
-					// Auto mode - next occurrence of selected day
-					const nextDate = getNextWeekdayDate(selectedDay);
-					displayDate = formatScheduleDate(nextDate);
+					if (!Number.isNaN(customDateObj.getTime())) {
+						dayLabel = dayNames[customDateObj.getDay()] || dayLabel;
+					}
 				}
-				scheduleElement.textContent = `${displayDate}, ${time}`;
+				scheduleElement.textContent = `${dayLabel || 'TBD'}, ${time}`;
 			}
 			
 			timeInput.value = '';
@@ -4217,9 +4223,8 @@
 				
 				const saturdayElement = document.getElementById('saturdaySchedule');
 				if (saturdayElement) {
-					const nextSaturday = getNextWeekdayDate(6);
-					const displayDate = formatScheduleDate(nextSaturday);
-					saturdayElement.textContent = `${displayDate}, ${time}`;
+					const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+					saturdayElement.textContent = `${dayNames[6]}, ${time}`;
 				}
 				oldTimeInput.value = '';
 				alert('Saturday schedule updated GLOBALLY!');
@@ -4244,9 +4249,8 @@
 				
 				const sundayElement = document.getElementById('sundaySchedule');
 				if (sundayElement) {
-					const nextSunday = getNextWeekdayDate(0);
-					const displayDate = formatScheduleDate(nextSunday);
-					sundayElement.textContent = `${displayDate}, ${time}`;
+					const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+					sundayElement.textContent = `${dayNames[0]}, ${time}`;
 				}
 				oldTimeInput.value = '';
 				alert('Sunday schedule updated GLOBALLY!');
