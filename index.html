@@ -1545,41 +1545,6 @@
 		</div>
 	</div>
 
-	<!-- Owner Setup Popup -->
-	<div id="ownerSetupPopup" class="popup-overlay">
-		<div class="popup-content">
-			<div class="popup-header">
-				<h3>Set Website Owner</h3>
-			</div>
-			<div class="popup-body">
-				<p>To secure the admin panel, please enter the website owner's email address.</p>
-				<input type="email" id="ownerSetupEmailInput" placeholder="owner@example.com" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text);">
-				<div style="display:flex; gap:10px; margin-top:16px;">
-					<button id="ownerSetupSaveButton" class="button" onclick="saveOwnerFromSetup()" style="flex:1; justify-content:center;">Save Owner</button>
-				</div>
-				<div id="ownerSetupStatus" class="login-status" style="margin-top:12px;"></div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Two-Factor Verification Popup -->
-	<div id="twoFactorPopup" class="popup-overlay">
-		<div class="popup-content">
-			<div class="popup-header">
-				<h3>Email Verification</h3>
-			</div>
-			<div class="popup-body">
-				<p>We've sent a 6-digit code to <strong id="twoFactorEmailLabel">your email</strong>. Enter it below to continue.</p>
-				<input type="text" id="twoFactorCodeInput" maxlength="6" placeholder="123456" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); letter-spacing:4px; text-align:center; font-size:20px; font-weight:600;">
-				<div style="display:flex; gap:10px; margin-top:16px;">
-					<button class="button" onclick="verifyTwoFactorCode()" style="flex:1; justify-content:center;">Verify Code</button>
-					<button type="button" onclick="resendTwoFactorCode()" class="button secondary" style="flex:1; justify-content:center;">Resend Code</button>
-				</div>
-				<div id="twoFactorStatus" class="login-status" style="margin-top:12px;"></div>
-			</div>
-		</div>
-	</div>
-
 	<!-- Admin Login Popup -->
 	<div id="adminLoginPopup" class="popup-overlay">
 		<div class="popup-content admin-popup">
@@ -1619,22 +1584,6 @@
 				<button class="close-btn" onclick="closeAdminPopup('adminPanelPopup')">&times;</button>
 			</div>
 			<div class="popup-body admin-panel-body">
-				<div class="admin-section">
-					<h4>Website Owner</h4>
-					<div class="admin-setting">
-						<p style="margin:0 0 12px 0;">Current owner: <strong id="currentOwnerEmailLabel">Not set</strong></p>
-						<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-							<input type="email" id="ownerEmailInput" placeholder="owner@example.com" style="flex:1; min-width:220px;">
-							<button id="ownerEmailSaveButton" class="button" onclick="saveOwnerEmailFromInput()" style="justify-content:center;">Save Owner Email</button>
-							<button id="ownerEmailClearButton" class="button" onclick="clearOwnerEmail()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24); display:none; justify-content:center;">Clear Owner</button>
-						</div>
-						<label style="display:flex; align-items:center; gap:8px; margin-top:12px;">
-							<input type="checkbox" id="ownerSelfToggle" onchange="handleOwnerSelfToggle(this)">
-							<span>I'm the website owner</span>
-						</label>
-						<small>Only the website owner can manage collaborators and critical access.</small>
-					</div>
-				</div>
 				<div class="admin-section">
 					<h4>Profile Settings</h4>
 					<div class="admin-setting">
@@ -1927,7 +1876,7 @@
 						<label for="collabEmail">Add collaborator email:</label>
 						<div style="display:flex; gap:10px; align-items:center;">
 							<input type="email" id="collabEmail" placeholder="user@example.com" style="flex:1;">
-							<button id="collabAddButton" onclick="addCollaborator()">Add</button>
+							<button onclick="addCollaborator()">Add</button>
 						</div>
 						<div id="collabList" style="margin-top:8px;"></div>
 						<small>Collaborators can access the admin panel with Google Sign-In. Owner email is fixed.</small>
@@ -2476,26 +2425,11 @@
 		let isAdminLoggedIn = false;
 		let adminUser = null;
 		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
-		const OWNER_SETTING_KEY = 'ownerEmail';
-		const OTP_SEND_ENDPOINT = 'admin/send-otp.php';
-		const OTP_VERIFY_ENDPOINT = 'admin/verify-otp.php';
-		let ownerEmail = null;
+		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
 		// Collaborators list (hoisted early to avoid TDZ)
 		let collaborators = [];
-		let pendingTwoFactorEmail = null;
-		let twoFactorResolver = null;
-		let twoFactorRejecter = null;
-		let ownerSetupResolver = null;
 
-		function normalizeEmail(email) {
-			return (email || '').trim().toLowerCase();
-		}
-
-		function currentUserIsOwner() {
-			return !!(ownerEmail && adminUser && normalizeEmail(adminUser.email) === ownerEmail);
-		}
-
-		async function openAdminLogin() {
+		function openAdminLogin() {
 			console.log('🔧 Admin button clicked!');
 			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
 			
@@ -2503,8 +2437,7 @@
 				console.log('✅ User is logged in, opening admin panel');
 				loadCurrentSettings();
 				// Render collaborators list and ensure tint rows state
-				await renderCollaborators();
-				updateOwnerUI();
+				renderCollaborators();
 				updateTintRows();
 				// Ensure action links lists are rendered inside panel
 				renderActionLinksList('follow');
@@ -2572,12 +2505,7 @@
 		// Initialize Google Sign-In when the page loads
 		window.onload = async function() {
 			console.log('🔑 Initializing OAuth system...');
-			try {
-				await loadExistingSettings();
-				console.log('✅ Settings loaded successfully');
-			} catch (error) {
-				console.error('❌ Error loading settings:', error);
-			}
+			
 			// Check for existing valid session first
 			checkExistingSession();
 			
@@ -2630,6 +2558,14 @@
 			const tm = document.getElementById('tintMode');
 			if (tm) tm.addEventListener('change', updateTintRows);
 
+			// Load existing settings from Firebase/localStorage (now properly awaited)
+			try {
+				await loadExistingSettings();
+				console.log('✅ Settings loaded successfully');
+			} catch (error) {
+				console.error('❌ Error loading settings:', error);
+			}
+
 			// Init Firebase DB UI helpers
 			try {
 				const siteSel = document.getElementById('firebaseSiteName');
@@ -2677,7 +2613,6 @@
 						// Session is valid
 						adminUser = session.user;
 						isAdminLoggedIn = true;
-						updateOwnerUI();
 						
 						// Set up auto-logout when token expires
 						const timeUntilExpiry = session.tokenExp - now;
@@ -2707,74 +2642,41 @@
 				const useDemo = confirm(`⚠️ OAuth Limitation Detected\n\nGoogle OAuth doesn't work with file:// protocol for security reasons.\n\nTo test OAuth:\n1. Host this file on a web server (localhost:8000, behindthebonnet.me, etc.)\n2. Add your domain to Google Cloud Console authorized origins\n\nWould you like to use demo admin access for testing?\n\nClick OK for demo access, Cancel to try manual email entry.`);
 				
 				if (useDemo) {
+					// Simulate successful admin login for testing
 					const simulatedUser = {
 						name: 'Admin (Demo)',
-						email: ownerEmail || 'demo@example.com',
+						email: AUTHORIZED_EMAIL,
 						picture: 'https://via.placeholder.com/40'
 					};
+					
 					console.log('🔧 Using simulated admin login for testing');
-					await attemptAdminLogin(simulatedUser, Date.now() + 10 * 60 * 1000, { skipTwoFactor: true });
+					adminUser = simulatedUser;
+					isAdminLoggedIn = true;
+					showLoginSuccess();
+					setTimeout(() => {
+						closeAdminPopup('adminLoginPopup');
+						openAdminLogin(); // This will now open the admin panel
+					}, 1000);
 					return;
 				}
 			}
 			
 			// Manual email verification for demonstration/testing
 			const currentDomain = window.location.origin || window.location.protocol + '//' + window.location.host;
-			const ownerInfo = ownerEmail ? `Only ${ownerEmail} and approved collaborators are authorized.` : 'No owner is set yet. The first approved email will become the website owner after verification.';
-			const email = prompt(`Enter your email for admin access:\n\n${ownerInfo}\n\nCurrent domain: ${currentDomain}\n\nIf OAuth isn't working, this might be due to:\n• Domain not authorized in Google Cloud Console\n• Missing HTTPS (required for OAuth)\n• CORS restrictions\n\nFor behindthebonnet.me: Make sure to add the domain to Google Cloud Console authorized origins.`);
+			const email = prompt(`Enter your email for admin access:\n\nNote: Only ${AUTHORIZED_EMAIL} is authorized.\n\nCurrent domain: ${currentDomain}\n\nIf OAuth isn't working, this might be due to:\n• Domain not authorized in Google Cloud Console\n• Missing HTTPS (required for OAuth)\n• CORS restrictions\n\nFor behindthebonnet.me: Make sure to add the domain to Google Cloud Console authorized origins.`);
 			
 			// Load collaborators before checking
 			await loadCollaborators();
 			if (email && isAuthorizedEmail(email)) {
-				await attemptAdminLogin({ email, name: 'Admin User (Manual)' }, Date.now() + 60 * 60 * 1000);
-			} else if (email) {
-				showLoginError(`Unauthorized email address.`);
-			}
-		}
-
-		async function attemptAdminLogin(user, tokenExpiryMs, options = {}) {
-			const settings = Object.assign({ skipTwoFactor: false }, options || {});
-			try {
-				await loadCollaborators();
-				if (!isAuthorizedEmail(user.email)) {
-					showLoginError('Unauthorized email address');
-					resetTwoFactorState();
-					return false;
-				}
-				if (!settings.skipTwoFactor) {
-					const passed = await startTwoFactorVerification(user.email);
-					if (!passed) {
-						return false;
-					}
-				} else {
-					resetTwoFactorState();
-				}
-				adminUser = {
-					email: user.email,
-					name: user.name || 'Admin User',
-					picture: user.picture || ''
-				};
+				adminUser = { email: email, name: "Admin User (Manual)" };
 				isAdminLoggedIn = true;
 				showLoginSuccess();
-				const sessionData = {
-					user: adminUser,
-					loginTime: Date.now(),
-					tokenExp: tokenExpiryMs || (Date.now() + 60 * 60 * 1000)
-				};
-				sessionStorage.setItem('admin-session', JSON.stringify(sessionData));
-				closeAdminPopup('adminLoginPopup');
-				closeTwoFactorPopup();
-				await ensureOwnerSetup();
-				if (!isAdminLoggedIn) {
-					return false;
-				}
-				await openAdminLogin();
-				return true;
-			} catch (error) {
-				console.error('Admin login failed:', error);
-				showLoginError(error.message || 'Login failed.');
-				resetTwoFactorState();
-				return false;
+				setTimeout(() => {
+					closeAdminPopup('adminLoginPopup');
+					openAdminLogin(); // This will now open the admin panel
+				}, 1000);
+			} else if (email) {
+				showLoginError(`Unauthorized email address.`);
 			}
 		}
 
@@ -2810,11 +2712,32 @@
 					throw new Error('Email not verified');
 				}
 
-				await attemptAdminLogin({
-					email: payload.email,
-					name: payload.name,
-					picture: payload.picture
-				}, payload.exp * 1000);
+				// Check authorized email or collaborator
+				await loadCollaborators();
+				if (isAuthorizedEmail(payload.email)) {
+					adminUser = {
+						email: payload.email,
+						name: payload.name,
+						picture: payload.picture
+					};
+					isAdminLoggedIn = true;
+					showLoginSuccess();
+					
+					// Optional: Store session with expiry
+					const sessionData = {
+						user: adminUser,
+						loginTime: Date.now(),
+						tokenExp: payload.exp * 1000 // Convert to milliseconds
+					};
+					sessionStorage.setItem('admin-session', JSON.stringify(sessionData));
+					
+					setTimeout(() => {
+						closeAdminPopup('adminLoginPopup');
+						openAdminLogin();
+					}, 1000);
+				} else {
+					showLoginError("Unauthorized email address");
+				}
 			} catch (error) {
 				console.error('Token verification failed:', error);
 				showLoginError("Login verification failed: " + error.message);
@@ -2836,10 +2759,7 @@
 		function signOut() {
 			isAdminLoggedIn = false;
 			adminUser = null;
-			closeTwoFactorPopup();
-			closeOwnerSetupPopup();
 			closeAdminPopup('adminPanelPopup');
-			resetTwoFactorState();
 			
 			// Clear session data
 			sessionStorage.removeItem('admin-session');
@@ -2848,9 +2768,7 @@
 				google.accounts.id.disableAutoSelect();
 			}
 			
-			const loginStatus = document.getElementById('loginStatus');
-			if (loginStatus) loginStatus.textContent = '';
-			updateOwnerUI();
+			document.getElementById('loginStatus').textContent = '';
 		}
 
 		// Admin Panel Functions
@@ -3013,16 +2931,6 @@
 
 		async function loadExistingSettings() {
 			console.log('🌍 Loading global settings for ALL visitors...');
-			try {
-				const savedOwner = await loadGlobalSetting(OWNER_SETTING_KEY);
-				if (savedOwner && savedOwner !== 'N/A') {
-					ownerEmail = normalizeEmail(savedOwner);
-				} else {
-					ownerEmail = null;
-				}
-			} catch (e) {
-				ownerEmail = null;
-			}
 			// Apply saved GLOBAL settings on page load - visible to ALL users
 			const savedDisplayName = await loadGlobalSetting('display-name');
 			const savedUsername = await loadGlobalSetting('username');
@@ -4412,431 +4320,55 @@
 			try {
 				const val = await loadGlobalSetting('collaborators');
 				if (val && val !== 'N/A') {
-					const parsed = Array.isArray(val) ? val : JSON.parse(val);
-					collaborators = (parsed || []).map(normalizeEmail).filter(Boolean);
-				} else {
-					collaborators = [];
-				}
-			} catch(e) {
-				collaborators = [];
-			}
-			if (ownerEmail) {
-				collaborators = collaborators.filter(email => email !== ownerEmail);
-			}
-			collaborators = Array.from(new Set(collaborators));
+					collaborators = Array.isArray(val) ? val : JSON.parse(val);
+				} else { collaborators = []; }
+			} catch(e) { collaborators = []; }
 		}
 		function isAuthorizedEmail(email) {
-			const em = normalizeEmail(email);
-			if (!ownerEmail) return true;
-			if (em === ownerEmail) return true;
-			return collaborators.includes(em);
+			const em = (email||'').toLowerCase();
+			return em === AUTHORIZED_EMAIL || collaborators.includes(em);
 		}
 		async function renderCollaborators() {
 			await loadCollaborators();
 			const list = document.getElementById('collabList');
 			if (!list) return;
 			list.innerHTML = '';
-			const isOwner = currentUserIsOwner();
-			if (ownerEmail) {
-				const ownerItem = document.createElement('div');
-				ownerItem.className = 'collab-item collab-owner';
-				ownerItem.innerHTML = `<span class="collab-email">${ownerEmail} (owner)</span>`;
-				list.appendChild(ownerItem);
-			} else {
-				const missingOwner = document.createElement('div');
-				missingOwner.className = 'collab-item collab-owner';
-				missingOwner.innerHTML = `<span class="collab-email">No owner configured yet</span>`;
-				list.appendChild(missingOwner);
-			}
-			collaborators.forEach(email => {
+			// owner first
+			const ownerItem = document.createElement('div');
+			ownerItem.className = 'collab-item collab-owner';
+			ownerItem.innerHTML = `<span class="collab-email">${AUTHORIZED_EMAIL} (owner)</span>`;
+			list.appendChild(ownerItem);
+			// others
+			collaborators.filter(e=>e!==AUTHORIZED_EMAIL).forEach(email=>{
 				const item = document.createElement('div');
-				item.className = 'collab-item';
+				item.className='collab-item';
 				item.innerHTML = `<span class="collab-email">${email}</span>`;
 				const btn = document.createElement('button');
-				btn.className = 'collab-remove';
-				btn.textContent = 'Remove';
-				btn.disabled = !isOwner;
-				btn.title = isOwner ? 'Remove collaborator' : 'Only the owner can remove collaborators';
-				btn.onclick = async () => { await removeCollaborator(email); };
+				btn.className='collab-remove';
+				btn.textContent='Remove';
+				btn.onclick = async ()=>{ await removeCollaborator(email); };
 				item.appendChild(btn);
 				list.appendChild(item);
 			});
-			if (!isOwner) {
-				const info = document.createElement('small');
-				info.style.display = 'block';
-				info.style.marginTop = '8px';
-				info.style.opacity = '0.7';
-				info.textContent = 'Only the website owner can add or remove collaborators.';
-				list.appendChild(info);
-			}
-			applyCollaboratorPermissions();
 		}
 		async function addCollaborator() {
-			if (!currentUserIsOwner()) {
-				alert('Only the website owner can add collaborators.');
-				return;
-			}
 			const input = document.getElementById('collabEmail');
-			const email = normalizeEmail(input.value);
+			const email = (input.value||'').trim().toLowerCase();
 			if (!email) return alert('Enter an email');
-			if (ownerEmail && email === ownerEmail) return alert('Owner is already authorized.');
+			if (email === AUTHORIZED_EMAIL) return alert('Owner is already authorized.');
 			await loadCollaborators();
 			if (!collaborators.includes(email)) collaborators.push(email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
 			input.value='';
 			alert('Collaborator added');
-			await renderCollaborators();
+			renderCollaborators();
 		}
 		async function removeCollaborator(email) {
-			if (!currentUserIsOwner()) {
-				alert('Only the website owner can remove collaborators.');
-				return;
-			}
-			email = normalizeEmail(email);
 			await loadCollaborators();
 			collaborators = collaborators.filter(e=>e!==email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
 			alert('Collaborator removed');
-			await renderCollaborators();
-		}
-		function applyCollaboratorPermissions() {
-			const isOwner = currentUserIsOwner();
-			const input = document.getElementById('collabEmail');
-			if (input) {
-				input.disabled = !isOwner;
-				if (!isOwner) {
-					input.placeholder = 'Only the owner can add collaborators';
-				} else {
-					input.placeholder = 'user@example.com';
-				}
-			}
-			const addButton = document.getElementById('collabAddButton');
-			if (addButton) addButton.disabled = !isOwner;
-		}
-		function updateOwnerUI() {
-			const label = document.getElementById('currentOwnerEmailLabel');
-			if (label) label.textContent = ownerEmail || 'Not set';
-			const isOwner = currentUserIsOwner();
-			const input = document.getElementById('ownerEmailInput');
-			if (input) {
-				if (ownerEmail) {
-					input.value = ownerEmail;
-					input.disabled = !isOwner;
-				} else {
-					input.disabled = false;
-					input.value = adminUser ? adminUser.email : '';
-				}
-			}
-			const toggle = document.getElementById('ownerSelfToggle');
-			if (toggle) {
-				toggle.checked = isOwner;
-				toggle.disabled = ownerEmail ? !isOwner : false;
-			}
-			const clearButton = document.getElementById('ownerEmailClearButton');
-			if (clearButton) {
-				clearButton.style.display = ownerEmail && isOwner ? 'inline-flex' : 'none';
-			}
-			applyCollaboratorPermissions();
-		}
-		async function setOwnerEmailNormalized(email) {
-			const normalized = email ? normalizeEmail(email) : null;
-			if (normalized) {
-				await saveGlobalSetting(OWNER_SETTING_KEY, normalized);
-				ownerEmail = normalized;
-			} else {
-				await saveGlobalSetting(OWNER_SETTING_KEY, 'N/A');
-				ownerEmail = null;
-			}
-			await renderCollaborators();
-			updateOwnerUI();
-			if (ownerSetupResolver) {
-				const resolver = ownerSetupResolver;
-				ownerSetupResolver = null;
-				resolver();
-			}
-		}
-		async function saveOwnerEmailFromInput() {
-			const input = document.getElementById('ownerEmailInput');
-			if (!input) return;
-			const value = normalizeEmail(input.value);
-			if (!value || !value.includes('@')) {
-				alert('Please enter a valid email address.');
-				return;
-			}
-			if (ownerEmail && !currentUserIsOwner()) {
-				alert('Only the website owner can change this email.');
-				updateOwnerUI();
-				return;
-			}
-			await setOwnerEmailNormalized(value);
-			alert('Website owner updated.');
-			if (normalizeEmail(adminUser?.email) !== value) {
-				alert('Please sign in with the new owner email to continue.');
-				signOut();
-			}
-		}
-		async function clearOwnerEmail(skipConfirm) {
-			if (!currentUserIsOwner()) {
-				alert('Only the website owner can clear this email.');
-				updateOwnerUI();
-				return;
-			}
-			if (!skipConfirm) {
-				const confirmClear = confirm('Remove the website owner? Collaborator actions will be disabled until a new owner is set.');
-				if (!confirmClear) {
-					updateOwnerUI();
-					return;
-				}
-			}
-			await setOwnerEmailNormalized(null);
-			alert('Owner cleared. Please assign a new owner.');
-			await ensureOwnerSetup();
-		}
-		async function handleOwnerSelfToggle(toggle) {
-			if (!toggle) return;
-			if (!adminUser) {
-				toggle.checked = false;
-				return;
-			}
-			if (toggle.checked) {
-				await setOwnerEmailNormalized(adminUser.email);
-				alert('You are now the website owner.');
-			} else {
-				await clearOwnerEmail(false);
-				updateOwnerUI();
-			}
-		}
-		function openOwnerSetupPopup() {
-			const popup = document.getElementById('ownerSetupPopup');
-			if (popup) {
-				popup.style.display = 'flex';
-				document.body.style.overflow = 'hidden';
-			}
-			const input = document.getElementById('ownerSetupEmailInput');
-			if (input) input.value = adminUser ? adminUser.email : '';
-			const status = document.getElementById('ownerSetupStatus');
-			if (status) {
-				status.className = 'login-status';
-				status.textContent = '';
-			}
-		}
-		function closeOwnerSetupPopup() {
-			const popup = document.getElementById('ownerSetupPopup');
-			if (popup) popup.style.display = 'none';
-			const adminPanel = document.getElementById('adminPanelPopup');
-			if (adminPanel && adminPanel.style.display === 'flex') {
-				document.body.style.overflow = 'hidden';
-			} else {
-				document.body.style.overflow = 'auto';
-			}
-			const status = document.getElementById('ownerSetupStatus');
-			if (status) status.textContent = '';
-		}
-		async function saveOwnerFromSetup() {
-			const input = document.getElementById('ownerSetupEmailInput');
-			const status = document.getElementById('ownerSetupStatus');
-			if (!input || !status) return;
-			const value = normalizeEmail(input.value);
-			if (!value || !value.includes('@')) {
-				status.className = 'login-status error';
-				status.textContent = 'Please enter a valid email address.';
-				return;
-			}
-			status.className = 'login-status';
-			status.textContent = 'Saving owner...';
-			try {
-				await setOwnerEmailNormalized(value);
-				status.className = 'login-status success';
-				status.textContent = 'Owner saved!';
-				closeOwnerSetupPopup();
-				if (normalizeEmail(adminUser?.email) !== value) {
-					alert('Owner set to a different email. Please sign in with that account.');
-					signOut();
-				}
-			} catch (error) {
-				status.className = 'login-status error';
-				status.textContent = error.message || 'Failed to save owner.';
-			}
-		}
-		async function ensureOwnerSetup() {
-			updateOwnerUI();
-			if (ownerEmail) return;
-			if (ownerSetupResolver) {
-				return new Promise(resolve => {
-					const previousResolver = ownerSetupResolver;
-					ownerSetupResolver = () => {
-						previousResolver();
-						resolve();
-					};
-				});
-			}
-			openOwnerSetupPopup();
-			return new Promise(resolve => {
-				ownerSetupResolver = resolve;
-			});
-		}
-		function resetTwoFactorState() {
-			pendingTwoFactorEmail = null;
-			twoFactorResolver = null;
-			twoFactorRejecter = null;
-		}
-		function openTwoFactorPopup() {
-			const popup = document.getElementById('twoFactorPopup');
-			if (popup) {
-				popup.style.display = 'flex';
-				document.body.style.overflow = 'hidden';
-			}
-			const label = document.getElementById('twoFactorEmailLabel');
-			if (label) label.textContent = pendingTwoFactorEmail || '';
-			const input = document.getElementById('twoFactorCodeInput');
-			if (input) {
-				input.value = '';
-				setTimeout(() => input.focus(), 50);
-			}
-			const status = document.getElementById('twoFactorStatus');
-			if (status) {
-				status.className = 'login-status';
-				status.textContent = '';
-			}
-		}
-		function closeTwoFactorPopup() {
-			const popup = document.getElementById('twoFactorPopup');
-			if (popup) popup.style.display = 'none';
-			const adminPanel = document.getElementById('adminPanelPopup');
-			if (adminPanel && adminPanel.style.display === 'flex') {
-				document.body.style.overflow = 'hidden';
-			} else {
-				document.body.style.overflow = 'auto';
-			}
-			const status = document.getElementById('twoFactorStatus');
-			if (status) status.textContent = '';
-		}
-		async function sendTwoFactorCode(isResend) {
-			if (!pendingTwoFactorEmail) throw new Error('Missing verification email.');
-			const status = document.getElementById('twoFactorStatus');
-			if (status) {
-				status.className = 'login-status';
-				status.textContent = isResend ? 'Resending verification code...' : 'Sending verification code...';
-			}
-			const response = await fetch(OTP_SEND_ENDPOINT, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ email: pendingTwoFactorEmail })
-			});
-			if (!response.ok) {
-				let message = 'Failed to send verification code.';
-				try {
-					const data = await response.json();
-					if (data && data.error) message = data.error;
-				} catch (e) {}
-				throw new Error(message);
-			}
-			if (status) {
-				status.className = 'login-status success';
-				status.textContent = isResend ? 'New code sent! Check your email.' : 'Code sent! Check your email.';
-			}
-		}
-		async function startTwoFactorVerification(email) {
-			if (twoFactorRejecter) {
-				try {
-					twoFactorRejecter(false);
-				} catch (e) {}
-				resetTwoFactorState();
-			}
-			pendingTwoFactorEmail = normalizeEmail(email);
-			const loginStatus = document.getElementById('loginStatus');
-			if (loginStatus) {
-				loginStatus.className = 'login-status';
-				loginStatus.textContent = 'Sending verification code...';
-			}
-			try {
-				await sendTwoFactorCode(false);
-				if (loginStatus) {
-					loginStatus.className = 'login-status success';
-					loginStatus.textContent = 'Verification code sent. Check your email.';
-				}
-				openTwoFactorPopup();
-				return await new Promise((resolve, reject) => {
-					twoFactorResolver = resolve;
-					twoFactorRejecter = reject;
-				});
-			} catch (error) {
-				if (loginStatus) {
-					loginStatus.className = 'login-status error';
-					loginStatus.textContent = error.message || 'Failed to send verification code.';
-				}
-				const status = document.getElementById('twoFactorStatus');
-				if (status) {
-					status.className = 'login-status error';
-					status.textContent = error.message || 'Failed to send verification code.';
-				}
-				resetTwoFactorState();
-				return false;
-			}
-		}
-		async function verifyTwoFactorCode() {
-			if (!pendingTwoFactorEmail) return;
-			const input = document.getElementById('twoFactorCodeInput');
-			const status = document.getElementById('twoFactorStatus');
-			const code = (input?.value || '').trim();
-			if (!/^[0-9]{6}$/.test(code)) {
-				if (status) {
-					status.className = 'login-status error';
-					status.textContent = 'Enter the 6-digit code sent to your email.';
-				}
-				if (input) input.focus();
-				return;
-			}
-			if (status) {
-				status.className = 'login-status';
-				status.textContent = 'Verifying code...';
-			}
-			try {
-				const response = await fetch(OTP_VERIFY_ENDPOINT, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
-					body: JSON.stringify({ email: pendingTwoFactorEmail, code })
-				});
-				if (!response.ok) {
-					let message = 'Verification failed.';
-					try {
-						const data = await response.json();
-						if (data && data.error) message = data.error;
-					} catch (e) {}
-					throw new Error(message);
-				}
-				if (status) {
-					status.className = 'login-status success';
-					status.textContent = 'Verification successful!';
-				}
-				closeTwoFactorPopup();
-				const resolver = twoFactorResolver;
-				resetTwoFactorState();
-				if (resolver) resolver(true);
-			} catch (error) {
-				if (status) {
-					status.className = 'login-status error';
-					status.textContent = error.message || 'Verification failed.';
-				}
-				if (input) {
-					input.select();
-					input.focus();
-				}
-			}
-		}
-		async function resendTwoFactorCode() {
-			if (!pendingTwoFactorEmail) return;
-			try {
-				await sendTwoFactorCode(true);
-			} catch (error) {
-				const status = document.getElementById('twoFactorStatus');
-				if (status) {
-					status.className = 'login-status error';
-					status.textContent = error.message || 'Failed to resend code.';
-				}
-			}
+			renderCollaborators();
 		}
 
 		// ===== Theme Tint helpers =====
