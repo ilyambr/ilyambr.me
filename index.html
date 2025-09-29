@@ -1729,12 +1729,6 @@
 						<button onclick="updateYouTubeLink()">Update</button>
 					</div>
 					<div class="admin-setting">
-						<label for="twitchChannel">Twitch Channel Name:</label>
-						<input type="text" id="twitchChannel" placeholder="ilyambrr" maxlength="50">
-						<button onclick="updateTwitchChannel()">Update</button>
-						<small>Channel name used for the Twitch player (no URL or @)</small>
-					</div>
-					<div class="admin-setting">
 						<label for="tiktokLink">TikTok URL:</label>
 						<input type="url" id="tiktokLink" placeholder="https://www.tiktok.com/@ilyambr_">
 						<button onclick="updateTikTokLink()">Update</button>
@@ -1753,6 +1747,16 @@
 						<label for="redditLink">Reddit URL:</label>
 						<input type="url" id="redditLink" placeholder="https://reddit.com/u/ilyambr">
 						<button onclick="updateRedditLink()">Update</button>
+					</div>
+				</div>
+
+				<div class="admin-section">
+					<h4>Twitch Player Settings</h4>
+					<div class="admin-setting">
+						<label for="twitchChannel">Player Channel Name:</label>
+						<input type="text" id="twitchChannel" placeholder="ilyambrr" maxlength="50">
+						<button onclick="updateTwitchChannel()">Update</button>
+						<small>Updates the embedded Twitch player. Enter just the username, no URL or @.</small>
 					</div>
 				</div>
 				
