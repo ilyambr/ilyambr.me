@@ -808,13 +808,13 @@
 				position: absolute; /* Change from fixed to absolute so it scrolls */
 				width: 100px; /* Bigger logo */
 				height: 100px;
-				top: 0; /* Align to very top */
+				top: 20px; /* Align with social links */
 				left: 20px; /* Keep it on the left like desktop */
 			}
 			
 			.social-bar {
 				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 0; /* Align level with logo */
+				top: 20px; /* Align level with logo */
 				right: 20px; /* Keep it on the right like desktop */
 				left: auto;
 				gap: 6px;
@@ -837,12 +837,12 @@
 				width: 80px; /* Bigger on mobile too */
 				height: 80px;
 				left: 15px;
-				top: 0; /* Align to very top */
+				top: 15px; /* Align to social links */
 			}
 			
 			.social-bar {
 				position: absolute; /* Change from fixed to absolute so it scrolls */
-				top: 0; /* Align level with logo */
+				top: 15px; /* Align level with logo */
 				right: 15px;
 			}
 			
@@ -1072,7 +1072,7 @@
 						radial-gradient(140% 140% at 90% 100%, rgba(100,100,100,0.24), transparent 60%),
 						linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));">
 						<div class="embed-container">
-							<iframe id="twitch-embed" class="embed-frame" src="https://player.twitch.tv/?channel=ilyambrr&parent=ilyambr.me" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
+							<iframe id="twitch-embed" class="embed-frame" src="" data-channel="ilyambrr" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
 							<iframe id="youtube-embed" class="embed-frame hidden" src="" frameborder="0" allowfullscreen></iframe>
 						</div>
 					</div>
@@ -1330,11 +1330,16 @@
 
 				// Get the saved username from settings, fallback to default
 				const savedUsername = await loadGlobalSetting('username');
-				let usernameForAPI = twitchConfig.username; // default fallback
+				const savedChannel = await loadGlobalSetting('twitchChannel');
+				let usernameForAPI = sanitizeTwitchChannel(savedChannel);
 				
-				if (savedUsername && savedUsername !== 'N/A') {
+				if (!usernameForAPI && savedUsername && savedUsername !== 'N/A') {
 					// Clean the username (remove @ if present)
-					usernameForAPI = savedUsername.replace('@', '');
+					usernameForAPI = savedUsername.replace('@', '').toLowerCase();
+				}
+				
+				if (!usernameForAPI) {
+					usernameForAPI = twitchConfig.username; // default fallback
 				}
 
 				console.log('🔄 Fetching Twitch followers using official API...');
@@ -1446,6 +1451,28 @@
 			return num.toString();
 		}
 		
+		const twitchHost = (window.location.hostname || 'ilyambr.me').toLowerCase();
+		const twitchIframe = document.getElementById('twitch-embed');
+
+		function sanitizeTwitchChannel(channel) {
+			if (!channel) return '';
+			let clean = String(channel).trim();
+			clean = clean.replace(/^https?:\/\/(www\.)?twitch\.tv\//i, '');
+			clean = clean.replace(/^@/, '');
+			clean = clean.split(/[/?#]/)[0];
+			return clean.toLowerCase();
+		}
+
+		function applyTwitchChannel(channel) {
+			if (!twitchIframe) return;
+			const fallback = sanitizeTwitchChannel(twitchIframe?.dataset?.channel) || 'ilyambrr';
+			const finalChannel = sanitizeTwitchChannel(channel) || fallback;
+			twitchIframe.dataset.channel = finalChannel;
+			twitchIframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(finalChannel)}&parent=${twitchHost}`;
+		}
+
+		applyTwitchChannel(twitchIframe?.dataset?.channel);
+
 		// Run all functions on page load
 		updateCounter();
 		updateScheduleDates();
@@ -1702,6 +1729,12 @@
 						<button onclick="updateYouTubeLink()">Update</button>
 					</div>
 					<div class="admin-setting">
+						<label for="twitchChannel">Twitch Channel Name:</label>
+						<input type="text" id="twitchChannel" placeholder="ilyambrr" maxlength="50">
+						<button onclick="updateTwitchChannel()">Update</button>
+						<small>Channel name used for the Twitch player (no URL or @)</small>
+					</div>
+					<div class="admin-setting">
 						<label for="tiktokLink">TikTok URL:</label>
 						<input type="url" id="tiktokLink" placeholder="https://www.tiktok.com/@ilyambr_">
 						<button onclick="updateTikTokLink()">Update</button>
@@ -1903,6 +1936,7 @@
 						<p><strong>Streaming Year:</strong> <span id="currentStreamingYear">N/A</span></p>
 						<p><strong>Page Logo:</strong> <span id="currentPageLogo">N/A</span></p>
 						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
+						<p><strong>Twitch Channel:</strong> <span id="currentTwitchChannel">ilyambrr</span></p>
 						<p><strong>Follower Count:</strong> <span id="currentFollowerCount">API</span></p>
 						<p><strong>Subscriber Count:</strong> <span id="currentSubscriberCount">API</span></p>
 						<p><strong>Discord Link:</strong> <span id="currentDiscordLink">N/A</span></p>
@@ -2917,7 +2951,8 @@
 			openPopup('subscribePopup');
 		}
 		function loadCurrentSettings() {
-			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name}`;
+			const currentHost = window.location.hostname || 'unknown';
+			document.getElementById('adminUserName').textContent = `Welcome, ${adminUser.name} (Domain: ${currentHost})`;
 			
 			// Load current settings
 			const currentPic = localStorage.getItem('admin-profile-pic') || 'Default';
@@ -2978,6 +3013,7 @@
 			const savedRedditLink = await loadGlobalSetting('redditLink');
 			const savedFollowButtonText = await loadGlobalSetting('followButtonText');
 			const savedSubscribeButtonText = await loadGlobalSetting('subscribeButtonText');
+			const savedTwitchChannel = await loadGlobalSetting('twitchChannel');
 			const savedSaturdayTime = await loadGlobalSetting('saturdayTime');
 			const savedSundayTime = await loadGlobalSetting('sundayTime');
 			
@@ -3142,6 +3178,16 @@
 			}
 			if (savedRedditLink && savedRedditLink !== 'N/A') {
 				updateSocialLink('reddit', savedRedditLink);
+			}
+
+			const sanitizedChannel = sanitizeTwitchChannel(savedTwitchChannel);
+			if (sanitizedChannel) {
+				console.log('🎮 Applying global Twitch channel to ALL visitors:', sanitizedChannel);
+				applyTwitchChannel(sanitizedChannel);
+				const currentChannelEl = document.getElementById('currentTwitchChannel');
+				if (currentChannelEl) currentChannelEl.textContent = sanitizedChannel;
+				const twitchChannelInput = document.getElementById('twitchChannel');
+				if (twitchChannelInput) twitchChannelInput.value = sanitizedChannel;
 			}
 			
 			// Apply saved button text
@@ -3409,6 +3455,7 @@
 			const currentFollowerCount = await loadGlobalSetting('followerCount') || '';
 			const currentSubscriberCount = await loadGlobalSetting('subscriberCount') || '';
 			const currentTwitchLink = await loadGlobalSetting('twitchLink') || '';
+			const currentTwitchChannelSetting = await loadGlobalSetting('twitchChannel') || '';
 			const currentYouTubeLink = await loadGlobalSetting('youtubeLink') || '';
 			const currentTikTokLink = await loadGlobalSetting('tiktokLink') || '';
 			const currentInstagramLink = await loadGlobalSetting('instagramLink') || '';
@@ -3433,6 +3480,8 @@
 				const el = document.getElementById(id);
 				if (el) el.textContent = value;
 			};
+			const currentHost = window.location.hostname || 'unknown';
+			setCurrentText('adminUserName', `Welcome, ${adminUser.name} (Domain: ${currentHost})`);
 			const shorten = (value, limit = 30, fallback = 'N/A') => {
 				if (!value || value === 'N/A') return fallback;
 				return value.length > limit ? `${value.substring(0, limit)}...` : value;
@@ -3443,6 +3492,10 @@
 			setCurrentText('currentTwitchStatus', currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None');
 			const twitchStatusSelect = document.getElementById('twitchStatus');
 			if (twitchStatusSelect) twitchStatusSelect.value = currentTwitchStatus;
+			const sanitizedCurrentChannel = sanitizeTwitchChannel(currentTwitchChannelSetting) || 'ilyambrr';
+			setCurrentText('currentTwitchChannel', sanitizedCurrentChannel);
+			const twitchChannelInput = document.getElementById('twitchChannel');
+			if (twitchChannelInput) twitchChannelInput.value = sanitizedCurrentChannel;
 			setCurrentText('currentDiscordLink', shorten(currentDiscordLink));
 			setCurrentText('currentProfilePic', shorten(currentPic, 50));
 			setCurrentText('currentBackground', shorten(currentBg, 50));
@@ -3902,6 +3955,30 @@
 			updateSocialLink('youtube', url);
 			document.getElementById('youtubeLink').value = '';
 			alert('YouTube link updated GLOBALLY!');
+		}
+
+		async function updateTwitchChannel() {
+			const input = document.getElementById('twitchChannel');
+			if (!input) return;
+			const rawValue = input.value.trim();
+			if (!rawValue) {
+				alert('Please enter a Twitch channel name');
+				return;
+			}
+
+			const channel = sanitizeTwitchChannel(rawValue);
+			if (!channel) {
+				alert('Invalid Twitch channel name');
+				return;
+			}
+
+			await saveGlobalSetting('twitchChannel', channel);
+			applyTwitchChannel(channel);
+			const currentChannelEl = document.getElementById('currentTwitchChannel');
+			if (currentChannelEl) currentChannelEl.textContent = channel;
+			input.value = '';
+			alert('Twitch channel updated GLOBALLY!');
+			updateTwitchFollowers();
 		}
 
 		async function updateTikTokLink() {
