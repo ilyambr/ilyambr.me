@@ -710,6 +710,88 @@
 			flex: 1;
 		}
 
+		@media (max-width: 720px) {
+			.popup-overlay {
+				align-items: flex-start;
+				padding-top: 32px;
+				padding-bottom: 32px;
+			}
+
+			.popup-content {
+				width: min(94vw, 520px);
+				min-width: 0;
+				margin: 0 auto;
+			}
+
+			.popup-content.admin-panel,
+			.admin-popup,
+			.admin-panel {
+				width: min(94vw, 520px);
+				min-width: 0;
+				max-width: 520px;
+			}
+
+			.admin-panel-body {
+				max-height: calc(100vh - 180px);
+				padding-right: 6px;
+			}
+
+			.popup-header {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 12px;
+			}
+
+			.popup-header .close-btn {
+				align-self: flex-end;
+			}
+
+			.admin-user-info {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 12px;
+			}
+
+			.profile-upload-row {
+				flex-direction: column;
+				align-items: stretch;
+			}
+
+			.profile-preview {
+				width: 100%;
+				height: 160px;
+				min-width: 0;
+			}
+
+			.profile-input-stack {
+				flex-direction: column;
+				align-items: stretch;
+			}
+
+			.profile-input-stack input,
+			.profile-input-stack button,
+			.admin-setting input,
+			.admin-setting select,
+			.admin-setting textarea,
+			.admin-setting button {
+				width: 100%;
+			}
+
+			.admin-setting button {
+				justify-content: center;
+			}
+
+			.admin-setting > div[style*="display:flex"] {
+				flex-direction: column !important;
+				align-items: stretch !important;
+				gap: 12px !important;
+			}
+
+			.admin-setting > div[style*="display:grid"] {
+				grid-template-columns: 1fr !important;
+			}
+		}
+
 		/* Collaborators list */
 		.collab-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; margin-top:8px}
 		.collab-email{color:var(--text); font-size:14px;}
