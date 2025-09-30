@@ -882,6 +882,11 @@
 
 		/* Mobile and Tablet: Header scrolls with page, not fixed */
 		@media (max-width: 1200px) { /* Changed from 980px to include landscape tablets */
+			/* Enable scrolling on tablet and mobile */
+			html, body {
+				overflow: auto;
+			}
+			
 			.container {
 				margin-top: 100px; /* Create space for logo and social bar */
 				padding-top: 20px;
