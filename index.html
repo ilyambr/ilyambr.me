@@ -35,13 +35,20 @@
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
 		*::-webkit-scrollbar{width:0; height:0;}
 		html,body{height:100%}
-		html{padding:0; margin:0; background:#1a1a2e; overflow:hidden}
+		html{
+			padding:0;
+			margin:0;
+			background:#1a1a2e;
+			overflow-y:auto;
+			overflow-x:hidden;
+		}
 		body{
 			margin:0; padding:0;
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
 			background: #1a1a2e;
-			overflow:hidden;
+			overflow-y:auto;
+			overflow-x:hidden;
 		}
 
 		/* Simple loading screen - no backdrop-filter to prevent blur conflicts */
