@@ -638,6 +638,78 @@
 			background: rgba(255, 255, 255, 0.85);
 		}
 
+		.profile-upload-row {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+		}
+
+		.profile-preview {
+			position: relative;
+			width: 64px;
+			height: 64px;
+			min-width: 64px;
+			border-radius: 12px;
+			overflow: hidden;
+			border: 1px solid var(--border);
+			background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+			background-size: cover;
+			background-position: center;
+			cursor: pointer;
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.profile-preview:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+		}
+
+		.profile-preview:focus {
+			outline: 2px solid rgba(255, 255, 255, 0.4);
+			outline-offset: 3px;
+		}
+
+		.profile-preview.empty {
+			background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+		}
+
+		.profile-preview-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgba(10, 10, 20, 0.55);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			transition: opacity 0.2s ease;
+		}
+
+		.profile-preview:hover .profile-preview-overlay,
+		.profile-preview:focus .profile-preview-overlay {
+			opacity: 1;
+		}
+
+		.profile-preview-icon {
+			width: 26px;
+			height: 26px;
+			filter: invert(1);
+			opacity: 0.9;
+		}
+
+		.profile-input-stack {
+			flex: 1;
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.profile-input-stack input {
+			flex: 1;
+		}
+
 		/* Collaborators list */
 		.collab-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; margin-top:8px}
 		.collab-email{color:var(--text); font-size:14px;}
@@ -1328,8 +1400,24 @@
 			}
 		}
 
+		let twitchFollowersRetryCount = 0;
+		const TWITCH_FOLLOWERS_MAX_RETRIES = 5;
+
 		// Official Twitch API followers function
 		async function updateTwitchFollowers() {
+			if (typeof loadGlobalSetting !== 'function') {
+				if (twitchFollowersRetryCount < TWITCH_FOLLOWERS_MAX_RETRIES) {
+					twitchFollowersRetryCount += 1;
+					console.warn('⏳ Global settings helpers not ready, retrying Twitch followers... (#' + twitchFollowersRetryCount + ')');
+					setTimeout(updateTwitchFollowers, 300 * twitchFollowersRetryCount);
+				} else {
+					console.error('❌ loadGlobalSetting unavailable after retries, using fallback for Twitch followers');
+					updateTwitchFollowersFallback();
+				}
+				return;
+			}
+
+			twitchFollowersRetryCount = 0;
 			try {
 				// Check if we have valid Twitch credentials
 				const credentials = getTwitchCredentials();
@@ -1461,9 +1549,23 @@
 			}
 			return num.toString();
 		}
-		
+
+		const DEFAULT_PROFILE_PIC = 'https://ilyambr.me/img/avatar.webp';
 		const twitchHost = (window.location.hostname || 'ilyambr.me').toLowerCase();
 		const twitchIframe = document.getElementById('twitch-embed');
+
+		function setProfilePreviewImage(src) {
+			const preview = document.getElementById('profilePicturePreview');
+			if (!preview) return;
+			const effectiveSrc = (src && src !== 'N/A') ? src : DEFAULT_PROFILE_PIC;
+			if (effectiveSrc) {
+				preview.style.backgroundImage = `url('${effectiveSrc}')`;
+				preview.classList.remove('empty');
+			} else {
+				preview.style.backgroundImage = '';
+				preview.classList.add('empty');
+			}
+		}
 
 		function sanitizeTwitchChannel(channel) {
 			if (!channel) return '';
@@ -1624,10 +1726,15 @@
 					<h4>Profile Settings</h4>
 					<div class="admin-setting">
 						<label for="profilePicture">Profile Picture URL:</label>
-						<div style="display:flex; gap:10px; align-items:center;">
-							<input type="url" id="profilePicture" placeholder="https://example.com/image.jpg" style="flex:1;">
-							<div role="button" title="Upload image" onclick="triggerProfileUpload()" style="width:42px; height:42px; min-width:42px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background: rgba(255,255,255,0.05); border-radius:8px; cursor:pointer;">
-								<img src="https://raw.githubusercontent.com/themesberg/flowbite-icons/refs/heads/main/src/outline/general/upload.svg" alt="Upload" style="width:22px; height:22px; filter: invert(1); opacity:0.9;" />
+						<div class="profile-upload-row">
+							<div class="profile-preview empty" id="profilePicturePreview" role="button" tabindex="0" aria-label="Upload profile picture" title="Upload image" onclick="triggerProfileUpload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerProfileUpload();}">
+								<div class="profile-preview-overlay">
+									<img src="https://raw.githubusercontent.com/themesberg/flowbite-icons/refs/heads/main/src/outline/general/upload.svg" alt="" class="profile-preview-icon" aria-hidden="true" />
+								</div>
+							</div>
+							<div class="profile-input-stack">
+								<input type="url" id="profilePicture" placeholder="https://example.com/image.jpg">
+								<button onclick="updateProfilePicture()">Update</button>
 							</div>
 							<input type="file" id="profilePictureUploadFile" accept="image/*" style="display:none" onchange="handleProfileUploadFile(this)">
 						</div>
@@ -2952,7 +3059,22 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
-		function handleProfileUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('profilePicture').value = dataUrl; await saveGlobalSetting('profile-pic', dataUrl); const avatarImgs = document.querySelectorAll('.avatar img'); avatarImgs.forEach(img => img.src = dataUrl); document.getElementById('currentProfilePic').textContent = 'uploaded image'; alert('Profile image uploaded and applied globally'); }; r.readAsDataURL(file); }
+		function handleProfileUploadFile(input) {
+			const file = input.files && input.files[0];
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = async () => {
+				const dataUrl = reader.result;
+				document.getElementById('profilePicture').value = dataUrl;
+				await saveGlobalSetting('profile-pic', dataUrl);
+				const avatarImgs = document.querySelectorAll('.avatar img');
+				avatarImgs.forEach(img => (img.src = dataUrl));
+				setProfilePreviewImage(dataUrl);
+				document.getElementById('currentProfilePic').textContent = 'uploaded image';
+				alert('Profile image uploaded and applied globally');
+			};
+			reader.readAsDataURL(file);
+		}
 		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; alert('Background image uploaded and applied globally'); }; r.readAsDataURL(file); }
 
 		async function openFollowPopup() {
@@ -3354,23 +3476,26 @@
 						avatar.classList.add('loaded'); // Show avatar after image loads
 						avatarLoaded = true;
 						checkContentLoaded();
+						setProfilePreviewImage(savedPic);
 					};
 					avatarImg.onerror = function() {
 						console.log('❌ Global profile pic failed to load, reverting to default');
-						this.src = 'https://ilyambr.me/img/avatar.webp';
+						this.src = DEFAULT_PROFILE_PIC;
 						avatar.classList.add('loaded');
 						avatarLoaded = true;
 						saveGlobalSetting('profile-pic', 'N/A');
+						setProfilePreviewImage(DEFAULT_PROFILE_PIC);
 						checkContentLoaded();
 					};
 				} else {
 					// Use default image
-					avatarImg.src = 'https://ilyambr.me/img/avatar.webp';
+					avatarImg.src = DEFAULT_PROFILE_PIC;
 					avatarImg.onload = function() {
 						avatar.classList.add('loaded');
 						avatarLoaded = true;
 						checkContentLoaded();
 					};
+					setProfilePreviewImage(DEFAULT_PROFILE_PIC);
 				}
 			} else {
 				avatarLoaded = true; // No avatar to load
@@ -3555,6 +3680,7 @@
 			if (twitchChannelInput) twitchChannelInput.value = sanitizedCurrentChannel;
 			setCurrentText('currentDiscordLink', shorten(currentDiscordLink));
 			setCurrentText('currentProfilePic', shorten(currentPic, 50));
+			setProfilePreviewImage(currentPic);
 			setCurrentText('currentBackground', shorten(currentBg, 50));
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
 			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
@@ -3637,6 +3763,7 @@
 				// Apply to all avatar images immediately
 				const avatarImgs = document.querySelectorAll('.avatar img');
 				avatarImgs.forEach(img => img.src = url);
+				setProfilePreviewImage(url);
 				
 				// Update current settings display
 				document.getElementById('currentProfilePic').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
@@ -4842,7 +4969,8 @@
 				});
 				
 				// Reset to defaults immediately
-				document.querySelector('.avatar img').src = 'https://ilyambr.me/img/avatar.webp';
+				document.querySelector('.avatar img').src = DEFAULT_PROFILE_PIC;
+				setProfilePreviewImage(DEFAULT_PROFILE_PIC);
 				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 				
 				// Reset YouTube to auto-latest
