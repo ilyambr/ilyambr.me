@@ -97,15 +97,18 @@
 			pointer-events:none;
 			z-index:0;
 		}
-		.bg-glass{
-			position:fixed;
-			top:0; left:0; right:0; bottom:0; /* explicit to ensure full coverage */
-			z-index:0; /* below content (.container z-index:1), above page background */
-			pointer-events:none;
-			background:rgba(10,10,15,0.18);
-			backdrop-filter: blur(10px) saturate(115%);
-			-webkit-backdrop-filter: blur(10px) saturate(115%);
-		}
+		.bg-glass {
+  position: absolute;      /* scrolls with the page */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;              /* full coverage */
+  z-index: 0;             /* behind content */
+  pointer-events: none;
+  background: rgba(10, 10, 15, 0.18);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+}
 		/* Background tint overlay (for solid/gradient theme colors) */
 		.bg-tint{
 			position:fixed;
