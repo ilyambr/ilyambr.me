@@ -120,6 +120,94 @@
 			padding:0 20px;
 		}
 
+		.desktop-shell{
+			position:relative;
+			z-index:1;
+		}
+		.short-video-panel{
+			display:none;
+			z-index:1;
+		}
+		.short-video-card{
+			display:flex;
+			flex-direction:column;
+			gap:14px;
+		}
+		.short-video-card h3{
+			margin:0;
+		}
+		.short-video-embed{
+			position:relative;
+			border-radius:var(--radius);
+			overflow:hidden;
+			background:linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)), var(--card);
+			border:1px solid var(--border);
+			box-shadow:var(--shadow), 0 0 40px rgba(86,224,255,0.08);
+			padding:0;
+			min-height:320px;
+			display:flex;
+			flex-direction:column;
+			align-items:stretch;
+			justify-content:flex-start;
+		}
+		.short-video-embed iframe{
+			width:100%;
+			height:auto;
+			border:0;
+			aspect-ratio:9/16;
+		}
+		.short-video-embed blockquote{
+			margin:0;
+			width:100%;
+		}
+		.short-video-placeholder{
+			text-align:center;
+			color:var(--muted);
+			font-size:14px;
+			line-height:1.6;
+			padding:24px 18px;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			justify-content:center;
+			gap:6px;
+			margin:auto;
+		}
+		.short-video-placeholder strong{
+			color:var(--text);
+			font-size:15px;
+		}
+
+		@media (min-width: 1200px){
+			.desktop-shell{
+				max-width:1400px;
+				margin:0 auto;
+				padding:40px 40px 80px;
+			}
+			.desktop-shell .container{
+				margin:0 auto;
+			}
+			.desktop-shell.has-short-video{
+				display:flex;
+				align-items:flex-start;
+				gap:28px;
+			}
+			.desktop-shell.has-short-video .container{
+				margin:0;
+				flex:1 1 auto;
+			}
+			.short-video-panel{
+				flex:0 0 360px;
+			}
+			.short-video-panel.is-active{
+				display:block;
+			}
+			.short-video-card{
+				position:sticky;
+				top:60px;
+			}
+		}
+
 		.header{
 			display:grid;
 			grid-template-columns:120px 1fr auto;
@@ -1185,8 +1273,9 @@
 	<div class="bg-glass" aria-hidden="true"></div>
 	<div class="bg-tint hidden" id="bgTint" aria-hidden="true"></div>
 
-	<div class="container">
-		<header class="header">
+	<div class="desktop-shell">
+		<div class="container">
+			<header class="header">
 			<div class="avatar" aria-label="Avatar">
 				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile avatar" />
 			</div>
@@ -1225,9 +1314,9 @@
 					Subscribe
 				</a>
 			</div>
-		</header>
+				</header>
 
-		<div class="grid">
+				<div class="grid">
 			<section class="card">
 				<div class="stream-header">
 					<h3>Recent Streams</h3>
@@ -1270,13 +1359,26 @@
 					</div>
 				</div>
 			</aside>
-		</div>
+				</div>
 
-		<div class="footer">
-			<div id="counter"></div>
-			© 2025 ilyambr, made with love <3
+				<div class="footer">
+					<div id="counter"></div>
+					© 2025 ilyambr, made with love <3
+				</div>
+			</div>
+			<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
+				<div class="card short-video-card">
+					<h3>Featured Short</h3>
+					<div class="short-video-embed">
+						<div class="short-video-placeholder" id="shortVideoPlaceholder">
+							<strong>No short video yet</strong>
+							<span>Paste a TikTok or YouTube Shorts link in the admin panel to showcase it here.</span>
+						</div>
+						<div id="shortVideoEmbed"></div>
+					</div>
+				</div>
+			</aside>
 		</div>
-	</div>
 
 	<!-- Admin Console Button -->
 	<div class="admin-button" onclick="openAdminLogin()">
@@ -1669,6 +1771,176 @@
 			const finalChannel = sanitizeTwitchChannel(channel) || fallback;
 			twitchIframe.dataset.channel = finalChannel;
 			twitchIframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(finalChannel)}&parent=${twitchHost}`;
+		}
+
+		function parseShortVideoLink(rawLink) {
+			if (!rawLink) return null;
+			const trimmed = String(rawLink).trim();
+			if (!trimmed) return null;
+			let url;
+			try {
+				url = new URL(trimmed);
+			} catch (e) {
+				// Allow passing a bare YouTube ID
+				if (/^[A-Za-z0-9_-]{8,15}$/.test(trimmed)) {
+					return {
+						provider: 'youtube',
+						id: trimmed,
+						embedUrl: `https://www.youtube-nocookie.com/embed/${trimmed}`,
+						originalUrl: `https://www.youtube.com/watch?v=${trimmed}`
+					};
+				}
+				return null;
+			}
+
+			const host = url.hostname.replace(/^www\./, '').toLowerCase();
+			let config = null;
+
+			if (host === 'youtu.be' || host.endsWith('youtube.com')) {
+				let videoId = url.searchParams.get('v') || '';
+				if (!videoId) {
+					const path = url.pathname.replace(/^\//, '');
+					const segments = path.split('/');
+					if (host === 'youtu.be' && segments[0]) {
+						videoId = segments[0];
+					} else if (segments[0] === 'shorts' && segments[1]) {
+						videoId = segments[1];
+					} else if (segments[0] === 'embed' && segments[1]) {
+						videoId = segments[1];
+					}
+				}
+				if (videoId && /^[A-Za-z0-9_-]{8,15}$/.test(videoId)) {
+					config = {
+						provider: 'youtube',
+						id: videoId,
+						embedUrl: `https://www.youtube.com/embed/${videoId}`,
+						originalUrl: trimmed
+					};
+				}
+			} else if (host.endsWith('tiktok.com')) {
+				const pathParts = url.pathname.split('/').filter(Boolean);
+				let videoId = '';
+				let handlePart = pathParts.find(p => p.startsWith('@')) || '';
+				const videoIndex = pathParts.indexOf('video');
+				if (videoIndex !== -1 && pathParts[videoIndex + 1]) {
+					videoId = pathParts[videoIndex + 1].split(/[?&#]/)[0];
+				}
+				if (!videoId && pathParts.length >= 2) {
+					const potentialId = pathParts[pathParts.length - 1].split(/[?&#]/)[0];
+					if (/^\d+$/.test(potentialId)) {
+						videoId = potentialId;
+					}
+				}
+				if (videoId) {
+					const handle = handlePart ? handlePart.replace('@', '') : '';
+					const canonicalHandle = handle ? `@${handle}` : handlePart || '';
+					const canonicalUrl = canonicalHandle ? `https://www.tiktok.com/${canonicalHandle}/video/${videoId}` : trimmed;
+					config = {
+						provider: 'tiktok',
+						id: videoId,
+						embedUrl: canonicalUrl,
+						originalUrl: trimmed,
+						handle
+					};
+				}
+			}
+
+			return config;
+		}
+
+		function normalizeShortVideoConfig(raw) {
+			if (!raw || raw === 'N/A') return null;
+			if (typeof raw === 'object') {
+				const obj = { ...raw };
+				if (obj.provider === 'youtube' && obj.id && !obj.embedUrl) {
+					obj.embedUrl = `https://www.youtube.com/embed/${obj.id}`;
+				}
+				if (obj.provider === 'tiktok' && obj.id && !obj.embedUrl) {
+					obj.embedUrl = obj.originalUrl || `https://www.tiktok.com/${obj.handle ? '@' + obj.handle : ''}/video/${obj.id}`;
+				}
+				if (!obj.originalUrl && obj.embedUrl) {
+					obj.originalUrl = obj.embedUrl;
+				}
+				return obj;
+			}
+			if (typeof raw === 'string') {
+				try {
+					const parsed = JSON.parse(raw);
+					if (parsed && typeof parsed === 'object') return normalizeShortVideoConfig(parsed);
+				} catch (e) {
+					const parsedLink = parseShortVideoLink(raw);
+					if (parsedLink) return parsedLink;
+				}
+			}
+			return null;
+		}
+
+		function formatShortVideoLabel(config) {
+			if (!config || !config.provider) return 'None';
+			const providerLabel = config.provider.charAt(0).toUpperCase() + config.provider.slice(1);
+			if (config.provider === 'youtube' && config.id) {
+				return `${providerLabel} • ${config.id}`;
+			}
+			if (config.provider === 'tiktok') {
+				return config.handle ? `${providerLabel} • @${config.handle}` : `${providerLabel}`;
+			}
+			return providerLabel;
+		}
+
+		function ensureTikTokEmbedScript() {
+			if (!document.getElementById('tiktok-embed-script')) {
+				const script = document.createElement('script');
+				script.id = 'tiktok-embed-script';
+				script.src = 'https://www.tiktok.com/embed.js';
+				script.async = true;
+				document.body.appendChild(script);
+			}
+		}
+
+		function applyShortVideoEmbed(config) {
+			const embedContainer = document.getElementById('shortVideoEmbed');
+			const placeholder = document.getElementById('shortVideoPlaceholder');
+			const panel = document.getElementById('shortVideoPanel');
+			const shell = document.querySelector('.desktop-shell');
+			if (!embedContainer || !placeholder) return;
+
+			embedContainer.innerHTML = '';
+			if (!config || !config.provider || !config.id) {
+				placeholder.style.display = 'flex';
+				placeholder.setAttribute('aria-hidden', 'false');
+				embedContainer.removeAttribute('data-provider');
+				if (panel) panel.classList.remove('is-active');
+				if (shell) shell.classList.remove('has-short-video');
+				return;
+			}
+
+			placeholder.style.display = 'none';
+			placeholder.setAttribute('aria-hidden', 'true');
+			embedContainer.setAttribute('data-provider', config.provider);
+			if (panel) panel.classList.add('is-active');
+			if (shell) shell.classList.add('has-short-video');
+
+			if (config.provider === 'youtube') {
+				const embedUrl = config.embedUrl || `https://www.youtube.com/embed/${config.id}`;
+				embedContainer.innerHTML = `
+					<iframe class="short-video-frame" src="${embedUrl}" title="Featured short video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+				`;
+			} else if (config.provider === 'tiktok') {
+				const cite = config.embedUrl || config.originalUrl;
+				embedContainer.innerHTML = `
+					<blockquote class="tiktok-embed short-video-frame" cite="${cite}" data-video-id="${config.id}" data-embed-from="oembed" style="max-width: 360px; min-width: 260px;">
+						<section></section>
+					</blockquote>
+				`;
+				ensureTikTokEmbedScript();
+				if (window.tiktokEmbedLoad) {
+					window.tiktokEmbedLoad();
+				} else {
+					setTimeout(() => {
+						if (window.tiktokEmbedLoad) window.tiktokEmbedLoad();
+					}, 250);
+				}
+			}
 		}
 
 		// Run all functions on page load
@@ -2141,6 +2413,19 @@
 						<small>Enter just the video ID from the YouTube URL</small>
 					</div>
 				</div>
+
+				<div class="admin-section">
+					<h4>Featured Short Video</h4>
+					<div class="admin-setting">
+						<label for="shortVideoLink">Short Video Link:</label>
+						<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+							<input type="url" id="shortVideoLink" placeholder="https://www.youtube.com/shorts/... or https://www.tiktok.com/@user/video/..." style="flex:1 1 260px;">
+							<button onclick="updateShortVideoEmbed()">Save</button>
+							<button style="background: rgba(255,59,107,0.2); border-color: rgba(255,59,107,0.3);" onclick="clearShortVideoEmbed()">Clear</button>
+						</div>
+						<small>Supports YouTube Shorts and TikTok links. We'll convert the link to an embed automatically.</small>
+					</div>
+				</div>
 				
 				<div class="admin-section">
 					<h4>Current Settings</h4>
@@ -2159,6 +2444,7 @@
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">N/A</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">N/A</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">N/A</span></p>
+						<p><strong>Short Video:</strong> <span id="currentShortVideo">None</span></p>
 						<p><strong>Firebase Database:</strong> <span id="currentFirebaseUrl">Loading...</span></p>
 					</div>
 					
@@ -3189,10 +3475,13 @@
 			const currentPic = localStorage.getItem('admin-profile-pic') || 'Default';
 			const currentBg = localStorage.getItem('admin-background') || 'Default';
 			const currentVideo = localStorage.getItem('admin-youtube-video') || 'Auto-Latest';
+			const shortVideoLine = localStorage.getItem('admin-short-video') || 'None';
 			
 			document.getElementById('currentProfilePic').textContent = currentPic;
 			document.getElementById('currentBackground').textContent = currentBg;
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
+			const shortVideoEl = document.getElementById('currentShortVideo');
+			if (shortVideoEl) shortVideoEl.textContent = shortVideoLine;
 		}
 
 		async function loadExistingSettings() {
@@ -3228,6 +3517,8 @@
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
+			const savedShortVideoRaw = await loadGlobalSetting('shortVideoEmbed');
+			const savedShortVideo = normalizeShortVideoConfig(savedShortVideoRaw);
 			const savedPageLogo = await loadGlobalSetting('pageLogo');
 			const savedLogoInvert = await loadGlobalSetting('logoInvert');
 			const savedLogoSize = await loadGlobalSetting('pageLogoSize');
@@ -3253,6 +3544,12 @@
 			console.log('�🖼️ Global profile pic:', savedPic);
 			console.log('🎨 Global background:', savedBg);
 			console.log('📺 Global YouTube video:', savedVideo);
+			if (savedShortVideo) {
+				console.log('🎬 Featured short video config:', savedShortVideo);
+				applyShortVideoEmbed(savedShortVideo);
+			} else {
+				applyShortVideoEmbed(null);
+			}
 			
 			// Apply saved names
 			if (savedDisplayName && savedDisplayName !== 'N/A') {
@@ -3723,6 +4020,8 @@
 			const currentPic = await loadGlobalSetting('profile-pic') || 'N/A';
 			const currentBg = await loadGlobalSetting('background') || 'N/A';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'N/A';
+			const currentShortVideoRaw = await loadGlobalSetting('shortVideoEmbed') || '';
+			const currentShortVideo = normalizeShortVideoConfig(currentShortVideoRaw);
 			const currentPageLogo = await loadGlobalSetting('pageLogo') || '';
 			const currentPageLogoResolution = await loadGlobalSetting('pageLogoResolution') || '';
 			const currentPageLogoSize = await loadGlobalSetting('pageLogoSize') || '';
@@ -3779,6 +4078,7 @@
 			setProfilePreviewImage(currentPic);
 			setCurrentText('currentBackground', shorten(currentBg, 50));
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
+			setCurrentText('currentShortVideo', formatShortVideoLabel(currentShortVideo));
 			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
 			const resInput = document.getElementById('pageLogoResolution');
 			if (resInput) resInput.value = currentPageLogoResolution;
@@ -3799,6 +4099,8 @@
 			setCurrentText('currentRedditLink', shorten(currentRedditLink));
 			setCurrentText('currentFollowButtonText', currentFollowButtonText || 'Follow');
 			setCurrentText('currentSubscribeButtonText', currentSubscribeButtonText || 'Subscribe');
+			const shortVideoInput = document.getElementById('shortVideoLink');
+			if (shortVideoInput) shortVideoInput.value = currentShortVideo?.originalUrl || '';
 			
 			// Set schedule selector values
 			const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -4506,6 +4808,40 @@
 			document.getElementById('youtubeVideoId').value = '';
 			
 			alert('YouTube video updated GLOBALLY! All visitors will see this video.');
+		}
+
+		async function updateShortVideoEmbed() {
+			const input = document.getElementById('shortVideoLink');
+			if (!input) return;
+			const link = input.value.trim();
+			if (!link) {
+				alert('Please paste a TikTok or YouTube Shorts link.');
+				return;
+			}
+
+			const parsed = parseShortVideoLink(link);
+			if (!parsed) {
+				alert('Unsupported link. Please use a valid YouTube Shorts or TikTok video URL.');
+				return;
+			}
+
+			input.value = parsed.originalUrl;
+			await saveGlobalSetting('shortVideoEmbed', JSON.stringify(parsed));
+			applyShortVideoEmbed(parsed);
+			const currentShortVideoEl = document.getElementById('currentShortVideo');
+			if (currentShortVideoEl) currentShortVideoEl.textContent = formatShortVideoLabel(parsed);
+			alert('Featured short video updated GLOBALLY!');
+		}
+
+		async function clearShortVideoEmbed() {
+			if (!confirm('Remove the featured short video for all visitors?')) return;
+			await saveGlobalSetting('shortVideoEmbed', 'N/A');
+			applyShortVideoEmbed(null);
+			const currentShortVideoEl = document.getElementById('currentShortVideo');
+			if (currentShortVideoEl) currentShortVideoEl.textContent = 'None';
+			const input = document.getElementById('shortVideoLink');
+			if (input) input.value = '';
+			alert('Featured short video cleared.');
 		}
 
 		async function updateFirebaseDatabase() {
