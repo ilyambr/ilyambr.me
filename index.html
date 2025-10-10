@@ -1,3 +1,132 @@
+		function renderGameSettingsTabs(preferredId) {
+			const tabsContainer = document.getElementById('gameSettingsTabs');
+			if (!tabsContainer) return;
+
+			cachedGameSettingsTabs = getAllSettingsTabs();
+			tabsContainer.innerHTML = '';
+
+			cachedGameSettingsTabs.forEach(tab => {
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'settings-tab';
+				button.dataset.section = tab.id;
+				button.textContent = tab.label;
+				button.addEventListener('click', () => selectGameSettingsTab(tab.id));
+				tabsContainer.appendChild(button);
+			});
+
+			let initialId = preferredId || currentGameSettingsTabId;
+			if (!initialId) {
+				initialId = cachedGameSettingsTabs[0]?.id || null;
+			} else {
+				initialId = resolveGameSettingsTabId(initialId);
+			}
+
+			if (initialId) {
+				selectGameSettingsTab(initialId);
+			} else {
+				const content = document.getElementById('gameSettingsContent');
+				if (content) {
+					content.innerHTML = '';
+					content.classList.remove('has-banner', 'list-mode');
+				}
+			}
+		}
+
+		function selectSettingsApp(appId) {
+			if (!appId || appId === selectedAllSettingsAppId) return;
+			selectedAllSettingsAppId = appId;
+			setGameSettingsContent(currentGameSettingsTabId);
+		}
+
+		function buildSettingsDetail(app) {
+			const template = Array.isArray(app?.settingsTemplate) && app.settingsTemplate.length ? app.settingsTemplate : DEFAULT_SETTINGS_TEMPLATE;
+			const container = document.createElement('section');
+			container.className = 'settings-app-template';
+			container.dataset.appId = app.id;
+
+			const hero = document.createElement('div');
+			hero.className = 'settings-template-hero';
+			applyBackgroundImage(hero, app.banner);
+
+			const heroOverlay = document.createElement('div');
+			heroOverlay.className = 'settings-template-hero-overlay';
+
+			if (app.logo) {
+				const logo = document.createElement('img');
+				logo.src = app.logo;
+				logo.alt = `${app.name} logo`;
+				heroOverlay.appendChild(logo);
+			} else {
+				const fallback = document.createElement('div');
+				fallback.className = 'settings-template-logo-fallback';
+				fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
+				heroOverlay.appendChild(fallback);
+			}
+
+			const title = document.createElement('h4');
+			title.textContent = app.name || 'Untitled App';
+			heroOverlay.appendChild(title);
+
+			const badge = document.createElement('span');
+			badge.className = 'settings-template-badge';
+			badge.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
+			heroOverlay.appendChild(badge);
+
+			hero.appendChild(heroOverlay);
+			container.appendChild(hero);
+
+			const sectionsWrap = document.createElement('div');
+			sectionsWrap.className = 'settings-template-sections';
+
+			if (!template.length) {
+				const placeholder = document.createElement('p');
+				placeholder.className = 'settings-template-placeholder';
+				placeholder.textContent = 'Settings template coming soon.';
+				sectionsWrap.appendChild(placeholder);
+			} else {
+				template.forEach(section => {
+					const sectionEl = document.createElement('section');
+					sectionEl.className = 'settings-template-section';
+
+					const heading = document.createElement('h5');
+					heading.textContent = section.title || 'Untitled Section';
+					sectionEl.appendChild(heading);
+
+					const grid = document.createElement('dl');
+					grid.className = 'settings-template-grid';
+
+					const items = Array.isArray(section.items) ? section.items : [];
+					if (!items.length) {
+						const emptyRow = document.createElement('div');
+						emptyRow.className = 'settings-template-row';
+						emptyRow.innerHTML = '<dt>Details</dt><dd>Not provided yet.</dd>';
+						grid.appendChild(emptyRow);
+					} else {
+						items.forEach(item => {
+							const row = document.createElement('div');
+							row.className = 'settings-template-row';
+
+							const term = document.createElement('dt');
+							term.textContent = item.label || 'Setting';
+
+							const value = document.createElement('dd');
+							value.textContent = item.value || '—';
+
+							row.appendChild(term);
+							row.appendChild(value);
+							grid.appendChild(row);
+						});
+					}
+
+					sectionEl.appendChild(grid);
+					sectionsWrap.appendChild(sectionEl);
+				});
+			}
+
+			container.appendChild(sectionsWrap);
+			return container;
+		}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3111,116 +3240,6 @@
 			return display;
 		}
 
-		function renderGameSettingsTabs(preferredId) {
-			const tabsContainer = document.getElementById('gameSettingsTabs');
-			if (!tabsContainer) return;
-			cachedGameSettingsTabs = getAllSettingsTabs();
-			tabsContainer.innerHTML = '';
-			cachedGameSettingsTabs.forEach(tab => {
-				const button = document.createElement('button');
-				button.type = 'button';
-				button.className = 'settings-tab';
-
-	function selectSettingsApp(appId) {
-		if (!appId || appId === selectedAllSettingsAppId) return;
-		selectedAllSettingsAppId = appId;
-		setGameSettingsContent(currentGameSettingsTabId);
-	}
-
-	function buildSettingsDetail(app) {
-		const template = Array.isArray(app?.settingsTemplate) && app.settingsTemplate.length ? app.settingsTemplate : DEFAULT_SETTINGS_TEMPLATE;
-		const container = document.createElement('section');
-		container.className = 'settings-app-template';
-		container.dataset.appId = app.id;
-		const hero = document.createElement('div');
-		hero.className = 'settings-template-hero';
-		applyBackgroundImage(hero, app.banner);
-		const heroOverlay = document.createElement('div');
-		heroOverlay.className = 'settings-template-hero-overlay';
-		if (app.logo) {
-			const logo = document.createElement('img');
-			logo.src = app.logo;
-			logo.alt = `${app.name} logo`;
-			heroOverlay.appendChild(logo);
-		} else {
-			const fallback = document.createElement('div');
-			fallback.className = 'settings-template-logo-fallback';
-			fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
-			heroOverlay.appendChild(fallback);
-		}
-		const title = document.createElement('h4');
-		title.textContent = app.name || 'Untitled App';
-		heroOverlay.appendChild(title);
-		const badge = document.createElement('span');
-		badge.className = 'settings-template-badge';
-		badge.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
-		heroOverlay.appendChild(badge);
-		hero.appendChild(heroOverlay);
-		container.appendChild(hero);
-		const sectionsWrap = document.createElement('div');
-		sectionsWrap.className = 'settings-template-sections';
-		if (!template.length) {
-			const placeholder = document.createElement('p');
-			placeholder.className = 'settings-template-placeholder';
-			placeholder.textContent = 'Settings template coming soon.';
-			sectionsWrap.appendChild(placeholder);
-		} else {
-			template.forEach(section => {
-				const sectionEl = document.createElement('section');
-				sectionEl.className = 'settings-template-section';
-				const heading = document.createElement('h5');
-				heading.textContent = section.title || 'Untitled Section';
-				sectionEl.appendChild(heading);
-				const grid = document.createElement('dl');
-				grid.className = 'settings-template-grid';
-				const items = Array.isArray(section.items) ? section.items : [];
-				if (!items.length) {
-					const emptyRow = document.createElement('div');
-					emptyRow.className = 'settings-template-row';
-					emptyRow.innerHTML = '<dt>Details</dt><dd>Not provided yet.</dd>';
-					grid.appendChild(emptyRow);
-				} else {
-					items.forEach(item => {
-						const row = document.createElement('div');
-						row.className = 'settings-template-row';
-						const term = document.createElement('dt');
-						term.textContent = item.label || 'Setting';
-						const value = document.createElement('dd');
-						value.textContent = item.value || '—';
-						row.appendChild(term);
-						row.appendChild(value);
-						grid.appendChild(row);
-					});
-				}
-				sectionEl.appendChild(grid);
-				sectionsWrap.appendChild(sectionEl);
-			});
-		}
-		container.appendChild(sectionsWrap);
-		return container;
-	}
-				button.dataset.section = tab.id;
-				button.textContent = tab.label;
-				button.addEventListener('click', () => selectGameSettingsTab(tab.id));
-				tabsContainer.appendChild(button);
-			});
-
-			let initialId = preferredId || currentGameSettingsTabId;
-			if (!initialId) {
-				initialId = cachedGameSettingsTabs[0]?.id || null;
-			} else {
-				initialId = resolveGameSettingsTabId(initialId);
-			}
-			if (initialId) {
-				selectGameSettingsTab(initialId);
-			} else {
-				const content = document.getElementById('gameSettingsContent');
-				if (content) {
-					content.innerHTML = '';
-					content.classList.remove('has-banner', 'list-mode');
-				}
-			}
-		}
 
 		function selectGameSettingsTab(tabId) {
 			const tabsContainer = document.getElementById('gameSettingsTabs');
