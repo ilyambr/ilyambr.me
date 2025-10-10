@@ -487,6 +487,9 @@
 			font-weight:600;
 			text-align:left;
 			cursor:pointer;
+			display:flex;
+			align-items:center;
+			gap:10px;
 			transition:all .15s ease;
 		}
 		.popup-content.game-settings-panel .settings-tab:hover{
@@ -496,7 +499,26 @@
 			background:linear-gradient(90deg, rgba(140,140,140,0.65), rgba(200,200,200,0.35));
 			box-shadow:0 8px 24px rgba(0,0,0,0.2);
 		}
+		.popup-content.game-settings-panel .settings-tab[data-logo]::before{
+			content:"";
+			width:20px;
+			height:20px;
+			border-radius:6px;
+			background-image:var(--tab-logo);
+			background-size:cover;
+			background-position:center;
+			opacity:0;
+			transform:scale(0.85);
+			transition:opacity .18s ease, transform .18s ease;
+		}
+		.popup-content.game-settings-panel .settings-tab[data-logo]:hover::before,
+		.popup-content.game-settings-panel .settings-tab[data-logo]:focus-visible::before,
+		.popup-content.game-settings-panel .settings-tab[data-logo].active::before{
+			opacity:1;
+			transform:scale(1);
+		}
 		.popup-content.game-settings-panel .settings-content{
+			position:relative;
 			width:100%;
 			background:rgba(255,255,255,0.04);
 			border:1px solid rgba(255,255,255,0.08);
@@ -506,12 +528,214 @@
 			display:flex;
 			align-items:center;
 			justify-content:center;
+			overflow:hidden;
+		}
+		.popup-content.game-settings-panel .settings-content.has-banner{
+			padding:0;
 		}
 		.popup-content.game-settings-panel .settings-placeholder{
 			margin:0;
 			color:var(--muted);
 			text-align:center;
 			line-height:1.6;
+		}
+		.app-settings-splash{
+			position:relative;
+			width:100%;
+			height:100%;
+			min-height:320px;
+			background:linear-gradient(180deg, rgba(10,10,20,0.75), rgba(10,10,20,0.9));
+			background-size:cover;
+			background-position:center;
+			display:flex;
+			align-items:flex-end;
+			justify-content:center;
+		}
+		.app-settings-overlay{
+			position:relative;
+			width:100%;
+			padding:48px 32px;
+			background:linear-gradient(180deg, rgba(5,5,10,0.15) 0%, rgba(5,5,10,0.85) 100%);
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			gap:12px;
+			text-align:center;
+		}
+		.app-settings-logo{
+			width:56px;
+			height:56px;
+			border-radius:14px;
+			object-fit:cover;
+			box-shadow:0 10px 20px rgba(0,0,0,0.45);
+		}
+		.app-settings-overlay h4{
+			margin:0;
+			font-size:20px;
+			color:#ffffff;
+		}
+		.app-settings-overlay p{
+			margin:0;
+			color:rgba(255,255,255,0.75);
+			max-width:360px;
+		}
+		.settings-manager-grid{
+			display:grid;
+			grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+			gap:18px;
+		}
+		.settings-app-card{
+			position:relative;
+			aspect-ratio:1080 / 1640;
+			border-radius:18px;
+			border:1px solid rgba(255,255,255,0.08);
+			background:rgba(255,255,255,0.04);
+			background-size:cover;
+			background-position:center;
+			display:flex;
+			align-items:flex-end;
+			justify-content:center;
+			overflow:hidden;
+			cursor:pointer;
+			transition:transform .2s ease, box-shadow .2s ease;
+		}
+		.settings-app-card:hover{
+			transform:translateY(-4px);
+			box-shadow:0 20px 38px rgba(0,0,0,0.35);
+		}
+		.settings-app-card::after{
+			content:"";
+			position:absolute;
+			inset:0;
+			background:linear-gradient(180deg, rgba(10,10,20,0.05), rgba(10,10,20,0.8));
+			opacity:0;
+			transition:opacity .2s ease;
+		}
+		.settings-app-card:hover::after{
+			opacity:1;
+		}
+		.app-card-overlay{
+			position:absolute;
+			inset:auto 0 0 0;
+			padding:18px 16px;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			gap:8px;
+			justify-content:center;
+			text-align:center;
+			color:#ffffff;
+			font-weight:600;
+			opacity:0;
+			transform:translateY(20px);
+			transition:opacity .2s ease, transform .2s ease;
+		}
+		.settings-app-card:hover .app-card-overlay{
+			opacity:1;
+			transform:translateY(0);
+		}
+		.app-card-overlay img{
+			width:28px;
+			height:28px;
+			border-radius:8px;
+			object-fit:cover;
+			box-shadow:0 10px 18px rgba(0,0,0,0.35);
+		}
+		.app-card-overlay .app-card-name{
+			font-size:15px;
+			font-weight:600;
+		}
+		.app-card-actions{
+			display:flex;
+			gap:8px;
+			flex-wrap:wrap;
+			justify-content:center;
+		}
+		.app-card-action{
+			border:none;
+			padding:6px 12px;
+			border-radius:999px;
+			background:rgba(255,255,255,0.14);
+			color:#ffffff;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+			transition:background .2s ease, transform .2s ease;
+		}
+		.app-card-action:hover{
+			background:rgba(255,255,255,0.24);
+			transform:translateY(-1px);
+		}
+		.app-card-action.delete{
+			background:rgba(255,82,82,0.24);
+		}
+		.app-card-action.delete:hover{
+			background:rgba(255,82,82,0.34);
+		}
+		.settings-app-card.add-card{
+			border:1.5px dashed rgba(255,255,255,0.18);
+			background:rgba(255,255,255,0.04);
+			color:rgba(255,255,255,0.75);
+			justify-content:center;
+			align-items:center;
+			flex-direction:column;
+			gap:12px;
+			font-weight:600;
+		}
+		.settings-app-card.add-card::after{display:none;}
+		.settings-app-card.add-card .add-icon{
+			width:48px;
+			height:48px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.12);
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			font-size:28px;
+			background:rgba(255,255,255,0.05);
+			box-shadow:0 12px 24px rgba(0,0,0,0.25);
+		}
+		.settings-manager-empty{
+			margin:0;
+			color:var(--muted);
+			text-align:center;
+			padding:16px 0;
+		}
+		.app-form-grid{
+			display:grid;
+			gap:16px;
+		}
+		.app-form-grid label{
+			font-weight:600;
+			font-size:14px;
+			color:rgba(255,255,255,0.8);
+		}
+		.app-form-grid input{
+			width:100%;
+			padding:10px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(255,255,255,0.05);
+			color:#ffffff;
+			font-size:14px;
+		}
+		.app-form-grid input::placeholder{color:rgba(255,255,255,0.55);}
+		.app-form-previews{display:flex; gap:16px; flex-wrap:wrap;}
+		.app-form-banner-preview{
+			flex:1 1 220px;
+			aspect-ratio:1080 / 1640;
+			border-radius:18px;
+			border:1px solid rgba(255,255,255,0.12);
+			background:rgba(255,255,255,0.04) center / cover no-repeat;
+			overflow:hidden;
+		}
+		.app-form-logo-preview{
+			width:70px;
+			height:70px;
+			border-radius:18px;
+			border:1px solid rgba(255,255,255,0.12);
+			background:rgba(255,255,255,0.06) center / cover no-repeat;
+			box-shadow:0 12px 24px rgba(0,0,0,0.25);
 		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
@@ -537,6 +761,7 @@
 			.popup-content.game-settings-panel .settings-tab{
 				flex:1 1 calc(50% - 8px);
 				text-align:center;
+				justify-content:center;
 			}
 			.popup-content.game-settings-panel .settings-content{
 				min-height:320px;
@@ -2415,47 +2640,445 @@
 			}
 		}
 
-		const GAME_SETTINGS_TAB_MESSAGES = {
-			games: 'Organize launch options, sensitivity presets, and config exports for every title in one place.',
-			utility: 'Track productivity tools, shortcuts, and overlays you rely on while streaming or gaming.',
-			hardware: 'Document your rig—from peripherals to PC specs—so collaborators know exactly what you use.',
-			internet: 'Monitor connection details, typical speeds, and backup plans to keep your stream online.'
-		};
+		let allSettingsApps = [];
+		let editingAllSettingsAppId = null;
 
-		function setGameSettingsContent(section) {
-			const content = document.getElementById('gameSettingsContent');
-			if (!content) return;
-			const message = GAME_SETTINGS_TAB_MESSAGES[section] || 'Details coming soon for this category.';
-			content.innerHTML = `<p class="settings-placeholder">${message}</p>`;
-		}
+		const DEFAULT_GAME_SETTINGS_TABS = [
+			{ id: 'games', label: 'Games', type: 'default' },
+			{ id: 'utility', label: 'Utility', type: 'default' },
+			{ id: 'hardware', label: 'Hardware', type: 'default' },
+			{ id: 'internet', label: 'Internet', type: 'default' }
+		];
+		let cachedGameSettingsTabs = [];
+		let currentGameSettingsTabId = null;
 
-		function initGameSettingsTabs() {
-			const tabs = Array.from(document.querySelectorAll('#gameSettingsBody .settings-tab'));
-			if (!tabs.length) return;
-			tabs.forEach(tab => {
-				if (tab.dataset.initialized === 'true') return;
-				tab.dataset.initialized = 'true';
-				tab.addEventListener('click', () => {
-					if (tab.classList.contains('active')) return;
-					tabs.forEach(btn => btn.classList.remove('active'));
-					tab.classList.add('active');
-					setGameSettingsContent(tab.dataset.section);
-				});
-			});
-			const initial = tabs.find(tab => tab.classList.contains('active')) || tabs[0];
-			if (initial) {
-				initial.classList.add('active');
-				setGameSettingsContent(initial.dataset.section);
+		function normalizeUrlForCss(url) {
+			if (!url) return '';
+			try {
+				const trimmed = url.trim();
+				if (trimmed.startsWith('data:')) {
+					return `url("${trimmed}")`;
+				}
+				const encoded = encodeURI(trimmed);
+				return `url("${encoded}")`;
+			} catch (e) {
+				return `url("${url}")`;
 			}
 		}
 
-		function openGameSettingsPopup() {
-			initGameSettingsTabs();
+		function applyBackgroundImage(el, url) {
+			if (!el) return;
+			if (url) {
+				el.style.backgroundImage = normalizeUrlForCss(url);
+			} else {
+				el.style.backgroundImage = '';
+			}
+		}
+
+		function getAllSettingsTabs() {
+			const appTabs = (allSettingsApps || []).map(app => ({
+				id: `app-${app.id}`,
+				label: app.name,
+				type: 'app',
+				appId: app.id,
+				logo: app.logo,
+				banner: app.banner
+			}));
+			return [...DEFAULT_GAME_SETTINGS_TABS, ...appTabs];
+		}
+
+		function renderGameSettingsTabs(preferredId) {
+			const tabsContainer = document.getElementById('gameSettingsTabs');
+			if (!tabsContainer) return;
+			cachedGameSettingsTabs = getAllSettingsTabs();
+			tabsContainer.innerHTML = '';
+			cachedGameSettingsTabs.forEach(tab => {
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'settings-tab';
+				button.dataset.section = tab.id;
+				if (tab.type === 'app') {
+					button.dataset.appId = tab.appId;
+					if (tab.logo) {
+						button.setAttribute('data-logo', 'true');
+						button.style.setProperty('--tab-logo', normalizeUrlForCss(tab.logo));
+					}
+				}
+				button.textContent = tab.label;
+				button.addEventListener('click', () => selectGameSettingsTab(tab.id));
+				tabsContainer.appendChild(button);
+			});
+
+			let initialId = preferredId || currentGameSettingsTabId;
+			if (!initialId || !cachedGameSettingsTabs.some(tab => tab.id === initialId)) {
+				initialId = cachedGameSettingsTabs[0]?.id || null;
+			}
+			if (initialId) {
+				selectGameSettingsTab(initialId);
+			} else {
+				const content = document.getElementById('gameSettingsContent');
+				if (content) {
+					content.innerHTML = '';
+					content.classList.remove('has-banner');
+				}
+			}
+		}
+
+		function selectGameSettingsTab(tabId) {
+			const tabsContainer = document.getElementById('gameSettingsTabs');
+			if (!tabsContainer) return;
+			const buttons = tabsContainer.querySelectorAll('.settings-tab');
+			buttons.forEach(btn => {
+				btn.classList.toggle('active', btn.dataset.section === tabId);
+			});
+			currentGameSettingsTabId = tabId;
+			setGameSettingsContent(tabId);
+		}
+
+		function setGameSettingsContent(tabId) {
+			const content = document.getElementById('gameSettingsContent');
+			if (!content) return;
+			const tabData = cachedGameSettingsTabs.find(tab => tab.id === tabId);
+			if (!tabData) {
+				content.innerHTML = '';
+				content.classList.remove('has-banner');
+				return;
+			}
+			if (tabData.type === 'app') {
+				const app = allSettingsApps.find(item => `app-${item.id}` === tabId);
+				content.classList.add('has-banner');
+				if (app) {
+					const splash = document.createElement('div');
+					splash.className = 'app-settings-splash';
+					applyBackgroundImage(splash, app.banner);
+					const overlay = document.createElement('div');
+					overlay.className = 'app-settings-overlay';
+					if (app.logo) {
+						const logo = document.createElement('img');
+						logo.className = 'app-settings-logo';
+						logo.src = app.logo;
+						logo.alt = `${app.name} logo`;
+						overlay.appendChild(logo);
+					}
+					const title = document.createElement('h4');
+					title.textContent = app.name;
+					overlay.appendChild(title);
+					const description = document.createElement('p');
+					description.textContent = 'Settings coming soon.';
+					overlay.appendChild(description);
+					splash.appendChild(overlay);
+					content.innerHTML = '';
+					content.appendChild(splash);
+					return;
+				}
+			}
+			content.classList.remove('has-banner');
+			if (tabData.type === 'app') {
+				content.innerHTML = '<div class="settings-placeholder">App not found.</div>';
+			} else {
+				content.innerHTML = '';
+			}
+		}
+
+		function initGameSettingsTabs(preferredId) {
+			renderGameSettingsTabs(preferredId);
+		}
+
+		function openGameSettingsPopup(targetTabId = null) {
+			initGameSettingsTabs(targetTabId);
 			const popup = document.getElementById('gameSettingsPopup');
 			if (popup) {
 				popup.style.display = 'flex';
 				setBodyScrollState(true);
 			}
+		}
+
+		function normalizeAllSettingsApp(raw) {
+			if (!raw) return null;
+			const normalized = {
+				id: String(raw.id || '').trim(),
+				name: (raw.name || '').trim(),
+				logo: (raw.logo || '').trim(),
+				banner: (raw.banner || '').trim(),
+				createdAt: raw.createdAt || Date.now(),
+				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
+			};
+			if (!normalized.id) {
+				const base = normalized.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+				const unique = normalized.createdAt ? normalized.createdAt.toString(36) : Date.now().toString(36);
+				normalized.id = `${base || 'app'}-${unique}`;
+			}
+			if (!normalized.name) {
+				normalized.name = 'Untitled App';
+			}
+			return normalized;
+		}
+
+		function generateAllSettingsAppId(name) {
+			const base = (name || 'app').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+			return `${base || 'app'}-${Date.now().toString(36)}`;
+		}
+
+		function updateAllSettingsAppPreview() {
+			const bannerInput = document.getElementById('allSettingsAppBanner');
+			const logoInput = document.getElementById('allSettingsAppLogo');
+			const bannerPreview = document.getElementById('allSettingsAppBannerPreview');
+			const logoPreview = document.getElementById('allSettingsAppLogoPreview');
+			if (bannerPreview) {
+				applyBackgroundImage(bannerPreview, bannerInput?.value || '');
+			}
+			if (logoPreview) {
+				applyBackgroundImage(logoPreview, logoInput?.value || '');
+				logoPreview.style.opacity = logoInput?.value ? '1' : '0.35';
+			}
+		}
+
+		function resetAllSettingsAppForm() {
+			editingAllSettingsAppId = null;
+			const nameInput = document.getElementById('allSettingsAppName');
+			const logoInput = document.getElementById('allSettingsAppLogo');
+			const bannerInput = document.getElementById('allSettingsAppBanner');
+			if (nameInput) nameInput.value = '';
+			if (logoInput) logoInput.value = '';
+			if (bannerInput) bannerInput.value = '';
+			updateAllSettingsAppPreview();
+			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
+			if (title) title.textContent = 'Add App to All Settings';
+		}
+
+		function openAllSettingsManager() {
+			renderAllSettingsManagerGrid();
+			openPopup('allSettingsManagerPopup');
+		}
+
+		function closeAllSettingsManager() {
+			closePopup('allSettingsManagerPopup');
+		}
+
+		function openAddAllSettingsAppPopup(appId = null) {
+			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
+			editingAllSettingsAppId = appId || null;
+			if (appId) {
+				const app = allSettingsApps.find(item => item.id === appId);
+				if (app) {
+					const nameInput = document.getElementById('allSettingsAppName');
+					const logoInput = document.getElementById('allSettingsAppLogo');
+					const bannerInput = document.getElementById('allSettingsAppBanner');
+					if (nameInput) nameInput.value = app.name || '';
+					if (logoInput) logoInput.value = app.logo || '';
+					if (bannerInput) bannerInput.value = app.banner || '';
+					if (title) title.textContent = `Edit ${app.name || 'App'}`;
+				} else {
+					resetAllSettingsAppForm();
+				}
+			} else {
+				resetAllSettingsAppForm();
+			}
+			updateAllSettingsAppPreview();
+			openPopup('allSettingsAppFormPopup');
+		}
+
+		function closeAddAllSettingsAppPopup() {
+			resetAllSettingsAppForm();
+			closePopup('allSettingsAppFormPopup');
+		}
+
+		function buildSettingsAppCard(app) {
+			const card = document.createElement('div');
+			card.className = 'settings-app-card';
+			card.dataset.appId = app.id;
+			card.tabIndex = 0;
+			card.setAttribute('role', 'button');
+			card.setAttribute('aria-label', `Edit ${app.name}`);
+			applyBackgroundImage(card, app.banner);
+			const overlay = document.createElement('div');
+			overlay.className = 'app-card-overlay';
+			if (app.logo) {
+				const logo = document.createElement('img');
+				logo.src = app.logo;
+				logo.alt = `${app.name} logo`;
+				overlay.appendChild(logo);
+			}
+			const nameEl = document.createElement('div');
+			nameEl.className = 'app-card-name';
+			nameEl.textContent = app.name || 'Untitled App';
+			overlay.appendChild(nameEl);
+			const actions = document.createElement('div');
+			actions.className = 'app-card-actions';
+			const editBtn = document.createElement('button');
+			editBtn.type = 'button';
+			editBtn.className = 'app-card-action';
+			editBtn.textContent = 'Edit';
+			editBtn.addEventListener('click', event => {
+				event.stopPropagation();
+				event.preventDefault();
+				openAddAllSettingsAppPopup(app.id);
+			});
+			actions.appendChild(editBtn);
+			const deleteBtn = document.createElement('button');
+			deleteBtn.type = 'button';
+			deleteBtn.className = 'app-card-action delete';
+			deleteBtn.textContent = 'Remove';
+			deleteBtn.addEventListener('click', event => {
+				event.stopPropagation();
+				event.preventDefault();
+				deleteAllSettingsApp(app.id);
+			});
+			actions.appendChild(deleteBtn);
+			overlay.appendChild(actions);
+			card.appendChild(overlay);
+			card.addEventListener('click', () => openAddAllSettingsAppPopup(app.id));
+			card.addEventListener('keydown', event => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					openAddAllSettingsAppPopup(app.id);
+				}
+			});
+			return card;
+		}
+
+		function buildAddAppCard() {
+			const card = document.createElement('div');
+			card.className = 'settings-app-card add-card';
+			card.tabIndex = 0;
+			card.setAttribute('role', 'button');
+			card.setAttribute('aria-label', 'Add new app');
+			const icon = document.createElement('div');
+			icon.className = 'add-icon';
+			icon.textContent = '+';
+			const label = document.createElement('span');
+			label.textContent = 'Add new app';
+			card.appendChild(icon);
+			card.appendChild(label);
+			card.addEventListener('click', () => openAddAllSettingsAppPopup());
+			card.addEventListener('keydown', event => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					openAddAllSettingsAppPopup();
+				}
+			});
+			return card;
+		}
+
+		function renderAllSettingsManagerGrid() {
+			const grid = document.getElementById('allSettingsAppGrid');
+			const emptyState = document.getElementById('allSettingsEmptyState');
+			if (!grid) return;
+			grid.innerHTML = '';
+			const apps = Array.isArray(allSettingsApps) ? allSettingsApps.slice() : [];
+			grid.appendChild(buildAddAppCard());
+			if (emptyState) {
+				emptyState.style.display = apps.length ? 'none' : 'block';
+			}
+			apps.forEach(app => {
+				const normalized = normalizeAllSettingsApp(app);
+				if (!normalized) return;
+				grid.appendChild(buildSettingsAppCard(normalized));
+			});
+		}
+
+		async function persistAllSettingsApps() {
+			try {
+				await saveGlobalSetting('allSettingsApps', JSON.stringify(allSettingsApps));
+			} catch (error) {
+				console.error('Failed to persist All Settings apps:', error);
+				throw error;
+			}
+		}
+
+		async function saveAllSettingsApp() {
+			const nameInput = document.getElementById('allSettingsAppName');
+			const logoInput = document.getElementById('allSettingsAppLogo');
+			const bannerInput = document.getElementById('allSettingsAppBanner');
+			const name = (nameInput?.value || '').trim();
+			const logo = (logoInput?.value || '').trim();
+			const banner = (bannerInput?.value || '').trim();
+			if (!name) {
+				notify.error('Give the app a name before saving.');
+				nameInput?.focus();
+				return;
+			}
+			let targetId = editingAllSettingsAppId;
+			const timestamp = Date.now();
+			if (editingAllSettingsAppId) {
+				const existingIndex = allSettingsApps.findIndex(app => app.id === editingAllSettingsAppId);
+				if (existingIndex !== -1) {
+					allSettingsApps[existingIndex] = {
+						...allSettingsApps[existingIndex],
+						name,
+						logo,
+						banner,
+						updatedAt: timestamp
+					};
+				} else {
+					// treat as new if missing
+					targetId = generateAllSettingsAppId(name);
+					allSettingsApps.push({
+						id: targetId,
+						name,
+						logo,
+						banner,
+						createdAt: timestamp,
+						updatedAt: timestamp
+					});
+				}
+			} else {
+				targetId = generateAllSettingsAppId(name);
+				allSettingsApps.push({
+					id: targetId,
+					name,
+					logo,
+					banner,
+					createdAt: timestamp,
+					updatedAt: timestamp
+				});
+			}
+			// Deduplicate by id and normalize ordering
+			const deduped = [];
+			const seen = new Set();
+			allSettingsApps.forEach(app => {
+				const normalized = normalizeAllSettingsApp(app);
+				if (!normalized || seen.has(normalized.id)) return;
+				seen.add(normalized.id);
+				deduped.push(normalized);
+			});
+			allSettingsApps = deduped;
+			editingAllSettingsAppId = null;
+			try {
+				await persistAllSettingsApps();
+			} catch (error) {
+				notify.error('Could not save this app. Please try again.');
+				return;
+			}
+			renderAllSettingsManagerGrid();
+			renderGameSettingsTabs(`app-${targetId}`);
+			closeAddAllSettingsAppPopup();
+			notify.success('App saved to All Settings.');
+		}
+
+		async function deleteAllSettingsApp(appId) {
+			const app = allSettingsApps.find(item => item.id === appId);
+			if (!app) return;
+			const confirmed = await showConfirm(`Remove ${app.name}?`, {
+				title: 'Remove settings app',
+				confirmText: 'Remove',
+				cancelText: 'Keep',
+				type: 'warning'
+			});
+			if (!confirmed) return;
+			allSettingsApps = allSettingsApps.filter(item => item.id !== appId);
+			try {
+				await persistAllSettingsApps();
+			} catch (error) {
+				notify.error('Could not remove the app. Please try again.');
+				return;
+			}
+			renderAllSettingsManagerGrid();
+			if (currentGameSettingsTabId === `app-${appId}`) {
+				currentGameSettingsTabId = null;
+			}
+			renderGameSettingsTabs();
+			notify.success(`${app.name} removed.`);
 		}
 
 		function closeGameSettingsPopup() {
@@ -2556,19 +3179,60 @@
 			</div>
 			<div class="popup-body" id="gameSettingsBody">
 				<div class="settings-layout">
-					<nav class="settings-tabs" aria-label="Settings categories">
-						<button type="button" class="settings-tab active" data-section="games">Games</button>
-						<button type="button" class="settings-tab" data-section="utility">Utility</button>
-						<button type="button" class="settings-tab" data-section="hardware">Hardware</button>
-						<button type="button" class="settings-tab" data-section="internet">Internet</button>
-					</nav>
-					<div class="settings-content" id="gameSettingsContent">
-						<p class="settings-placeholder">Tabs are ready—content coming soon.</p>
-					</div>
+					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories"></nav>
+					<div class="settings-content" id="gameSettingsContent"></div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+		<!-- All Settings Manager Popup -->
+		<div id="allSettingsManagerPopup" class="popup-overlay">
+			<div class="popup-content admin-popup" style="max-width:920px;">
+				<div class="popup-header">
+					<h3>All Settings Apps</h3>
+					<button class="close-btn" onclick="closeAllSettingsManager()" aria-label="Close all settings manager">&times;</button>
+				</div>
+				<div class="popup-body" style="max-height:70vh; overflow-y:auto; display:flex; flex-direction:column; gap:18px;">
+					<p class="settings-manager-empty" id="allSettingsEmptyState" style="display:none;">No custom apps yet. Tap the banner card to add your first one.</p>
+					<div class="settings-manager-grid" id="allSettingsAppGrid"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Add All Settings App Popup -->
+		<div id="allSettingsAppFormPopup" class="popup-overlay">
+			<div class="popup-content admin-popup" style="max-width:520px;">
+				<div class="popup-header">
+					<h3>Add App to All Settings</h3>
+					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
+				</div>
+				<div class="popup-body" style="display:flex; flex-direction:column; gap:18px;">
+					<div class="app-form-grid">
+						<label>
+							App Name
+							<input type="text" id="allSettingsAppName" placeholder="Valorant" maxlength="60">
+						</label>
+						<label>
+							App Logo URL (square)
+							<input type="url" id="allSettingsAppLogo" placeholder="https://example.com/logo.png" oninput="updateAllSettingsAppPreview()">
+						</label>
+						<label>
+							Banner Image URL (1080 × 1640)
+							<input type="url" id="allSettingsAppBanner" placeholder="https://example.com/banner.jpg" oninput="updateAllSettingsAppPreview()">
+						</label>
+					</div>
+					<div class="app-form-previews">
+						<div class="app-form-banner-preview" id="allSettingsAppBannerPreview"></div>
+						<div class="app-form-logo-preview" id="allSettingsAppLogoPreview"></div>
+					</div>
+					<div style="display:flex; justify-content:flex-end; gap:10px;">
+						<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
+						<button class="admin-logout-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 	<!-- Admin Login Popup -->
 	<div id="adminLoginPopup" class="popup-overlay">
@@ -2600,6 +3264,7 @@
 					<div style="margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
 						<button class="admin-logout-btn" onclick="signOut()">Logout</button>
 						<button class="admin-logout-btn alt-light" onclick="openColorsPopup()">Edit Colors</button>
+						<button class="admin-logout-btn alt-light" onclick="openAllSettingsManager()">Manage All Settings</button>
 						<small>Edit global CSS theme variables</small>
 					</div>
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
@@ -4442,6 +5107,33 @@
 			renderActionLinksList('subscribe');
 			renderActionPopupButtons('follow');
 			renderActionPopupButtons('subscribe');
+
+			try {
+				const storedApps = await loadGlobalSetting('allSettingsApps');
+				if (storedApps && storedApps !== 'N/A') {
+					const parsed = JSON.parse(storedApps);
+					if (Array.isArray(parsed)) {
+						const deduped = [];
+						const seen = new Set();
+						parsed.forEach(item => {
+							const normalized = normalizeAllSettingsApp(item);
+							if (!normalized || seen.has(normalized.id)) return;
+							seen.add(normalized.id);
+							deduped.push(normalized);
+						});
+						allSettingsApps = deduped;
+					} else {
+						allSettingsApps = [];
+					}
+				} else {
+					allSettingsApps = [];
+				}
+			} catch (error) {
+				console.error('Failed to load All Settings apps:', error);
+				allSettingsApps = [];
+			}
+			renderGameSettingsTabs();
+			renderAllSettingsManagerGrid();
 
 			// Update popup titles with current display name
 			setPopupTitles(savedDisplayName);
