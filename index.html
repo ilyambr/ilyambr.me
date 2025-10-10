@@ -125,6 +125,17 @@
 		@media (max-width: 1024px){
 			.bg-glass{
 				backdrop-filter:none;
+		.main-stage{
+			position:relative;
+			z-index:1;
+			width:100%;
+			box-sizing:border-box;
+			padding:80px 20px 100px;
+			display:flex;
+			flex-direction:column;
+			gap:28px;
+			align-items:center;
+		}
 				-webkit-backdrop-filter:none;
 				background:rgba(10,10,15,0.45);
 			}
@@ -210,13 +221,20 @@
 		}
 
 		@media (min-width: 1200px){
-			.desktop-shell{
-				display:flex;
-				align-items:stretch;
-				gap:28px;
+			.main-stage{
+				flex-direction:row;
+				justify-content:center;
+				align-items:center;
+				gap:32px;
+				padding:80px 40px;
+				min-height:100vh;
 				max-width:1600px;
 				margin:0 auto;
-				padding:40px 40px 80px;
+			}
+			.desktop-shell{
+				flex:1 1 0;
+				max-width:1100px;
+				min-width:0;
 			}
 			.desktop-shell .container{
 				margin:0;
@@ -229,7 +247,7 @@
 				flex-direction:column;
 				justify-content:flex-end;
 				flex:0 0 360px;
-				align-self:flex-start;
+				align-self:center;
 				transform:translateY(-5px);
 			}
 			.short-video-card{
@@ -259,6 +277,7 @@
 			width:135px;
 			height:135px;
 			z-index:1000;
+			filter:drop-shadow(0 24px 45px rgba(0,0,0,0.45));
 		}
 		.page-logo img{
 			width:100%;
@@ -1578,6 +1597,7 @@
 	<div class="bg-glass" aria-hidden="true"></div>
 	<div class="bg-tint hidden" id="bgTint" aria-hidden="true"></div>
 
+	<div class="main-stage">
 	<div class="desktop-shell">
 		<div class="container">
 			<header class="header">
@@ -1682,6 +1702,7 @@
 					</div>
 				</div>
 		</aside>
+	</div>
 
 	<!-- Admin Console Button -->
 	<div class="admin-button" onclick="openAdminLogin()">
@@ -6248,6 +6269,5 @@
 		setTimeout(setupDateSelectors, 100);
 		
 	</script>
-	</div> <!-- End page-content -->
 </body>
 </html>
