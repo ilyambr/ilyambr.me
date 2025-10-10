@@ -477,7 +477,8 @@
 		}
 		.popup-content.game-settings-panel .popup-body{
 			padding:32px;
-			overflow-y:auto;
+			overflow-y:hidden;
+			overflow-x:auto;
 		}
 		.popup-content.game-settings-panel .settings-layout{
 			display:grid;
@@ -5784,15 +5785,15 @@
 	</div>
 
 	<!-- Colors Editor Popup -->
-	<div id="colorsPopup" class="popup-overlay">
-		<div class="popup-content">
+	<div id="colorsPopup" class="popup-overlay" data-keep-color="true">
+		<div class="popup-content" data-keep-color="true">
 			<div class="popup-header">
 				<h3>Edit Site Colors</h3>
 				<button class="close-btn" onclick="closePopup('colorsPopup')">&times;</button>
 			</div>
-			<div class="popup-body">
-				<div class="admin-setting">
-					<div id="colorsList" style="display:grid; gap:10px;"></div>
+			<div class="popup-body" data-keep-color="true">
+				<div class="admin-setting" data-keep-color="true">
+					<div id="colorsList" style="display:grid; gap:10px;" data-keep-color="true"></div>
 					<div style="display:flex; gap:10px; margin-top:12px;">
 						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
 						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
@@ -6593,9 +6594,11 @@
 				row.style.display = 'grid';
 				row.style.gridTemplateColumns = '160px 1fr 110px';
 				row.style.gap = '10px';
+				row.dataset.keepColor = 'true';
 				const label = document.createElement('label');
 				label.textContent = v.key;
 				label.style.color = 'var(--muted)';
+				label.dataset.keepColor = 'true';
 				const input = document.createElement('input');
 				input.type = 'text';
 				input.value = getCssVar(v.key);
@@ -6603,6 +6606,7 @@
 				input.style.border = '1px solid var(--border)';
 				input.style.color = 'var(--text)';
 				input.style.borderRadius = '8px';
+				input.dataset.keepColor = 'true';
 				input.oninput = (e) => {
 					setCssVar(v.key, e.target.value);
 					// keep color input in sync if user types a value
@@ -6620,6 +6624,7 @@
 				preview.style.background = getCssVar(v.key);
 				preview.style.cursor = 'pointer';
 				preview.title = 'Click to pick color';
+				preview.dataset.keepColor = 'true';
 
 				// hidden color input to open the native picker
 				const color = document.createElement('input');
@@ -6627,6 +6632,7 @@
 				color.style.position = 'absolute';
 				color.style.opacity = '0';
 				color.style.pointerEvents = 'none';
+				color.dataset.keepColor = 'true';
 				// initialize color input from current value (convert to hex, ignore alpha)
 				try {
 					const rgb = parseCssColor(input.value);
