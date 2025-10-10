@@ -951,20 +951,29 @@
 		.image-cropper-stage{
 			position:relative;
 			width:100%;
-			min-height:360px;
+			height:clamp(320px, 62vh, 640px);
 			border-radius:18px;
 			overflow:hidden;
 			border:1px solid rgba(255,255,255,0.14);
 			background:rgba(8,8,18,0.82);
+			max-width:100%;
 		}
 		.image-cropper-stage .cropper-container,
 		.image-cropper-stage .cropper-wrap-box,
 		.image-cropper-stage .cropper-canvas,
-		.image-cropper-stage .cropper-view-box{
+		.image-cropper-stage .cropper-view-box,
+		.image-cropper-stage .cropper-drag-box,
+		.image-cropper-stage .cropper-crop-box,
+		.image-cropper-stage .cropper-modal{
 			border-radius:18px;
+			width:100% !important;
+			height:100% !important;
+			top:0 !important;
+			left:0 !important;
 		}
 		#imageCropperPreview{
 			max-width:100%;
+			max-height:100%;
 			display:block;
 			width:100%;
 		}
@@ -985,14 +994,15 @@
 		}
 		.image-cropper-popup .popup-body{
 			max-height:80vh;
-			overflow:hidden;
+			overflow:auto;
+			padding-right:4px;
 		}
 		@media (max-width:720px){
 			.cropper-popup{
 				max-width:calc(100vw - 28px);
 			}
 			.image-cropper-stage{
-				min-height:260px;
+				height:clamp(240px, 55vh, 520px);
 			}
 		}
 		.app-form-footer{
@@ -1084,7 +1094,7 @@
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
-			.settings-template-row{grid-template-columns:1fr; gap:6px;}
+			.settings-template-row{padding:12px 14px;}
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
 		}
@@ -1381,29 +1391,38 @@
 			color:rgba(178,230,255,0.9);
 		}
 		.settings-template-grid{
-			display:grid;
+			display:flex;
+			flex-direction:column;
 			gap:12px;
 			margin:0;
+			padding:0;
+			list-style:none;
 		}
 		.settings-template-row{
-			display:grid;
-			grid-template-columns:160px 1fr;
-			gap:16px;
-			align-items:center;
+			display:flex;
+			flex-direction:column;
+			align-items:flex-start;
+			gap:6px;
+			padding:14px 16px;
+			background:rgba(255,255,255,0.04);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:14px;
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);
 		}
 		.settings-template-row dt{
 			margin:0;
-			font-size:13px;
+			font-size:12px;
 			font-weight:600;
 			color:rgba(198,225,244,0.78);
 			text-transform:uppercase;
-			letter-spacing:0.3px;
+			letter-spacing:0.4px;
 		}
 		.settings-template-row dd{
 			margin:0;
 			font-size:15px;
 			font-weight:600;
 			color:#ffffff;
+			word-break:break-word;
 		}
 		.settings-template-placeholder{
 			margin:0;
@@ -3513,6 +3532,7 @@
 					const aspectRatio = Number.isFinite(options?.aspectRatio) ? options.aspectRatio : undefined;
 					const cropOptions = {
 						aspectRatio,
+						initialAspectRatio: aspectRatio,
 						viewMode: typeof options?.viewMode === 'number' ? options.viewMode : 1,
 						autoCropArea: typeof options?.autoCropArea === 'number' ? options.autoCropArea : 0.92,
 						background: false,
@@ -3521,10 +3541,29 @@
 						wheelZoomRatio: 0.12,
 						dragMode: 'move',
 						responsive: true,
-						checkOrientation: false
+						checkOrientation: false,
+						ready() {
+							const stage = modal.querySelector('.image-cropper-stage');
+							if (!stage) return;
+							const bounds = stage.getBoundingClientRect();
+							const imageData = this.getImageData();
+							if (!imageData || !imageData.naturalWidth || !imageData.naturalHeight) {
+								if (applyBtn) applyBtn.disabled = false;
+								return;
+							}
+							this.reset();
+							const scale = Math.min(
+								bounds.width / imageData.naturalWidth,
+								bounds.height / imageData.naturalHeight
+							);
+							if (Number.isFinite(scale) && scale > 0) {
+								this.zoomTo(scale);
+							}
+							this.setDragMode('move');
+							if (applyBtn) applyBtn.disabled = false;
+						}
 					};
 					imageCropperInstance = new Cropper(preview, cropOptions);
-					if (applyBtn) applyBtn.disabled = false;
 				};
 				preview.onerror = () => {
 					cleanup();
