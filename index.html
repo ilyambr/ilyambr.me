@@ -38,19 +38,16 @@
 		::-webkit-scrollbar{width:12px; height:12px;}
 		::-webkit-scrollbar:horizontal{height:10px;}
 		::-webkit-scrollbar-track{
-			background:rgba(12,14,28,0.82);
+			background:transparent;
 			border-radius:999px;
-			border:1px solid rgba(0,0,0,0.4);
-			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
 		}
 		::-webkit-scrollbar-thumb{
-			background:linear-gradient(145deg, rgba(0,199,255,0.58), rgba(0,132,255,0.42));
+			background:#ffffff;
 			border-radius:999px;
-			border:2px solid rgba(10,12,26,0.92);
-			box-shadow:0 10px 24px rgba(0,0,0,0.32);
+			border:3px solid rgba(0,0,0,0.25);
 		}
 		::-webkit-scrollbar-thumb:hover{
-			background:linear-gradient(145deg, rgba(64,228,255,0.7), rgba(0,158,255,0.58));
+			background:#f5f5f5;
 		}
 		::-webkit-scrollbar-corner{background:transparent;}
 		html,body{height:100%}
@@ -1664,7 +1661,7 @@
 			position:relative;
 			height:260px;
 			width:100%;
-			border-radius:28px;
+			border-radius:0;
 			overflow:hidden;
 			background:rgba(255,255,255,0.06) center/cover no-repeat;
 			border-bottom:1px solid rgba(132,164,255,0.18);
@@ -1692,78 +1689,59 @@
 		.app-settings-tab-bar{
 			display:flex;
 			gap:12px;
-			padding:10px 38px 6px;
+			padding:12px 32px;
 			margin-top:-20px;
 			position:relative;
 			z-index:2;
 			overflow-x:auto;
 			scrollbar-width:thin;
-			scrollbar-color:rgba(0,199,255,0.6) transparent;
+			scrollbar-color:rgba(20,24,46,0.25) transparent;
 			scroll-snap-type:x proximity;
-		}
-		.app-settings-tab-bar:before,
-		.app-settings-tab-bar:after{
-			content:"";
-			position:absolute;
-			top:0;
-			bottom:12px;
-			width:42px;
-			pointer-events:none;
-			z-index:3;
-		}
-		.app-settings-tab-bar:before{
-			left:0;
-			background:linear-gradient(90deg, rgba(12,14,28,1), rgba(12,14,28,0));
-		}
-		.app-settings-tab-bar:after{
-			right:0;
-			background:linear-gradient(270deg, rgba(12,14,28,1), rgba(12,14,28,0));
+			background:#ffffff;
+			border-radius:18px;
+			border:1px solid rgba(20,24,46,0.12);
 		}
 		.app-settings-tab-bar::-webkit-scrollbar{
-			height:8px;
+			height:6px;
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-track{
-			background:rgba(8,10,24,0.72);
-			border-radius:999px;
+			background:transparent;
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-thumb{
-			background:linear-gradient(135deg, rgba(0,199,255,0.7), rgba(0,132,255,0.55));
+			background:#d5daeb;
 			border-radius:999px;
-			border:2px solid rgba(10,12,26,0.92);
-			box-shadow:0 6px 14px rgba(0,0,0,0.28);
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-thumb:hover{
-			background:linear-gradient(135deg, rgba(60,224,255,0.82), rgba(12,166,255,0.62));
+			background:#c8cee4;
 		}
 		.app-settings-tab-bar.empty{
 			min-height:48px;
 		}
 		.app-settings-tab{
-			border:none;
-			background:rgba(255,255,255,0.05);
-			color:rgba(255,255,255,0.78);
+			border:1px solid rgba(20,24,46,0.14);
+			background:#ffffff;
+			color:#152043;
 			padding:12px 18px;
 			border-radius:14px;
 			font-size:13px;
 			font-weight:600;
-			letter-spacing:0.32px;
+			letter-spacing:0.28px;
 			text-transform:uppercase;
 			cursor:pointer;
-			transition:all 0.2s ease;
+			transition:background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 			white-space:nowrap;
-			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
 			scroll-snap-align:center;
 		}
 		.app-settings-tab:hover{
-			background:rgba(0,199,255,0.18);
-			color:#ffffff;
-			box-shadow:inset 0 0 0 1px rgba(0,199,255,0.36);
+			background:#f2f5ff;
+			border-color:rgba(20,24,46,0.22);
+			color:#0d1636;
 		}
 		.app-settings-tab.active{
-			background:linear-gradient(135deg, rgba(0,199,255,0.32), rgba(0,132,255,0.28));
-			color:#ffffff;
-			box-shadow:0 18px 32px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.46);
-			transform:translateY(-2px);
+			background:#e4e9ff;
+			color:#0c1230;
+			border-color:rgba(20,24,46,0.28);
+			transform:none;
 		}
 		.settings-template-hero-overlay img,
 		.settings-template-logo-fallback{
@@ -1876,6 +1854,7 @@
 			}
 			.settings-template-hero{
 				height:220px;
+				border-radius:0;
 			}
 			.settings-template-sections{
 				padding:26px 24px 34px;
@@ -1900,12 +1879,8 @@
 				max-height:none;
 			}
 			.app-settings-tab-bar{
-				padding:18px 24px 0;
+				padding:12px 20px;
 				gap:8px;
-			}
-			.app-settings-tab-bar:before,
-			.app-settings-tab-bar:after{
-				width:28px;
 			}
 			.app-settings-tab{
 				padding:10px 14px;
@@ -2301,6 +2276,20 @@
 		.admin-panel-body {
 			max-height: 70vh;
 			overflow-y: auto;
+		}
+		#allSettingsAppFormPopup .popup-content {
+			display:flex;
+			flex-direction:column;
+			max-height:90vh;
+			height:90vh;
+		}
+		#allSettingsAppFormPopup .popup-header {
+			flex:0 0 auto;
+		}
+		#allSettingsAppFormPopup .popup-body {
+			flex:1 1 auto;
+			min-height:0;
+			overflow-y:auto;
 		}
 
 		.notification-center {
@@ -3896,38 +3885,44 @@
 				title: 'Crop banner',
 				hint: 'Keep the subject centered. Banner crops vertically at 1080 × 1640.',
 				aspectRatio: 1080 / 1640,
+				canvas: { width: 1080, height: 1640 },
 				outputFormat: 'image/jpeg',
 				outputQuality: 0.92
 			},
 			logo: {
 				title: 'Crop logo',
 				hint: 'Square format works best for logos.',
-				aspectRatio: 1
+				aspectRatio: 1,
+				canvas: { width: 600, height: 600 }
 			},
 			character: {
 				title: 'Crop character portrait',
 				hint: 'Use a tall crop (1080 × 1440). Keep the character centered.',
 				aspectRatio: 1080 / 1440,
+				canvas: { width: 1080, height: 1440 },
 				outputFormat: 'image/jpeg',
 				outputQuality: 0.92
 			},
 			profile: {
 				title: 'Crop profile picture',
 				hint: 'Square avatars look best across the site.',
-				aspectRatio: 1
+				aspectRatio: 1,
+				canvas: { width: 512, height: 512 }
 			},
 			background: {
 				title: 'Crop background image',
 				hint: 'Choose the portion of the image you want behind everything.',
 				viewMode: 0,
 				autoCropArea: 1,
+				canvas: { width: 1920, height: 1080 },
 				outputFormat: 'image/jpeg',
 				outputQuality: 0.9
 			},
 			actionLogo: {
 				title: 'Crop button logo',
 				hint: 'Square icons align best with the follow/subscribe buttons.',
-				aspectRatio: 1
+				aspectRatio: 1,
+				canvas: { width: 400, height: 400 }
 			}
 		};
 
@@ -4059,7 +4054,9 @@
 					if (imageCropperInstance) {
 						imageCropperInstance.destroy();
 					}
-					const aspectRatio = Number.isFinite(options?.aspectRatio) ? options.aspectRatio : undefined;
+					const aspectRatio = typeof options?.aspectRatio === 'number' && Number.isFinite(options.aspectRatio)
+						? options.aspectRatio
+						: undefined;
 					const cropOptions = {
 						aspectRatio,
 						initialAspectRatio: aspectRatio,
@@ -4072,6 +4069,8 @@
 						dragMode: 'move',
 						responsive: true,
 						checkOrientation: false,
+						minCropBoxWidth: options?.minCropBoxWidth,
+						minCropBoxHeight: options?.minCropBoxHeight,
 						ready() {
 							const stage = modal.querySelector('.image-cropper-stage');
 							if (!stage) return;
@@ -4082,13 +4081,30 @@
 								return;
 							}
 							this.reset();
-							const scale = Math.min(
+							let scale = Math.min(
 								bounds.width / imageData.naturalWidth,
 								bounds.height / imageData.naturalHeight
 							);
-							if (Number.isFinite(scale) && scale > 0) {
-								this.zoomTo(scale);
+							if (!Number.isFinite(scale) || scale <= 0) {
+								scale = 1;
 							}
+							this.zoomTo(scale);
+							const canvasData = this.getCanvasData();
+							const appliedAspect = aspectRatio || (imageData.naturalWidth / imageData.naturalHeight) || 1;
+							let cropWidth = canvasData.width;
+							let cropHeight = cropWidth / appliedAspect;
+							if (cropHeight > canvasData.height) {
+								cropHeight = canvasData.height;
+								cropWidth = cropHeight * appliedAspect;
+							}
+							const cropLeft = canvasData.left + (canvasData.width - cropWidth) / 2;
+							const cropTop = canvasData.top + (canvasData.height - cropHeight) / 2;
+							this.setCropBoxData({
+								width: cropWidth,
+								height: cropHeight,
+								left: cropLeft,
+								top: cropTop
+							});
 							this.setDragMode('move');
 							if (applyBtn) applyBtn.disabled = false;
 						}
