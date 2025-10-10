@@ -34,8 +34,25 @@
 			--radius-sm:12px;
 		}
 
-		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
-		*::-webkit-scrollbar{width:0; height:0;}
+		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
+		::-webkit-scrollbar{width:12px; height:12px;}
+		::-webkit-scrollbar:horizontal{height:10px;}
+		::-webkit-scrollbar-track{
+			background:rgba(12,14,28,0.82);
+			border-radius:999px;
+			border:1px solid rgba(0,0,0,0.4);
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+		}
+		::-webkit-scrollbar-thumb{
+			background:linear-gradient(145deg, rgba(0,199,255,0.58), rgba(0,132,255,0.42));
+			border-radius:999px;
+			border:2px solid rgba(10,12,26,0.92);
+			box-shadow:0 10px 24px rgba(0,0,0,0.32);
+		}
+		::-webkit-scrollbar-thumb:hover{
+			background:linear-gradient(145deg, rgba(64,228,255,0.7), rgba(0,158,255,0.58));
+		}
+		::-webkit-scrollbar-corner{background:transparent;}
 		html,body{height:100%}
 		html{
 			padding:0;
@@ -49,6 +66,8 @@
 			overscroll-behavior-x:none;
 			overscroll-behavior-y:none;
 			overflow-anchor:auto;
+			scrollbar-width:thin;
+			scrollbar-color:rgba(0,199,255,0.55) rgba(10,12,26,0.86);
 		}
 		body{
 			margin:0;
@@ -63,6 +82,7 @@
 			overscroll-behavior-x:none;
 			overscroll-behavior-y:none;
 			max-width:100vw;
+			scrollbar-gutter:stable both-edges;
 		}
 		@media (min-width: 1201px){
 			body{
@@ -911,6 +931,305 @@
 			gap:28px;
 			align-items:flex-start;
 		}
+		.app-settings-editor{
+			grid-column:1 / -1;
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+			padding:22px;
+			border-radius:22px;
+			background:linear-gradient(165deg, rgba(20,24,46,0.84) 0%, rgba(12,14,28,0.94) 100%);
+			border:1px solid rgba(132,164,255,0.16);
+			box-shadow:0 26px 46px rgba(6,10,30,0.32), inset 0 0 0 1px rgba(255,255,255,0.02);
+		}
+		.app-settings-editor-header{
+			display:flex;
+			justify-content:space-between;
+			align-items:flex-start;
+			gap:22px;
+		}
+		.app-settings-editor-actions{
+			display:flex;
+			align-items:center;
+			gap:12px;
+		}
+		.app-settings-editor-header h4{
+			margin:0;
+			font-size:18px;
+			font-weight:700;
+			letter-spacing:0.4px;
+			color:#ffffff;
+		}
+		.app-settings-editor-header p{
+			margin:6px 0 0;
+			font-size:13px;
+			color:rgba(186,204,232,0.72);
+			line-height:1.6;
+		}
+		.app-settings-editor-body{
+			display:grid;
+			grid-template-columns:minmax(200px, 280px) minmax(0, 1fr);
+			gap:20px;
+		}
+		.app-settings-tab-list{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			max-height:480px;
+			overflow:auto;
+			padding-right:6px;
+			scrollbar-width:thin;
+			scrollbar-color:rgba(0,199,255,0.48) rgba(6,8,20,0.78);
+		}
+		.app-settings-tab-list::-webkit-scrollbar{
+			width:8px;
+		}
+		.app-settings-tab-list::-webkit-scrollbar-track{
+			background:rgba(6,8,20,0.78);
+			border-radius:999px;
+		}
+		.app-settings-tab-list::-webkit-scrollbar-thumb{
+			background:linear-gradient(135deg, rgba(0,199,255,0.68), rgba(0,132,255,0.5));
+			border-radius:999px;
+			border:2px solid rgba(6,8,18,0.92);
+			box-shadow:0 8px 18px rgba(0,0,0,0.28);
+		}
+		.app-settings-tab-list::-webkit-scrollbar-thumb:hover{
+			background:linear-gradient(135deg, rgba(60,224,255,0.82), rgba(12,166,255,0.6));
+		}
+		.app-settings-tab-item{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			padding:14px;
+			border-radius:16px;
+			background:rgba(12,16,32,0.82);
+			border:1px solid rgba(132,164,255,0.12);
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);
+		}
+		.app-settings-tab-select{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:12px;
+			padding:12px 14px;
+			border-radius:12px;
+			border:none;
+			background:rgba(255,255,255,0.05);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+			cursor:pointer;
+			transition:all 0.2s ease;
+		}
+		.app-settings-tab-select.active{
+			background:linear-gradient(140deg, rgba(0,199,255,0.32), rgba(0,132,255,0.26));
+			box-shadow:0 18px 30px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.42);
+		}
+		.app-settings-tab-select span.status{
+			font-size:11px;
+			font-weight:600;
+			letter-spacing:0.4px;
+			text-transform:uppercase;
+			color:rgba(173,222,255,0.75);
+		}
+		.app-settings-tab-fields{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+		}
+		.app-settings-tab-fields label{
+			display:flex;
+			flex-direction:column;
+			gap:6px;
+			font-size:12px;
+			font-weight:600;
+			color:rgba(174,205,255,0.7);
+		}
+		.app-settings-tab-fields input[type="text"]{
+			width:100%;
+			padding:10px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.3);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-tab-fields input[type="text"]:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-settings-tab-toggle{
+			display:flex;
+			align-items:center;
+			gap:8px;
+			font-size:12px;
+			font-weight:600;
+			color:rgba(186,204,232,0.75);
+		}
+		.app-settings-tab-footer{
+			display:flex;
+			justify-content:flex-end;
+			gap:10px;
+		}
+		.app-settings-tab-footer button{
+			padding:6px 10px;
+			border-radius:8px;
+			border:none;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-tab-footer .danger{
+			background:rgba(255,99,132,0.18);
+			color:#ff6b81;
+		}
+		.app-settings-tab-footer .danger:hover{
+			background:rgba(255,99,132,0.32);
+		}
+		.app-settings-tab-detail{
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+			padding:18px;
+			border-radius:18px;
+			background:rgba(10,14,28,0.78);
+			border:1px solid rgba(132,164,255,0.12);
+			min-height:320px;
+		}
+		.app-settings-tab-detail header{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:16px;
+		}
+		.app-settings-tab-detail header h5{
+			margin:0;
+			font-size:16px;
+			font-weight:700;
+			color:#ffffff;
+		}
+		.app-settings-section-list{
+			display:flex;
+			flex-direction:column;
+			gap:14px;
+		}
+		.app-settings-section-card{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			padding:16px;
+			border-radius:14px;
+			background:rgba(12,18,36,0.85);
+			border:1px solid rgba(255,255,255,0.08);
+		}
+		.app-settings-section-card header{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:12px;
+		}
+		.app-settings-section-card header input[type="text"]{
+			flex:1 1 auto;
+			padding:10px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.3);
+			color:#ffffff;
+		}
+		.app-settings-section-card header button{
+			border:none;
+			background:rgba(255,99,132,0.18);
+			color:#ff6b81;
+			border-radius:10px;
+			padding:8px 12px;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-section-actions{
+			display:flex;
+			align-items:center;
+			gap:10px;
+		}
+		.app-settings-section-actions select{
+			padding:9px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.35);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-section-actions select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-settings-option-list{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+		}
+		.app-settings-option-row{
+			display:grid;
+			grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) auto;
+			gap:8px;
+			align-items:center;
+		}
+		.app-settings-option-row input[type="text"]{
+			padding:9px 11px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-option-row button{
+			border:none;
+			background:rgba(255,99,132,0.2);
+			color:#ff6b81;
+			border-radius:8px;
+			padding:8px;
+			cursor:pointer;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			gap:6px;
+		}
+		.app-settings-option-row button svg{
+			width:14px;
+			height:14px;
+		}
+		.app-settings-option-actions{
+			display:flex;
+			justify-content:flex-end;
+			gap:8px;
+		}
+		.app-settings-option-actions button{
+			border:none;
+			border-radius:10px;
+			padding:9px 14px;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-option-actions .add-option{
+			background:rgba(0,199,255,0.24);
+			color:#ffffff;
+		}
+		.app-settings-option-actions .add-option:hover{
+			background:rgba(0,199,255,0.34);
+		}
+		.app-settings-empty-state{
+			padding:24px;
+			border-radius:14px;
+			background:rgba(255,255,255,0.04);
+			border:1px dashed rgba(255,255,255,0.12);
+			text-align:center;
+			font-size:14px;
+			color:rgba(186,204,232,0.72);
+		}
 		.app-form-left{
 			display:flex;
 			flex-direction:column;
@@ -1089,6 +1408,8 @@
 			.app-inline-logo{flex-direction:row; justify-content:flex-start; align-items:center; gap:12px; min-width:0; flex-wrap:wrap;}
 			.app-inline-logo-hint{width:100%; text-align:left; margin-top:2px;}
 			.app-inline-logo-hint{margin:0;}
+			.app-settings-editor-body{grid-template-columns:1fr;}
+			.app-settings-tab-list{max-height:none;}
 		}
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
@@ -1096,6 +1417,19 @@
 			.settings-template-row{grid-template-columns:1fr; gap:6px;}
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
+			.app-settings-editor{
+				padding:18px;
+			}
+			.app-settings-editor-body{gap:16px;}
+			.app-settings-tab-select{font-size:13px;}
+			.app-settings-tab-fields input[type="text"]{font-size:12px;}
+			.app-settings-section-actions{flex-direction:column; align-items:flex-start; width:100%;}
+			.app-settings-section-actions select{width:100%;}
+			.app-settings-section-actions button{width:100%;}
+			.app-settings-section-card header{flex-direction:column; align-items:stretch;}
+			.app-settings-section-card header button{width:100%;}
+			.app-settings-option-row{grid-template-columns:1fr;}
+			.app-settings-option-row button{justify-self:flex-start;}
 		}
 		.settings-app-list{
 			width:100%;
@@ -1330,7 +1664,7 @@
 			position:relative;
 			height:260px;
 			width:100%;
-			border-radius:28px 28px 0 0;
+			border-radius:28px;
 			overflow:hidden;
 			background:rgba(255,255,255,0.06) center/cover no-repeat;
 			border-bottom:1px solid rgba(132,164,255,0.18);
@@ -1350,11 +1684,92 @@
 			gap:22px;
 			z-index:1;
 		}
+		.settings-template-body{
+			display:flex;
+			flex-direction:column;
+			gap:0;
+		}
+		.app-settings-tab-bar{
+			display:flex;
+			gap:12px;
+			padding:10px 38px 6px;
+			margin-top:-20px;
+			position:relative;
+			z-index:2;
+			overflow-x:auto;
+			scrollbar-width:thin;
+			scrollbar-color:rgba(0,199,255,0.6) transparent;
+			scroll-snap-type:x proximity;
+		}
+		.app-settings-tab-bar:before,
+		.app-settings-tab-bar:after{
+			content:"";
+			position:absolute;
+			top:0;
+			bottom:12px;
+			width:42px;
+			pointer-events:none;
+			z-index:3;
+		}
+		.app-settings-tab-bar:before{
+			left:0;
+			background:linear-gradient(90deg, rgba(12,14,28,1), rgba(12,14,28,0));
+		}
+		.app-settings-tab-bar:after{
+			right:0;
+			background:linear-gradient(270deg, rgba(12,14,28,1), rgba(12,14,28,0));
+		}
+		.app-settings-tab-bar::-webkit-scrollbar{
+			height:8px;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-track{
+			background:rgba(8,10,24,0.72);
+			border-radius:999px;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-thumb{
+			background:linear-gradient(135deg, rgba(0,199,255,0.7), rgba(0,132,255,0.55));
+			border-radius:999px;
+			border:2px solid rgba(10,12,26,0.92);
+			box-shadow:0 6px 14px rgba(0,0,0,0.28);
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-thumb:hover{
+			background:linear-gradient(135deg, rgba(60,224,255,0.82), rgba(12,166,255,0.62));
+		}
+		.app-settings-tab-bar.empty{
+			min-height:48px;
+		}
+		.app-settings-tab{
+			border:none;
+			background:rgba(255,255,255,0.05);
+			color:rgba(255,255,255,0.78);
+			padding:12px 18px;
+			border-radius:14px;
+			font-size:13px;
+			font-weight:600;
+			letter-spacing:0.32px;
+			text-transform:uppercase;
+			cursor:pointer;
+			transition:all 0.2s ease;
+			white-space:nowrap;
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+			scroll-snap-align:center;
+		}
+		.app-settings-tab:hover{
+			background:rgba(0,199,255,0.18);
+			color:#ffffff;
+			box-shadow:inset 0 0 0 1px rgba(0,199,255,0.36);
+		}
+		.app-settings-tab.active{
+			background:linear-gradient(135deg, rgba(0,199,255,0.32), rgba(0,132,255,0.28));
+			color:#ffffff;
+			box-shadow:0 18px 32px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.46);
+			transform:translateY(-2px);
+		}
 		.settings-template-hero-overlay img,
 		.settings-template-logo-fallback{
 			width:68px;
 			height:68px;
-			border-radius:20px;
+			border-radius:0;
 			box-shadow:0 24px 46px rgba(6,10,30,0.55);
 			background:rgba(8,10,20,0.72);
 			display:flex;
@@ -1390,7 +1805,7 @@
 			display:flex;
 			flex-direction:column;
 			gap:26px;
-			padding:32px 38px 42px;
+			padding:24px 38px 38px;
 		}
 		.settings-template-section{
 			display:flex;
@@ -1484,6 +1899,18 @@
 				padding:0 0 26px;
 				max-height:none;
 			}
+			.app-settings-tab-bar{
+				padding:18px 24px 0;
+				gap:8px;
+			}
+			.app-settings-tab-bar:before,
+			.app-settings-tab-bar:after{
+				width:28px;
+			}
+			.app-settings-tab{
+				padding:10px 14px;
+				font-size:12px;
+			}
 			.character-trn-panel{
 				padding:28px 22px 36px;
 			}
@@ -1493,7 +1920,7 @@
 				align-items:flex-start;
 			}
 			.settings-template-sections{
-				padding:22px 20px 28px;
+				padding:20px 20px 26px;
 			}
 			.settings-template-hero-overlay img,
 			.settings-template-logo-fallback{
@@ -3448,6 +3875,9 @@
 		let allSettingsApps = [];
 		let editingAllSettingsAppId = null;
 		let pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
+		let editingAppSettingsTabs = [];
+		let activeEditingSettingsTabId = null;
+		let appSettingsEditorHandlersBound = false;
 		let allSettingsMediaHandlersBound = false;
 		let allSettingsSpecialHandlersBound = false;
 		let imageCropperInstance = null;
@@ -3717,42 +4147,140 @@
 		let currentGameSettingsTabId = null;
 		let selectedAllSettingsAppId = null;
 
-		const DEFAULT_SETTINGS_TEMPLATE = [
+		const DEFAULT_APP_SETTINGS_TABS = [
+			{ id: 'general', label: 'General', hidden: false, sections: [] },
+			{ id: 'other', label: 'Other', hidden: false, sections: [] },
+			{ id: 'controls-actions', label: 'Controls > Actions', hidden: false, sections: [] },
+			{ id: 'controls-equipment', label: 'Controls > Equipment', hidden: false, sections: [] },
+			{ id: 'crosshair', label: 'Crosshair', hidden: false, sections: [] },
+			{ id: 'video-general', label: 'Video > General', hidden: false, sections: [] },
+			{ id: 'video-graphics', label: 'Video > Graphics Quality', hidden: false, sections: [] }
+		];
+
+		const SETTINGS_SECTION_TEMPLATES = [
 			{
-				title: 'Accessibility',
-				items: [
-					{ label: 'Text Language', value: 'English (United States)' },
-					{ label: 'Enemy Highlight Color', value: 'Yellow (Protanopia)' }
-				]
+				id: 'blank',
+				label: 'Blank section',
+				build: () => ({
+					id: generateSettingsSectionId(),
+					title: 'New Section',
+					items: []
+				})
 			},
 			{
-				title: 'Mouse',
-				items: [
-					{ label: 'Sensitivity: Aim', value: '0.17' },
-					{ label: 'Scoped Sensitivity Multiplier', value: '1.0' },
-					{ label: 'Invert Mouse', value: 'Off' },
-					{ label: 'Raw Input Buffer', value: 'On' }
-				]
-			},
-			{
-				title: 'Video – General',
-				items: [
-					{ label: 'Display Mode', value: 'Fullscreen' },
-					{ label: 'Resolution', value: '1920×1080 16:9 (240 Hz)' },
-					{ label: 'Frame Rate Limit', value: 'Unlocked' },
-					{ label: 'V-Sync', value: 'Off' }
-				]
-			},
-			{
-				title: 'Map',
-				items: [
-					{ label: 'Rotate', value: 'Rotate' },
-					{ label: 'Keep Player Centered', value: 'On' },
-					{ label: 'Minimap Size', value: '1.2' },
-					{ label: 'Minimap Zoom', value: '1' }
-				]
+				id: 'basic-pairs',
+				label: 'Value pairs (label + value)',
+				build: () => ({
+					id: generateSettingsSectionId(),
+					title: 'New Section',
+					items: [
+						{ id: generateSettingsItemId(), label: 'Setting name', value: 'Value' }
+					]
+				})
 			}
 		];
+
+		function generateSettingsTabId(label = 'tab') {
+			const slug = String(label || 'tab').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'tab';
+			return `tab-${slug}-${Math.random().toString(36).slice(2, 6)}${Date.now().toString(36).slice(-3)}`;
+		}
+
+		function generateSettingsSectionId() {
+			return `section-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+		}
+
+		function generateSettingsItemId() {
+			return `item-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+		}
+
+		function cloneDefaultAppSettingsTabs() {
+			return DEFAULT_APP_SETTINGS_TABS.map(tab => ({
+				id: tab.id,
+				label: tab.label,
+				hidden: !!tab.hidden,
+				sections: []
+			}));
+		}
+
+		function cloneAppSettingsTabs(tabs) {
+			return normalizeAppSettingsTabs(tabs || []).map(tab => ({
+				id: tab.id,
+				label: tab.label,
+				hidden: !!tab.hidden,
+				sections: (tab.sections || []).map(section => ({
+					id: section.id || generateSettingsSectionId(),
+					title: section.title || 'Untitled Section',
+					items: (section.items || []).map(item => ({
+						id: item.id || generateSettingsItemId(),
+						label: item.label || '',
+						value: item.value || ''
+					}))
+				}))
+			}));
+		}
+
+		function normalizeAppSettingsTabs(rawTabs, legacyTemplate = []) {
+			const ensureItems = (items) => {
+				if (!Array.isArray(items)) return [];
+				return items.map(item => ({
+					id: item?.id || generateSettingsItemId(),
+					label: (item?.label || '').trim(),
+					value: (item?.value || '').trim()
+				}));
+			};
+			const ensureSections = (sections) => {
+				if (!Array.isArray(sections)) return [];
+				return sections.map(section => ({
+					id: section?.id || generateSettingsSectionId(),
+					title: (section?.title || '').trim() || 'Untitled Section',
+					items: ensureItems(section?.items)
+				}));
+			};
+			const fallbackFromLegacy = () => {
+				if (!Array.isArray(legacyTemplate) || !legacyTemplate.length) {
+					return cloneDefaultAppSettingsTabs();
+				}
+				const tabClone = cloneDefaultAppSettingsTabs();
+				tabClone[0].sections = ensureSections(legacyTemplate);
+				return tabClone;
+			};
+			const source = Array.isArray(rawTabs) && rawTabs.length ? rawTabs : fallbackFromLegacy();
+			const normalized = [];
+			const seen = new Set();
+			source.forEach(tab => {
+				const id = (tab?.id || '').trim() || generateSettingsTabId(tab?.label);
+				if (seen.has(id)) return;
+				seen.add(id);
+				normalized.push({
+					id,
+					label: (tab?.label || '').trim() || 'Untitled Tab',
+					hidden: !!tab?.hidden,
+					sections: ensureSections(tab?.sections)
+				});
+			});
+			if (!normalized.length) {
+				return cloneDefaultAppSettingsTabs();
+			}
+			return normalized;
+		}
+
+		function flattenSettingsTabsToTemplate(tabs) {
+			const normalized = normalizeAppSettingsTabs(tabs || []);
+			const template = [];
+			normalized.forEach(tab => {
+				tab.sections.forEach(section => {
+					const items = section.items
+						.filter(item => item.label || item.value)
+						.map(item => ({ label: item.label, value: item.value }));
+					if (!items.length) return;
+					template.push({
+						title: `${tab.label} • ${section.title}`,
+						items
+					});
+				});
+			});
+			return template;
+		}
 
 		function normalizeUrlForCss(url) {
 			if (!url) return '';
@@ -3838,7 +4366,10 @@
 		}
 
 		function buildSettingsDetail(app) {
-			const template = Array.isArray(app?.settingsTemplate) && app.settingsTemplate.length ? app.settingsTemplate : DEFAULT_SETTINGS_TEMPLATE;
+			const tabs = normalizeAppSettingsTabs(app?.settingsTabs, app?.settingsTemplate);
+			const visibleTabs = tabs.filter(tab => !tab.hidden);
+			let activeTabId = visibleTabs[0]?.id || tabs[0]?.id || null;
+
 			const container = document.createElement('section');
 			container.className = 'settings-app-template';
 			container.dataset.appId = app.id;
@@ -3874,16 +4405,41 @@
 			hero.appendChild(heroOverlay);
 			container.appendChild(hero);
 
+			const templateBody = document.createElement('div');
+			templateBody.className = 'settings-template-body';
+
+			const tabBar = document.createElement('div');
+			tabBar.className = 'app-settings-tab-bar';
+			templateBody.appendChild(tabBar);
+
 			const sectionsWrap = document.createElement('div');
 			sectionsWrap.className = 'settings-template-sections';
+			templateBody.appendChild(sectionsWrap);
 
-			if (!template.length) {
+			container.appendChild(templateBody);
+
+			const tabButtons = new Map();
+
+			const renderEmptyState = (message) => {
+				sectionsWrap.innerHTML = '';
 				const placeholder = document.createElement('p');
 				placeholder.className = 'settings-template-placeholder';
-				placeholder.textContent = 'Settings template coming soon.';
+				placeholder.textContent = message;
 				sectionsWrap.appendChild(placeholder);
-			} else {
-				template.forEach(section => {
+			};
+
+			const renderTabContent = (tabId) => {
+				sectionsWrap.innerHTML = '';
+				const tab = tabs.find(item => item.id === tabId) || tabs[0] || null;
+				if (!tab) {
+					renderEmptyState('No settings configured yet.');
+					return;
+				}
+				if (!tab.sections.length) {
+					renderEmptyState('No sections added for this tab yet.');
+					return;
+				}
+				tab.sections.forEach(section => {
 					const sectionEl = document.createElement('section');
 					sectionEl.className = 'settings-template-section';
 
@@ -3920,9 +4476,37 @@
 					sectionEl.appendChild(grid);
 					sectionsWrap.appendChild(sectionEl);
 				});
-			}
+			};
 
-			container.appendChild(sectionsWrap);
+			if (!visibleTabs.length) {
+				tabBar.classList.add('empty');
+				renderEmptyState('All tabs are hidden. Update settings to display content.');
+			} else {
+				if (!visibleTabs.some(tab => tab.id === activeTabId)) {
+					activeTabId = visibleTabs[0]?.id || null;
+				}
+				visibleTabs.forEach((tab, index) => {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'app-settings-tab';
+					button.dataset.tabId = tab.id;
+					button.textContent = tab.label || 'Untitled Tab';
+					if (index === 0 && !activeTabId) {
+						activeTabId = tab.id;
+					}
+					if (tab.id === activeTabId) {
+						button.classList.add('active');
+					}
+					button.addEventListener('click', () => {
+						activeTabId = tab.id;
+						tabButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+						renderTabContent(tab.id);
+					});
+					tabButtons.set(tab.id, button);
+					tabBar.appendChild(button);
+				});
+				renderTabContent(activeTabId);
+			}
 
 			const detailCard = document.createElement('div');
 			detailCard.className = 'settings-app-detail';
@@ -4162,13 +4746,15 @@
 				if (!value || value === 'N/A') return '';
 				return String(value).trim();
 			};
+			const normalizedTabs = normalizeAppSettingsTabs(raw?.settingsTabs, raw?.settingsTemplate);
 			const normalized = {
 				id: String(raw.id || '').trim(),
 				name: (raw.name || '').trim(),
 				logo: sanitizeMedia(raw.logo),
 				banner: sanitizeMedia(raw.banner),
 				tabId: resolveGameSettingsTabId(raw.tabId),
-				settingsTemplate: Array.isArray(raw.settingsTemplate) ? raw.settingsTemplate : [],
+				settingsTabs: normalizedTabs,
+				settingsTemplate: flattenSettingsTabsToTemplate(normalizedTabs),
 				specialOption: normalizeAllSettingsSpecialOption(raw.specialOption),
 				characterImage: sanitizeMedia(raw.characterImage),
 				characterName: (raw.characterName || '').trim(),
@@ -4260,6 +4846,460 @@
 			setAllSettingsMediaPreview('character', pendingAllSettingsAppMedia.character);
 		}
 
+		function resolveUniqueTabLabel(baseLabel, tabs) {
+			const base = (baseLabel || 'New Tab').trim() || 'New Tab';
+			const existing = new Set((tabs || []).map(tab => (tab.label || '').toLowerCase()));
+			if (!existing.has(base.toLowerCase())) {
+				return base;
+			}
+			let index = 2;
+			while (existing.has(`${base} ${index}`.toLowerCase())) {
+				index += 1;
+			}
+			return `${base} ${index}`;
+		}
+
+		function buildSectionFromTemplate(templateId) {
+			const template = SETTINGS_SECTION_TEMPLATES.find(item => item.id === templateId) || SETTINGS_SECTION_TEMPLATES[0];
+			if (!template) {
+				return { id: generateSettingsSectionId(), title: 'New Section', items: [] };
+			}
+			const section = template.build();
+			return {
+				id: section.id || generateSettingsSectionId(),
+				title: section.title || 'New Section',
+				items: Array.isArray(section.items) ? section.items.map(item => ({
+					id: item.id || generateSettingsItemId(),
+					label: item.label || '',
+					value: item.value || ''
+				})) : []
+			};
+		}
+
+		function renderAppSettingsEditor() {
+			renderAppSettingsTabList();
+			renderAppSettingsTabDetail();
+		}
+
+		function renderAppSettingsTabList() {
+			const list = document.getElementById('allSettingsSettingsTabList');
+			if (!list) return;
+			list.innerHTML = '';
+			if (!editingAppSettingsTabs.length) {
+				const empty = document.createElement('div');
+				empty.className = 'app-settings-empty-state';
+				empty.textContent = 'No tabs yet. Add one to start configuring settings.';
+				list.appendChild(empty);
+				return;
+			}
+			const activeId = activeEditingSettingsTabId;
+			editingAppSettingsTabs.forEach(tab => {
+				const item = document.createElement('div');
+				item.className = 'app-settings-tab-item';
+				item.dataset.tabId = tab.id;
+
+				const selectBtn = document.createElement('button');
+				selectBtn.type = 'button';
+				selectBtn.className = 'app-settings-tab-select';
+				if (tab.id === activeId) {
+					selectBtn.classList.add('active');
+				}
+				selectBtn.dataset.action = 'select-tab';
+				selectBtn.dataset.tabId = tab.id;
+				const labelSpan = document.createElement('span');
+				labelSpan.textContent = tab.label || 'Untitled Tab';
+				const statusSpan = document.createElement('span');
+				statusSpan.className = 'status';
+				statusSpan.textContent = tab.hidden ? 'Hidden' : 'Visible';
+				selectBtn.appendChild(labelSpan);
+				selectBtn.appendChild(statusSpan);
+				item.appendChild(selectBtn);
+
+				const fields = document.createElement('div');
+				fields.className = 'app-settings-tab-fields';
+				const nameLabel = document.createElement('label');
+				nameLabel.textContent = 'Tab name';
+				const nameInput = document.createElement('input');
+				nameInput.type = 'text';
+				nameInput.value = tab.label || '';
+				nameInput.dataset.role = 'tab-label';
+				nameInput.dataset.tabId = tab.id;
+				nameLabel.appendChild(nameInput);
+				fields.appendChild(nameLabel);
+
+				const toggleLabel = document.createElement('label');
+				toggleLabel.className = 'app-settings-tab-toggle';
+				const toggleInput = document.createElement('input');
+				toggleInput.type = 'checkbox';
+				toggleInput.checked = !!tab.hidden;
+				toggleInput.dataset.role = 'tab-hidden';
+				toggleInput.dataset.tabId = tab.id;
+				toggleLabel.appendChild(toggleInput);
+				const toggleText = document.createElement('span');
+				toggleText.textContent = 'Hide this tab';
+				toggleLabel.appendChild(toggleText);
+				fields.appendChild(toggleLabel);
+
+				item.appendChild(fields);
+
+				const footer = document.createElement('div');
+				footer.className = 'app-settings-tab-footer';
+				const deleteBtn = document.createElement('button');
+				deleteBtn.type = 'button';
+				deleteBtn.className = 'danger';
+				deleteBtn.dataset.action = 'delete-tab';
+				deleteBtn.dataset.tabId = tab.id;
+				deleteBtn.textContent = 'Delete';
+				deleteBtn.setAttribute('aria-label', `Delete ${tab.label || 'tab'}`);
+				footer.appendChild(deleteBtn);
+				item.appendChild(footer);
+
+				list.appendChild(item);
+			});
+		}
+
+		function renderAppSettingsTabDetail() {
+			const detail = document.getElementById('allSettingsSettingsTabDetail');
+			if (!detail) return;
+			detail.innerHTML = '';
+			if (!editingAppSettingsTabs.length) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'Add a tab to start managing sections and options.';
+				detail.appendChild(placeholder);
+				return;
+			}
+			let tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) {
+				tab = editingAppSettingsTabs[0];
+				activeEditingSettingsTabId = tab?.id || null;
+			}
+			if (!tab) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'No tab selected.';
+				detail.appendChild(placeholder);
+				return;
+			}
+
+			const header = document.createElement('header');
+			const heading = document.createElement('h5');
+			heading.textContent = `${tab.label || 'Untitled Tab'} sections`;
+			header.appendChild(heading);
+			const sectionActions = document.createElement('div');
+			sectionActions.className = 'app-settings-section-actions';
+			const templateSelect = document.createElement('select');
+			templateSelect.dataset.role = 'section-template';
+			SETTINGS_SECTION_TEMPLATES.forEach(template => {
+				const opt = document.createElement('option');
+				opt.value = template.id;
+				opt.textContent = template.label;
+				templateSelect.appendChild(opt);
+			});
+			const addSectionBtn = document.createElement('button');
+			addSectionBtn.type = 'button';
+			addSectionBtn.className = 'admin-logout-btn alt-light';
+			addSectionBtn.dataset.action = 'add-section';
+			addSectionBtn.textContent = 'Add section';
+			sectionActions.appendChild(templateSelect);
+			sectionActions.appendChild(addSectionBtn);
+			header.appendChild(sectionActions);
+			detail.appendChild(header);
+
+			if (!tab.sections.length) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'No sections yet. Use the dropdown above to add one.';
+				detail.appendChild(placeholder);
+				return;
+			}
+
+			const sectionList = document.createElement('div');
+			sectionList.className = 'app-settings-section-list';
+			tab.sections.forEach(section => {
+				const card = document.createElement('div');
+				card.className = 'app-settings-section-card';
+				card.dataset.sectionId = section.id;
+
+				const cardHeader = document.createElement('header');
+				const sectionTitleInput = document.createElement('input');
+				sectionTitleInput.type = 'text';
+				sectionTitleInput.value = section.title || '';
+				sectionTitleInput.dataset.role = 'section-title';
+				sectionTitleInput.dataset.sectionId = section.id;
+				cardHeader.appendChild(sectionTitleInput);
+
+				const removeSectionBtn = document.createElement('button');
+				removeSectionBtn.type = 'button';
+				removeSectionBtn.dataset.action = 'delete-section';
+				removeSectionBtn.dataset.sectionId = section.id;
+				removeSectionBtn.textContent = 'Remove section';
+				removeSectionBtn.setAttribute('aria-label', 'Remove this section');
+				cardHeader.appendChild(removeSectionBtn);
+				card.appendChild(cardHeader);
+
+				const optionList = document.createElement('div');
+				optionList.className = 'app-settings-option-list';
+				if (!section.items.length) {
+					const emptyOption = document.createElement('div');
+					emptyOption.className = 'app-settings-empty-state';
+					emptyOption.textContent = 'No options yet. Add one below.';
+					optionList.appendChild(emptyOption);
+				} else {
+					section.items.forEach(item => {
+						const row = document.createElement('div');
+						row.className = 'app-settings-option-row';
+						row.dataset.itemId = item.id;
+
+						const labelInput = document.createElement('input');
+						labelInput.type = 'text';
+						labelInput.value = item.label || '';
+						labelInput.placeholder = 'Setting';
+						labelInput.dataset.role = 'option-field';
+						labelInput.dataset.field = 'label';
+						labelInput.dataset.sectionId = section.id;
+						labelInput.dataset.itemId = item.id;
+
+						const valueInput = document.createElement('input');
+						valueInput.type = 'text';
+						valueInput.value = item.value || '';
+						valueInput.placeholder = 'Value';
+						valueInput.dataset.role = 'option-field';
+						valueInput.dataset.field = 'value';
+						valueInput.dataset.sectionId = section.id;
+						valueInput.dataset.itemId = item.id;
+
+						const deleteOptionBtn = document.createElement('button');
+						deleteOptionBtn.type = 'button';
+						deleteOptionBtn.dataset.action = 'delete-option';
+						deleteOptionBtn.dataset.sectionId = section.id;
+						deleteOptionBtn.dataset.itemId = item.id;
+						deleteOptionBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6l1-3h4l1 3"/></svg>';
+						deleteOptionBtn.setAttribute('aria-label', 'Remove option');
+
+						row.appendChild(labelInput);
+						row.appendChild(valueInput);
+						row.appendChild(deleteOptionBtn);
+						optionList.appendChild(row);
+					});
+				}
+				card.appendChild(optionList);
+
+				const optionActions = document.createElement('div');
+				optionActions.className = 'app-settings-option-actions';
+				const addOptionBtn = document.createElement('button');
+				addOptionBtn.type = 'button';
+				addOptionBtn.className = 'add-option';
+				addOptionBtn.dataset.action = 'add-option';
+				addOptionBtn.dataset.sectionId = section.id;
+				addOptionBtn.textContent = 'Add option';
+				optionActions.appendChild(addOptionBtn);
+				card.appendChild(optionActions);
+
+				sectionList.appendChild(card);
+			});
+			detail.appendChild(sectionList);
+		}
+
+		function ensureAppSettingsEditorHandlers() {
+			if (appSettingsEditorHandlersBound) return;
+			const editor = document.getElementById('allSettingsAppSettingsEditor');
+			if (!editor) return;
+			editor.addEventListener('input', handleAppSettingsEditorInput);
+			editor.addEventListener('change', handleAppSettingsEditorChange);
+			editor.addEventListener('click', handleAppSettingsEditorClick);
+			const addTabBtn = document.getElementById('addSettingsTabBtn');
+			if (addTabBtn) {
+				addTabBtn.addEventListener('click', () => {
+					addNewAppSettingsTab();
+				});
+			}
+			appSettingsEditorHandlersBound = true;
+		}
+
+		function handleAppSettingsEditorInput(event) {
+			const target = event.target;
+			if (!target) return;
+			const role = target.dataset.role;
+			if (role === 'tab-label') {
+				const tabId = target.dataset.tabId;
+				const tab = editingAppSettingsTabs.find(item => item.id === tabId);
+				if (tab) {
+					tab.label = target.value;
+					const selectBtn = document.querySelector(`.app-settings-tab-select[data-tab-id="${tabId}"] span:first-child`);
+					if (selectBtn) {
+						selectBtn.textContent = target.value || 'Untitled Tab';
+					}
+					if (tabId === activeEditingSettingsTabId) {
+						const detailHeader = document.querySelector('#allSettingsSettingsTabDetail header h5');
+						if (detailHeader) {
+							detailHeader.textContent = `${tab.label || 'Untitled Tab'} sections`;
+						}
+					}
+				}
+			}
+			if (role === 'section-title') {
+				const sectionId = target.dataset.sectionId;
+				const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+				if (!tab) return;
+				const section = tab.sections.find(item => item.id === sectionId);
+				if (section) {
+					section.title = target.value;
+				}
+			}
+			if (role === 'option-field') {
+				const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+				if (!tab) return;
+				const section = tab.sections.find(item => item.id === target.dataset.sectionId);
+				if (!section) return;
+				const item = section.items.find(option => option.id === target.dataset.itemId);
+				if (!item) return;
+				if (target.dataset.field === 'label') {
+					item.label = target.value;
+				} else if (target.dataset.field === 'value') {
+					item.value = target.value;
+				}
+			}
+		}
+
+		function handleAppSettingsEditorChange(event) {
+			const target = event.target;
+			if (!target) return;
+			const role = target.dataset.role;
+			if (role === 'tab-hidden') {
+				const tab = editingAppSettingsTabs.find(item => item.id === target.dataset.tabId);
+				if (tab) {
+					tab.hidden = target.checked;
+					renderAppSettingsTabList();
+				}
+			}
+		}
+
+		function handleAppSettingsEditorClick(event) {
+			const actionTarget = event.target.closest('[data-action]');
+			if (!actionTarget) return;
+			const action = actionTarget.dataset.action;
+			switch(action) {
+				case 'select-tab': {
+					const tabId = actionTarget.dataset.tabId;
+					setActiveEditingTab(tabId);
+					break;
+				}
+				case 'delete-tab': {
+					const tabId = actionTarget.dataset.tabId;
+					removeAppSettingsTab(tabId);
+					break;
+				}
+				case 'add-section': {
+					const detail = document.getElementById('allSettingsSettingsTabDetail');
+					const select = detail ? detail.querySelector('select[data-role="section-template"]') : null;
+					const templateId = select ? select.value : SETTINGS_SECTION_TEMPLATES[0].id;
+					addSectionToActiveTab(templateId);
+					break;
+				}
+				case 'delete-section': {
+					const sectionId = actionTarget.dataset.sectionId;
+					removeSectionFromActiveTab(sectionId);
+					break;
+				}
+				case 'add-option': {
+					const sectionId = actionTarget.dataset.sectionId;
+					addOptionToSection(sectionId);
+					break;
+				}
+				case 'delete-option': {
+					const sectionId = actionTarget.dataset.sectionId;
+					const itemId = actionTarget.dataset.itemId;
+					removeOptionFromSection(sectionId, itemId);
+					break;
+				}
+			}
+		}
+
+		function setActiveEditingTab(tabId) {
+			if (!tabId) return;
+			if (!editingAppSettingsTabs.some(tab => tab.id === tabId)) return;
+			activeEditingSettingsTabId = tabId;
+			renderAppSettingsEditor();
+		}
+
+		function addNewAppSettingsTab() {
+			const label = resolveUniqueTabLabel('New Tab', editingAppSettingsTabs);
+			const newTab = {
+				id: generateSettingsTabId(label),
+				label,
+				hidden: false,
+				sections: []
+			};
+			editingAppSettingsTabs.push(newTab);
+			activeEditingSettingsTabId = newTab.id;
+			renderAppSettingsEditor();
+		}
+
+		function removeAppSettingsTab(tabId) {
+			if (!tabId) return;
+			if (editingAppSettingsTabs.length <= 1) {
+				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
+					notify.warning('Keep at least one tab. Hide it if you do not want to show it.');
+				} else {
+					console.warn('Keep at least one tab. Hide it if you do not want to show it.');
+				}
+				return;
+			}
+			const tab = editingAppSettingsTabs.find(item => item.id === tabId);
+			const shouldRemove = window.confirm ? window.confirm(`Remove the “${tab?.label || 'Untitled Tab'}” tab?`) : true;
+			if (!shouldRemove) return;
+			editingAppSettingsTabs = editingAppSettingsTabs.filter(item => item.id !== tabId);
+			if (!editingAppSettingsTabs.some(item => item.id === activeEditingSettingsTabId)) {
+				activeEditingSettingsTabId = editingAppSettingsTabs[0]?.id || null;
+			}
+			renderAppSettingsEditor();
+		}
+
+		function addSectionToActiveTab(templateId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = buildSectionFromTemplate(templateId);
+			tab.sections.push(section);
+			renderAppSettingsTabDetail();
+		}
+
+		function removeSectionFromActiveTab(sectionId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			tab.sections = tab.sections.filter(section => section.id !== sectionId);
+			renderAppSettingsTabDetail();
+		}
+
+		function addOptionToSection(sectionId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = tab.sections.find(item => item.id === sectionId);
+			if (!section) return;
+			section.items.push({ id: generateSettingsItemId(), label: '', value: '' });
+			renderAppSettingsTabDetail();
+		}
+
+		function removeOptionFromSection(sectionId, itemId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = tab.sections.find(item => item.id === sectionId);
+			if (!section) return;
+			section.items = section.items.filter(item => item.id !== itemId);
+			renderAppSettingsTabDetail();
+		}
+
+		function initializeAppSettingsEditor(initialTabs, legacyTemplate = []) {
+			const normalized = normalizeAppSettingsTabs(initialTabs, legacyTemplate);
+			editingAppSettingsTabs = cloneAppSettingsTabs(normalized.length ? normalized : cloneDefaultAppSettingsTabs());
+			if (!editingAppSettingsTabs.length) {
+				editingAppSettingsTabs = cloneDefaultAppSettingsTabs();
+			}
+			activeEditingSettingsTabId = editingAppSettingsTabs[0]?.id || null;
+			renderAppSettingsEditor();
+			ensureAppSettingsEditorHandlers();
+		}
+
 		function triggerAllSettingsMediaInput(type) {
 			const config = ALL_SETTINGS_MEDIA_CONFIG[type];
 			if (!config) return;
@@ -4332,6 +5372,7 @@
 			pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 			updateAllSettingsAppPreview();
 			updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
+			initializeAppSettingsEditor([]);
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			if (title) title.textContent = 'Add App to All Settings';
 		}
@@ -4366,6 +5407,7 @@
 						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null,
 						character: (app.characterImage && app.characterImage !== 'N/A') ? app.characterImage : null
 					};
+					initializeAppSettingsEditor(app.settingsTabs, app.settingsTemplate);
 					updateAllSettingsSpecialOptionUI(specialSelect ? specialSelect.value : ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
 					if (title) title.textContent = `Edit ${app.name || 'App'}`;
 				} else {
@@ -4518,6 +5560,8 @@
 				nameInput?.focus();
 				return;
 			}
+			const settingsTabs = cloneAppSettingsTabs(editingAppSettingsTabs);
+			const settingsTemplate = flattenSettingsTabsToTemplate(settingsTabs);
 			let targetId = editingAllSettingsAppId;
 			const timestamp = Date.now();
 			if (editingAllSettingsAppId) {
@@ -4529,6 +5573,8 @@
 						logo,
 						banner,
 						tabId,
+						settingsTabs,
+						settingsTemplate,
 						specialOption,
 						characterImage,
 						characterName,
@@ -4543,7 +5589,8 @@
 						logo,
 						banner,
 						tabId,
-						settingsTemplate: [],
+						settingsTabs,
+						settingsTemplate,
 						specialOption,
 						characterImage,
 						characterName,
@@ -4559,7 +5606,8 @@
 					logo,
 					banner,
 					tabId,
-					settingsTemplate: [],
+					settingsTabs,
+					settingsTemplate,
 					specialOption,
 					characterImage,
 					characterName,
@@ -4874,6 +5922,21 @@
 									</div>
 								</div>
 							</div>
+						</div>
+					</div>
+					<div class="app-settings-editor" id="allSettingsAppSettingsEditor">
+						<div class="app-settings-editor-header">
+							<div>
+								<h4>Settings Tabs & Sections</h4>
+								<p>Organize every tab, control visibility, and add sections and options for each configuration page.</p>
+							</div>
+							<div class="app-settings-editor-actions">
+								<button type="button" class="admin-logout-btn alt-light" id="addSettingsTabBtn">Add Tab</button>
+							</div>
+						</div>
+						<div class="app-settings-editor-body">
+							<aside class="app-settings-tab-list" id="allSettingsSettingsTabList" aria-label="Settings tabs"></aside>
+							<section class="app-settings-tab-detail" id="allSettingsSettingsTabDetail" aria-live="polite"></section>
 						</div>
 					</div>
 					<div class="app-form-footer">
