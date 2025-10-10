@@ -776,7 +776,11 @@
 		}
 		.app-media-preview:hover::after{opacity:1;}
 		.app-media-preview.has-image{box-shadow:0 18px 32px rgba(0,0,0,0.24);}
-		.app-form-banner-preview{height:210px;}
+		.app-form-banner-preview{
+			width:100%;
+			aspect-ratio:1080 / 1640;
+			min-height:0;
+		}
 		.app-form-logo-preview{
 			width:104px;
 			height:104px;
@@ -878,6 +882,8 @@
 			display:flex;
 			align-items:flex-end;
 			justify-content:center;
+			width:100%;
+			aspect-ratio:1080 / 1640;
 		}
 		.settings-app-display::after{
 			content:"";
