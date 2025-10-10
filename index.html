@@ -499,24 +499,6 @@
 			background:linear-gradient(90deg, rgba(140,140,140,0.65), rgba(200,200,200,0.35));
 			box-shadow:0 8px 24px rgba(0,0,0,0.2);
 		}
-		.popup-content.game-settings-panel .settings-tab[data-logo]::before{
-			content:"";
-			width:20px;
-			height:20px;
-			border-radius:6px;
-			background-image:var(--tab-logo);
-			background-size:cover;
-			background-position:center;
-			opacity:0;
-			transform:scale(0.85);
-			transition:opacity .18s ease, transform .18s ease;
-		}
-		.popup-content.game-settings-panel .settings-tab[data-logo]:hover::before,
-		.popup-content.game-settings-panel .settings-tab[data-logo]:focus-visible::before,
-		.popup-content.game-settings-panel .settings-tab[data-logo].active::before{
-			opacity:1;
-			transform:scale(1);
-		}
 		.popup-content.game-settings-panel .settings-content{
 			position:relative;
 			width:100%;
@@ -532,6 +514,10 @@
 		}
 		.popup-content.game-settings-panel .settings-content.has-banner{
 			padding:0;
+		}
+		.popup-content.game-settings-panel .settings-content.list-mode{
+			display:block;
+			overflow:auto;
 		}
 		.popup-content.game-settings-panel .settings-placeholder{
 			margin:0;
@@ -630,6 +616,19 @@
 			transform:translateY(20px);
 			transition:opacity .2s ease, transform .2s ease;
 		}
+		.app-card-badge{
+			display:inline-flex;
+			align-items:center;
+			gap:6px;
+			padding:4px 12px;
+			border-radius:999px;
+			background:rgba(255,255,255,0.14);
+			color:#ffffff;
+			font-size:11px;
+			font-weight:600;
+			letter-spacing:0.4px;
+			text-transform:uppercase;
+		}
 		.settings-app-card:hover .app-card-overlay{
 			opacity:1;
 			transform:translateY(0);
@@ -703,39 +702,250 @@
 		}
 		.app-form-grid{
 			display:grid;
-			gap:16px;
+			gap:18px;
 		}
-		.app-form-grid label{
-			font-weight:600;
-			font-size:14px;
-			color:rgba(255,255,255,0.8);
-		}
-		.app-form-grid input{
-			width:100%;
-			padding:10px 12px;
-			border-radius:10px;
-			border:1px solid rgba(255,255,255,0.14);
+		.app-name-field{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
 			background:rgba(255,255,255,0.05);
-			color:#ffffff;
-			font-size:14px;
+			border:1px solid rgba(255,255,255,0.16);
+			border-radius:16px;
+			padding:16px 18px;
+			box-shadow:0 18px 28px rgba(0,0,0,0.18);
 		}
-		.app-form-grid input::placeholder{color:rgba(255,255,255,0.55);}
-		.app-form-previews{display:flex; gap:16px; flex-wrap:wrap;}
-		.app-form-banner-preview{
-			flex:1 1 220px;
-			aspect-ratio:1080 / 1640;
+		.app-name-label{
+			display:flex;
+			align-items:center;
+			gap:8px;
+			font-size:15px;
+			font-weight:700;
+			letter-spacing:0.4px;
+			text-transform:uppercase;
+			color:rgba(255,255,255,0.82);
+		}
+		.app-name-input{
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.12);
+			background:linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+			color:#ffffff;
+			font-size:16px;
+			font-weight:600;
+			outline:none;
+			transition:border .2s ease, box-shadow .2s ease;
+		}
+		.app-name-input::placeholder{color:rgba(255,255,255,0.5);}
+		.app-name-input:focus{
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-form-previews{
+			display:grid;
+			grid-template-columns:2fr 1fr;
+			gap:18px;
+			align-items:start;
+		}
+		.app-media-block{display:flex; flex-direction:column; gap:10px;}
+		.app-media-hint{
+			font-size:11px;
+			text-transform:uppercase;
+			letter-spacing:0.4px;
+			color:rgba(255,255,255,0.55);
+		}
+		.app-media-preview{
+			position:relative;
 			border-radius:18px;
 			border:1px solid rgba(255,255,255,0.12);
 			background:rgba(255,255,255,0.04) center / cover no-repeat;
 			overflow:hidden;
+			transition:border .2s ease, box-shadow .2s ease;
+			cursor:pointer;
 		}
+		.app-media-preview::after{
+			content:"";
+			position:absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			background:linear-gradient(180deg, rgba(7,7,14,0.0) 0%, rgba(7,7,14,0.55) 100%);
+			opacity:0;
+			transition:opacity .2s ease;
+		}
+		.app-media-preview:hover::after{opacity:1;}
+		.app-media-preview.has-image{box-shadow:0 18px 32px rgba(0,0,0,0.24);}
+		.app-form-banner-preview{height:210px;}
 		.app-form-logo-preview{
-			width:70px;
-			height:70px;
+			width:104px;
+			height:104px;
+			align-self:center;
+		}
+		.app-media-upload{
+			position:absolute;
+			inset:auto 0 14px 0;
+			margin:auto;
+			width:70%;
+			max-width:220px;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			gap:8px;
+			padding:10px 14px;
+			border-radius:999px;
+			border:none;
+			background:rgba(15,15,30,0.72);
+			color:#ffffff;
+			font-size:13px;
+			font-weight:600;
+			opacity:0;
+			transform:translateY(10px);
+			transition:opacity .2s ease, transform .2s ease;
+			pointer-events:none;
+		}
+		.app-media-preview:hover .app-media-upload,
+		.app-media-preview:focus-within .app-media-upload{
+			opacity:1;
+			transform:translateY(0);
+			pointer-events:auto;
+		}
+		.app-media-upload svg{width:16px; height:16px; opacity:0.9;}
+		.app-media-input{display:none;}
+		.app-media-preview.empty::before{
+			content:"Drop or upload";
+			position:absolute;
+			inset:0;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			font-size:12px;
+			color:rgba(255,255,255,0.4);
+			pointer-events:none;
+		}
+		.app-category-field{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+		}
+		.app-category-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.app-category-select{
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+			appearance:none;
+			background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"/%3E%3C/svg%3E');
+			background-repeat:no-repeat;
+			background-position:right 14px center;
+			background-size:16px;
+		}
+		.app-category-select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		@media (max-width: 640px){
+			.app-form-previews{grid-template-columns:1fr;}
+			.app-form-logo-preview{justify-self:start;}
+		}
+		.settings-app-list{
+			width:100%;
+			display:grid;
+			grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+			gap:18px;
+			margin:0;
+			padding:4px;
+			box-sizing:border-box;
+		}
+		.settings-app-display{
+			position:relative;
+			min-height:220px;
 			border-radius:18px;
-			border:1px solid rgba(255,255,255,0.12);
-			background:rgba(255,255,255,0.06) center / cover no-repeat;
-			box-shadow:0 12px 24px rgba(0,0,0,0.25);
+			border:1px solid rgba(255,255,255,0.09);
+			background:rgba(255,255,255,0.05);
+			background-size:cover;
+			background-position:center;
+			overflow:hidden;
+			display:flex;
+			align-items:flex-end;
+			cursor:pointer;
+			transition:transform .2s ease, box-shadow .2s ease;
+		}
+		.settings-app-display:hover{
+			transform:translateY(-4px);
+			box-shadow:0 18px 32px rgba(0,0,0,0.3);
+		}
+		.settings-app-display:focus-visible{
+			outline:2px solid rgba(0,199,255,0.75);
+			outline-offset:3px;
+		}
+		.settings-app-overlay{
+			position:relative;
+			width:100%;
+			padding:22px 20px;
+			background:linear-gradient(180deg, rgba(7,7,12,0.12) 0%, rgba(7,7,12,0.8) 100%);
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+			align-items:flex-start;
+		}
+		.settings-app-overlay img{
+			width:40px;
+			height:40px;
+			border-radius:12px;
+			object-fit:cover;
+			box-shadow:0 12px 20px rgba(0,0,0,0.35);
+		}
+		.settings-app-overlay h4{
+			margin:0;
+			font-size:18px;
+			color:#ffffff;
+		}
+		.settings-app-overlay p{
+			margin:0;
+			font-size:13px;
+			color:rgba(255,255,255,0.72);
+		}
+		.settings-app-customize{
+			align-self:flex-start;
+			padding:8px 14px;
+			border-radius:999px;
+			border:1px solid rgba(255,255,255,0.16);
+			background:rgba(255,255,255,0.12);
+			color:#ffffff;
+			font-size:13px;
+			font-weight:600;
+			cursor:pointer;
+			transition:background .2s ease, transform .2s ease;
+		}
+		.settings-app-customize:hover{
+			background:rgba(255,255,255,0.22);
+			transform:translateY(-1px);
+		}
+		.settings-empty-manage{
+			margin-top:18px;
+			padding:8px 16px;
+			border-radius:999px;
+			border:1px solid rgba(255,255,255,0.18);
+			background:rgba(255,255,255,0.08);
+			color:#ffffff;
+			font-size:13px;
+			font-weight:600;
+			cursor:pointer;
+			transition:background .2s ease, transform .2s ease;
+		}
+		.settings-empty-manage:hover{
+			background:rgba(255,255,255,0.16);
+			transform:translateY(-1px);
 		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
@@ -838,6 +1048,8 @@
 
 		/* Ensure Colors Editor sits above Admin Panel */
 		#colorsPopup { z-index: 1101; }
+		#allSettingsManagerPopup { z-index: 1125; }
+		#allSettingsAppFormPopup { z-index: 1135; }
 
 		.popup-content {
 			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)), var(--card);
@@ -2642,6 +2854,8 @@
 
 		let allSettingsApps = [];
 		let editingAllSettingsAppId = null;
+		let pendingAllSettingsAppMedia = { banner: null, logo: null };
+		let allSettingsMediaHandlersBound = false;
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
 			{ id: 'games', label: 'Games', type: 'default' },
@@ -2649,6 +2863,7 @@
 			{ id: 'hardware', label: 'Hardware', type: 'default' },
 			{ id: 'internet', label: 'Internet', type: 'default' }
 		];
+		const GAME_SETTINGS_TAB_IDS = DEFAULT_GAME_SETTINGS_TABS.map(tab => tab.id);
 		let cachedGameSettingsTabs = [];
 		let currentGameSettingsTabId = null;
 
@@ -2676,15 +2891,61 @@
 		}
 
 		function getAllSettingsTabs() {
-			const appTabs = (allSettingsApps || []).map(app => ({
-				id: `app-${app.id}`,
-				label: app.name,
-				type: 'app',
-				appId: app.id,
-				logo: app.logo,
-				banner: app.banner
-			}));
-			return [...DEFAULT_GAME_SETTINGS_TABS, ...appTabs];
+			return DEFAULT_GAME_SETTINGS_TABS.slice();
+		}
+
+		function resolveGameSettingsTabId(tabId) {
+			if (!tabId) return DEFAULT_GAME_SETTINGS_TABS[0].id;
+			const normalized = String(tabId).trim().toLowerCase();
+			return GAME_SETTINGS_TAB_IDS.includes(normalized) ? normalized : DEFAULT_GAME_SETTINGS_TABS[0].id;
+		}
+
+		function getGameSettingsTabLabel(tabId) {
+			const canonical = resolveGameSettingsTabId(tabId);
+			const match = DEFAULT_GAME_SETTINGS_TABS.find(tab => tab.id === canonical);
+			return match ? match.label : tabId;
+		}
+
+		function buildTabAppDisplay(app) {
+			const display = document.createElement('article');
+			display.className = 'settings-app-display';
+			display.tabIndex = 0;
+			display.setAttribute('role', 'button');
+			display.setAttribute('aria-label', `Customize ${app.name}`);
+			applyBackgroundImage(display, app.banner);
+			const overlay = document.createElement('div');
+			overlay.className = 'settings-app-overlay';
+			if (app.logo) {
+				const logo = document.createElement('img');
+				logo.src = app.logo;
+				logo.alt = `${app.name} logo`;
+				overlay.appendChild(logo);
+			}
+			const title = document.createElement('h4');
+			title.textContent = app.name || 'Untitled App';
+			overlay.appendChild(title);
+			const hint = document.createElement('p');
+			hint.textContent = 'Tap customize to edit this app.';
+			overlay.appendChild(hint);
+			const action = document.createElement('button');
+			action.type = 'button';
+			action.className = 'settings-app-customize';
+			action.textContent = 'Customize';
+			action.addEventListener('click', event => {
+				event.stopPropagation();
+				event.preventDefault();
+				openAddAllSettingsAppPopup(app.id);
+			});
+			overlay.appendChild(action);
+			display.appendChild(overlay);
+			display.addEventListener('click', () => openAddAllSettingsAppPopup(app.id));
+			display.addEventListener('keydown', event => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					openAddAllSettingsAppPopup(app.id);
+				}
+			});
+			return display;
 		}
 
 		function renderGameSettingsTabs(preferredId) {
@@ -2697,21 +2958,16 @@
 				button.type = 'button';
 				button.className = 'settings-tab';
 				button.dataset.section = tab.id;
-				if (tab.type === 'app') {
-					button.dataset.appId = tab.appId;
-					if (tab.logo) {
-						button.setAttribute('data-logo', 'true');
-						button.style.setProperty('--tab-logo', normalizeUrlForCss(tab.logo));
-					}
-				}
 				button.textContent = tab.label;
 				button.addEventListener('click', () => selectGameSettingsTab(tab.id));
 				tabsContainer.appendChild(button);
 			});
 
 			let initialId = preferredId || currentGameSettingsTabId;
-			if (!initialId || !cachedGameSettingsTabs.some(tab => tab.id === initialId)) {
+			if (!initialId) {
 				initialId = cachedGameSettingsTabs[0]?.id || null;
+			} else {
+				initialId = resolveGameSettingsTabId(initialId);
 			}
 			if (initialId) {
 				selectGameSettingsTab(initialId);
@@ -2719,7 +2975,7 @@
 				const content = document.getElementById('gameSettingsContent');
 				if (content) {
 					content.innerHTML = '';
-					content.classList.remove('has-banner');
+					content.classList.remove('has-banner', 'list-mode');
 				}
 			}
 		}
@@ -2727,57 +2983,58 @@
 		function selectGameSettingsTab(tabId) {
 			const tabsContainer = document.getElementById('gameSettingsTabs');
 			if (!tabsContainer) return;
+			const canonicalId = resolveGameSettingsTabId(tabId);
 			const buttons = tabsContainer.querySelectorAll('.settings-tab');
 			buttons.forEach(btn => {
-				btn.classList.toggle('active', btn.dataset.section === tabId);
+				btn.classList.toggle('active', btn.dataset.section === canonicalId);
 			});
-			currentGameSettingsTabId = tabId;
-			setGameSettingsContent(tabId);
+			currentGameSettingsTabId = canonicalId;
+			setGameSettingsContent(canonicalId);
 		}
 
 		function setGameSettingsContent(tabId) {
 			const content = document.getElementById('gameSettingsContent');
 			if (!content) return;
-			const tabData = cachedGameSettingsTabs.find(tab => tab.id === tabId);
+			const canonicalId = resolveGameSettingsTabId(tabId);
+			const tabData = cachedGameSettingsTabs.find(tab => tab.id === canonicalId);
+			content.classList.remove('has-banner', 'list-mode');
+			content.innerHTML = '';
+			content.scrollTop = 0;
 			if (!tabData) {
-				content.innerHTML = '';
-				content.classList.remove('has-banner');
 				return;
 			}
-			if (tabData.type === 'app') {
-				const app = allSettingsApps.find(item => `app-${item.id}` === tabId);
-				content.classList.add('has-banner');
-				if (app) {
-					const splash = document.createElement('div');
-					splash.className = 'app-settings-splash';
-					applyBackgroundImage(splash, app.banner);
-					const overlay = document.createElement('div');
-					overlay.className = 'app-settings-overlay';
-					if (app.logo) {
-						const logo = document.createElement('img');
-						logo.className = 'app-settings-logo';
-						logo.src = app.logo;
-						logo.alt = `${app.name} logo`;
-						overlay.appendChild(logo);
-					}
-					const title = document.createElement('h4');
-					title.textContent = app.name;
-					overlay.appendChild(title);
-					const description = document.createElement('p');
-					description.textContent = 'Settings coming soon.';
-					overlay.appendChild(description);
-					splash.appendChild(overlay);
-					content.innerHTML = '';
-					content.appendChild(splash);
-					return;
-				}
+			const appsForTab = (allSettingsApps || [])
+				.filter(app => resolveGameSettingsTabId(app.tabId) === canonicalId)
+				.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+			if (!appsForTab.length) {
+				const wrap = document.createElement('div');
+				wrap.style.display = 'flex';
+				wrap.style.flexDirection = 'column';
+				wrap.style.alignItems = 'center';
+				wrap.style.gap = '14px';
+				const message = document.createElement('div');
+				message.className = 'settings-placeholder';
+				message.innerHTML = `No apps in <strong>${getGameSettingsTabLabel(canonicalId)}</strong> yet.`;
+				const manageButton = document.createElement('button');
+				manageButton.type = 'button';
+				manageButton.className = 'settings-empty-manage';
+				manageButton.textContent = 'Manage apps';
+				manageButton.addEventListener('click', () => {
+					openAllSettingsManager();
+				});
+				wrap.appendChild(message);
+				wrap.appendChild(manageButton);
+				content.appendChild(wrap);
+				return;
 			}
-			content.classList.remove('has-banner');
-			if (tabData.type === 'app') {
-				content.innerHTML = '<div class="settings-placeholder">App not found.</div>';
-			} else {
-				content.innerHTML = '';
-			}
+			content.classList.add('list-mode');
+			const list = document.createElement('div');
+			list.className = 'settings-app-list';
+			appsForTab.forEach(app => {
+				const display = buildTabAppDisplay(app);
+				list.appendChild(display);
+			});
+			content.appendChild(list);
 		}
 
 		function initGameSettingsTabs(preferredId) {
@@ -2795,11 +3052,16 @@
 
 		function normalizeAllSettingsApp(raw) {
 			if (!raw) return null;
+			const sanitizeMedia = (value) => {
+				if (!value || value === 'N/A') return '';
+				return String(value).trim();
+			};
 			const normalized = {
 				id: String(raw.id || '').trim(),
 				name: (raw.name || '').trim(),
-				logo: (raw.logo || '').trim(),
-				banner: (raw.banner || '').trim(),
+				logo: sanitizeMedia(raw.logo),
+				banner: sanitizeMedia(raw.banner),
+				tabId: resolveGameSettingsTabId(raw.tabId),
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -2819,28 +3081,94 @@
 			return `${base || 'app'}-${Date.now().toString(36)}`;
 		}
 
+		const ALL_SETTINGS_MEDIA_CONFIG = {
+			banner: { previewId: 'allSettingsAppBannerPreview', inputSelector: '#allSettingsBannerInput' },
+			logo: { previewId: 'allSettingsAppLogoPreview', inputSelector: '#allSettingsLogoInput' }
+		};
+
+		function setAllSettingsMediaPreview(type, value) {
+			const config = ALL_SETTINGS_MEDIA_CONFIG[type];
+			if (!config) return;
+			const preview = document.getElementById(config.previewId);
+			if (!preview) return;
+			if (value) {
+				applyBackgroundImage(preview, value);
+				preview.classList.add('has-image');
+				preview.classList.remove('empty');
+				preview.style.opacity = '1';
+			} else {
+				preview.style.backgroundImage = '';
+				preview.classList.remove('has-image');
+				preview.classList.add('empty');
+				preview.style.opacity = '0.45';
+			}
+		}
+
 		function updateAllSettingsAppPreview() {
-			const bannerInput = document.getElementById('allSettingsAppBanner');
-			const logoInput = document.getElementById('allSettingsAppLogo');
-			const bannerPreview = document.getElementById('allSettingsAppBannerPreview');
-			const logoPreview = document.getElementById('allSettingsAppLogoPreview');
-			if (bannerPreview) {
-				applyBackgroundImage(bannerPreview, bannerInput?.value || '');
-			}
-			if (logoPreview) {
-				applyBackgroundImage(logoPreview, logoInput?.value || '');
-				logoPreview.style.opacity = logoInput?.value ? '1' : '0.35';
-			}
+			setAllSettingsMediaPreview('banner', pendingAllSettingsAppMedia.banner);
+			setAllSettingsMediaPreview('logo', pendingAllSettingsAppMedia.logo);
+		}
+
+		function triggerAllSettingsMediaInput(type) {
+			const config = ALL_SETTINGS_MEDIA_CONFIG[type];
+			if (!config) return;
+			const input = document.querySelector(config.inputSelector);
+			if (input) input.click();
+		}
+
+		function onAllSettingsMediaInputChange(event) {
+			const input = event.target;
+			const type = input?.dataset?.mediaType;
+			if (!type || !ALL_SETTINGS_MEDIA_CONFIG[type]) return;
+			const file = input.files && input.files[0];
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = e => {
+				pendingAllSettingsAppMedia[type] = e.target?.result || null;
+				setAllSettingsMediaPreview(type, pendingAllSettingsAppMedia[type]);
+			};
+			reader.onerror = () => {
+				notify.error('Could not read that image. Try a different file.');
+			};
+			reader.readAsDataURL(file);
+			input.value = '';
+		}
+
+		function ensureAllSettingsMediaHandlers() {
+			if (allSettingsMediaHandlersBound) return;
+			const triggers = document.querySelectorAll('[data-media-trigger]');
+			triggers.forEach(button => {
+				button.addEventListener('click', event => {
+					event.preventDefault();
+					const type = button.dataset.mediaTrigger;
+					triggerAllSettingsMediaInput(type);
+				});
+			});
+			const previews = document.querySelectorAll('.app-media-preview');
+			previews.forEach(preview => {
+				const type = preview.dataset.mediaType;
+				preview.addEventListener('click', () => triggerAllSettingsMediaInput(type));
+				preview.addEventListener('keydown', event => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						triggerAllSettingsMediaInput(type);
+					}
+				});
+			});
+			const inputs = document.querySelectorAll('.app-media-input');
+			inputs.forEach(input => {
+				input.addEventListener('change', onAllSettingsMediaInputChange);
+			});
+			allSettingsMediaHandlersBound = true;
 		}
 
 		function resetAllSettingsAppForm() {
 			editingAllSettingsAppId = null;
 			const nameInput = document.getElementById('allSettingsAppName');
-			const logoInput = document.getElementById('allSettingsAppLogo');
-			const bannerInput = document.getElementById('allSettingsAppBanner');
 			if (nameInput) nameInput.value = '';
-			if (logoInput) logoInput.value = '';
-			if (bannerInput) bannerInput.value = '';
+			const categorySelect = document.getElementById('allSettingsAppCategory');
+			if (categorySelect) categorySelect.value = DEFAULT_GAME_SETTINGS_TABS[0].id;
+			pendingAllSettingsAppMedia = { banner: null, logo: null };
 			updateAllSettingsAppPreview();
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			if (title) title.textContent = 'Add App to All Settings';
@@ -2858,15 +3186,18 @@
 		function openAddAllSettingsAppPopup(appId = null) {
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			editingAllSettingsAppId = appId || null;
+			ensureAllSettingsMediaHandlers();
 			if (appId) {
 				const app = allSettingsApps.find(item => item.id === appId);
 				if (app) {
 					const nameInput = document.getElementById('allSettingsAppName');
-					const logoInput = document.getElementById('allSettingsAppLogo');
-					const bannerInput = document.getElementById('allSettingsAppBanner');
 					if (nameInput) nameInput.value = app.name || '';
-					if (logoInput) logoInput.value = app.logo || '';
-					if (bannerInput) bannerInput.value = app.banner || '';
+					const categorySelect = document.getElementById('allSettingsAppCategory');
+					if (categorySelect) categorySelect.value = resolveGameSettingsTabId(app.tabId);
+					pendingAllSettingsAppMedia = {
+						banner: (app.banner && app.banner !== 'N/A') ? app.banner : null,
+						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null
+					};
 					if (title) title.textContent = `Edit ${app.name || 'App'}`;
 				} else {
 					resetAllSettingsAppForm();
@@ -2903,6 +3234,10 @@
 			nameEl.className = 'app-card-name';
 			nameEl.textContent = app.name || 'Untitled App';
 			overlay.appendChild(nameEl);
+			const badge = document.createElement('span');
+			badge.className = 'app-card-badge';
+			badge.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
+			overlay.appendChild(badge);
 			const actions = document.createElement('div');
 			actions.className = 'app-card-actions';
 			const editBtn = document.createElement('button');
@@ -2966,6 +3301,15 @@
 			if (!grid) return;
 			grid.innerHTML = '';
 			const apps = Array.isArray(allSettingsApps) ? allSettingsApps.slice() : [];
+			const tabOrder = DEFAULT_GAME_SETTINGS_TABS.map(tab => tab.id);
+			apps.sort((a, b) => {
+				const aTab = resolveGameSettingsTabId(a.tabId);
+				const bTab = resolveGameSettingsTabId(b.tabId);
+				const aIndex = tabOrder.indexOf(aTab);
+				const bIndex = tabOrder.indexOf(bTab);
+				if (aIndex !== bIndex) return aIndex - bIndex;
+				return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+			});
 			grid.appendChild(buildAddAppCard());
 			if (emptyState) {
 				emptyState.style.display = apps.length ? 'none' : 'block';
@@ -2988,11 +3332,11 @@
 
 		async function saveAllSettingsApp() {
 			const nameInput = document.getElementById('allSettingsAppName');
-			const logoInput = document.getElementById('allSettingsAppLogo');
-			const bannerInput = document.getElementById('allSettingsAppBanner');
+			const categorySelect = document.getElementById('allSettingsAppCategory');
 			const name = (nameInput?.value || '').trim();
-			const logo = (logoInput?.value || '').trim();
-			const banner = (bannerInput?.value || '').trim();
+			const logo = pendingAllSettingsAppMedia.logo || '';
+			const banner = pendingAllSettingsAppMedia.banner || '';
+			const tabId = resolveGameSettingsTabId(categorySelect?.value);
 			if (!name) {
 				notify.error('Give the app a name before saving.');
 				nameInput?.focus();
@@ -3008,6 +3352,7 @@
 						name,
 						logo,
 						banner,
+						tabId,
 						updatedAt: timestamp
 					};
 				} else {
@@ -3018,6 +3363,7 @@
 						name,
 						logo,
 						banner,
+						tabId,
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -3029,6 +3375,7 @@
 					name,
 					logo,
 					banner,
+					tabId,
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
@@ -3051,7 +3398,7 @@
 				return;
 			}
 			renderAllSettingsManagerGrid();
-			renderGameSettingsTabs(`app-${targetId}`);
+			renderGameSettingsTabs(tabId);
 			closeAddAllSettingsAppPopup();
 			notify.success('App saved to All Settings.');
 		}
@@ -3074,10 +3421,7 @@
 				return;
 			}
 			renderAllSettingsManagerGrid();
-			if (currentGameSettingsTabId === `app-${appId}`) {
-				currentGameSettingsTabId = null;
-			}
-			renderGameSettingsTabs();
+			renderGameSettingsTabs(currentGameSettingsTabId);
 			notify.success(`${app.name} removed.`);
 		}
 
@@ -3202,29 +3546,48 @@
 
 		<!-- Add All Settings App Popup -->
 		<div id="allSettingsAppFormPopup" class="popup-overlay">
-			<div class="popup-content admin-popup" style="max-width:520px;">
+			<div class="popup-content admin-popup" style="max-width:480px; max-height:74vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
 					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
 				</div>
-				<div class="popup-body" style="display:flex; flex-direction:column; gap:18px;">
+				<div class="popup-body" style="display:flex; flex-direction:column; gap:22px; overflow-y:auto;">
 					<div class="app-form-grid">
-						<label>
-							App Name
-							<input type="text" id="allSettingsAppName" placeholder="Valorant" maxlength="60">
-						</label>
-						<label>
-							App Logo URL (square)
-							<input type="url" id="allSettingsAppLogo" placeholder="https://example.com/logo.png" oninput="updateAllSettingsAppPreview()">
-						</label>
-						<label>
-							Banner Image URL (1080 × 1640)
-							<input type="url" id="allSettingsAppBanner" placeholder="https://example.com/banner.jpg" oninput="updateAllSettingsAppPreview()">
-						</label>
+						<div class="app-name-field">
+							<label for="allSettingsAppName" class="app-name-label">App Name</label>
+							<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
+						</div>
+						<div class="app-category-field">
+							<label for="allSettingsAppCategory" class="app-category-label">Tab</label>
+							<select id="allSettingsAppCategory" class="app-category-select">
+								<option value="games">Games</option>
+								<option value="utility">Utility</option>
+								<option value="hardware">Hardware</option>
+								<option value="internet">Internet</option>
+							</select>
+						</div>
 					</div>
 					<div class="app-form-previews">
-						<div class="app-form-banner-preview" id="allSettingsAppBannerPreview"></div>
-						<div class="app-form-logo-preview" id="allSettingsAppLogoPreview"></div>
+						<div class="app-media-block">
+							<span class="app-media-hint">Banner • 1080 × 1640</span>
+							<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+								<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+									Upload
+								</button>
+								<input type="file" accept="image/*" id="allSettingsBannerInput" class="app-media-input" data-media-type="banner">
+							</div>
+						</div>
+						<div class="app-media-block">
+							<span class="app-media-hint">Logo • 512 × 512</span>
+							<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+								<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+									Upload
+								</button>
+								<input type="file" accept="image/*" id="allSettingsLogoInput" class="app-media-input" data-media-type="logo">
+							</div>
+						</div>
 					</div>
 					<div style="display:flex; justify-content:flex-end; gap:10px;">
 						<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
