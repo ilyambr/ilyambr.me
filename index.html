@@ -1169,88 +1169,81 @@
 			opacity:0.55;
 		}
 		.character-trn-panel{
+			position:relative;
 			display:flex;
 			flex-direction:column;
-			gap:26px;
-		}
-		.character-trn-image{
-			position:relative;
-			min-height:320px;
-			border-radius:22px;
+			justify-content:flex-end;
+			min-height:440px;
+			padding:40px 32px 48px;
+			border-radius:26px;
 			overflow:hidden;
-			background:rgba(255,255,255,0.06) center/cover no-repeat;
-			border:1px solid rgba(132,164,255,0.2);
-			box-shadow:0 24px 48px rgba(8,10,28,0.45);
+			background:rgba(10,12,26,0.92) center/cover no-repeat;
+			box-shadow:0 34px 60px rgba(8,10,24,0.55), inset 0 0 0 1px rgba(255,255,255,0.05);
 		}
-		.character-trn-image::after{
+		.character-trn-panel::after{
 			content:"";
 			position:absolute;
 			inset:0;
-			background:linear-gradient(200deg, rgba(8,10,24,0.05) 0%, rgba(8,10,24,0.92) 100%);
+			background:linear-gradient(190deg, rgba(6,8,18,0.05) 0%, rgba(6,8,18,0.78) 60%, rgba(6,8,18,0.96) 100%);
+			z-index:0;
 		}
-		.character-trn-image.empty{
-			display:flex;
-			align-items:center;
-			justify-content:center;
-			color:rgba(255,255,255,0.65);
+		.character-trn-panel.empty{
+			background:linear-gradient(160deg, rgba(26,30,54,0.92), rgba(12,14,28,0.96));
+		}
+		.character-trn-panel.empty::before{
+			content:"Character Portrait";
+			position:absolute;
+			top:50%;
+			left:50%;
+			transform:translate(-50%, -50%);
+			font-size:14px;
 			font-weight:600;
-			font-size:16px;
+			letter-spacing:0.12em;
+			color:rgba(255,255,255,0.6);
 			text-transform:uppercase;
-			letter-spacing:0.08em;
+			z-index:1;
+			pointer-events:none;
 		}
-		.character-trn-image.empty::after{
-			display:none;
-		}
-		.character-trn-stats{
-			padding:26px 28px 30px;
+		.character-trn-content{
+			position:relative;
+			z-index:1;
 			display:flex;
 			flex-direction:column;
-			gap:24px;
-			background:linear-gradient(165deg, rgba(22,24,46,0.82) 0%, rgba(10,12,26,0.94) 100%);
-			border:1px solid rgba(132,164,255,0.16);
-			border-radius:22px;
-			box-shadow:0 24px 44px rgba(6,10,30,0.35), inset 0 0 0 1px rgba(255,255,255,0.02);
+			align-items:center;
+			gap:28px;
 		}
 		.character-trn-name{
 			margin:0;
-			font-size:30px;
+			font-size:34px;
 			font-weight:700;
 			letter-spacing:-0.02em;
 			color:#ffffff;
-		}
-		.character-trn-summary{
-			margin:0;
-			font-size:13px;
-			line-height:1.6;
-			color:rgba(196,214,255,0.72);
+			text-align:center;
 		}
 		.character-trn-meta{
-			display:grid;
-			grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
-			gap:18px;
+			display:flex;
+			justify-content:center;
+			gap:54px;
+			flex-wrap:wrap;
 		}
 		.character-trn-meta-item{
 			display:flex;
 			flex-direction:column;
-			gap:6px;
-			padding:16px 18px;
-			border-radius:18px;
-			background:rgba(255,255,255,0.05);
-			border:1px solid rgba(255,255,255,0.08);
-			box-shadow:0 18px 32px rgba(6,10,28,0.28), inset 0 0 0 1px rgba(255,255,255,0.03);
+			gap:8px;
+			align-items:center;
 		}
 		.character-trn-meta-label{
-			font-size:11px;
+			font-size:12px;
 			font-weight:600;
-			letter-spacing:0.32em;
+			letter-spacing:0.36em;
 			text-transform:uppercase;
-			color:rgba(176,212,255,0.68);
+			color:rgba(186,208,255,0.68);
 		}
 		.character-trn-meta-value{
-			font-size:20px;
+			font-size:24px;
 			font-weight:700;
 			color:#ffffff;
-			line-height:1.3;
+			line-height:1.2;
 		}
 		.settings-detail-overlay{
 			justify-content:center;
@@ -1285,9 +1278,11 @@
 			border-bottom:1px solid rgba(255,255,255,0.08);
 		}
 		.settings-detail-panel .popup-body{
-			padding:0 0 32px;
+			padding:0;
 			max-height:calc(82vh - 110px);
 			overflow:auto;
+			display:flex;
+			flex-direction:column;
 		}
 		.settings-detail-panel .close-btn{
 			top:26px;
@@ -1321,24 +1316,12 @@
 		.character-detail-panel[aria-hidden="true"]{
 			display:none;
 		}
-		.character-detail-subtitle{
-			display:block;
-			margin-top:4px;
-			font-size:12px;
-			letter-spacing:0.32px;
-			text-transform:uppercase;
-			color:rgba(155,204,255,0.66);
-		}
 		.settings-app-detail{
 			display:flex;
 			flex-direction:column;
-			gap:30px;
-			padding:34px 38px 42px;
-			margin:32px 38px 0;
-			background:linear-gradient(160deg, rgba(24,28,56,0.62) 0%, rgba(12,14,28,0.92) 100%);
-			border-radius:26px;
-			border:1px solid rgba(132,164,255,0.16);
-			box-shadow:0 30px 58px rgba(6,10,32,0.45), inset 0 0 0 1px rgba(255,255,255,0.03);
+			gap:32px;
+			padding:0 0 42px;
+			margin:0;
 		}
 		.settings-app-template{
 			display:flex;
@@ -1348,11 +1331,11 @@
 		.settings-template-hero{
 			position:relative;
 			height:260px;
-			border-radius:24px;
+			width:100%;
+			border-radius:28px 28px 0 0;
 			overflow:hidden;
 			background:rgba(255,255,255,0.06) center/cover no-repeat;
-			border:1px solid rgba(132,164,255,0.18);
-			box-shadow:0 28px 50px rgba(6,10,30,0.4);
+			border-bottom:1px solid rgba(132,164,255,0.18);
 		}
 		.settings-template-hero::after{
 			content:"";
@@ -1409,7 +1392,7 @@
 			display:flex;
 			flex-direction:column;
 			gap:26px;
-			padding:0;
+			padding:32px 38px 42px;
 		}
 		.settings-template-section{
 			display:flex;
@@ -1478,18 +1461,21 @@
 			.settings-detail-overlay{
 				padding:36px 20px;
 			}
-			.settings-app-detail{
-				padding:28px;
-				margin:24px 20px 0;
-			}
 			.settings-template-hero{
 				height:220px;
+			}
+			.settings-template-sections{
+				padding:26px 24px 34px;
 			}
 			.settings-template-row{
 				grid-template-columns:1fr;
 			}
+			.character-trn-panel{
+				min-height:360px;
+				padding:32px 24px 40px;
+			}
 			.character-trn-meta{
-				grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+				gap:32px;
 			}
 		}
 		@media (max-width: 720px){
@@ -1502,14 +1488,16 @@
 				padding:0 0 26px;
 				max-height:none;
 			}
-			.settings-app-detail{
-				padding:24px;
-				margin:20px 18px 0;
+			.character-trn-panel{
+				padding:28px 22px 36px;
 			}
 			.settings-template-hero-overlay{
 				padding:26px;
 				flex-direction:column;
 				align-items:flex-start;
+			}
+			.settings-template-sections{
+				padding:22px 20px 28px;
 			}
 			.settings-template-hero-overlay img,
 			.settings-template-logo-fallback{
@@ -1517,22 +1505,32 @@
 				height:56px;
 			}
 			.character-trn-meta{
-				grid-template-columns:1fr;
+				gap:26px;
 			}
 		}
 		@media (max-width: 520px){
 			.settings-app-detail{
-				padding:20px;
-				margin:18px 16px 0;
+				padding:0 0 30px;
 			}
 			.settings-template-section{
 				padding:20px;
 			}
+			.settings-template-sections{
+				padding:18px 16px 26px;
+			}
 			.settings-template-hero-overlay h4{
 				font-size:22px;
 			}
-			.character-trn-meta-item{
-				padding:14px 16px;
+			.character-trn-panel{
+				min-height:300px;
+				padding:26px 18px 32px;
+			}
+			.character-trn-meta{
+				flex-direction:column;
+				gap:18px;
+			}
+			.character-trn-name{
+				font-size:28px;
 			}
 		}
 		@media (max-width: 900px){
@@ -3940,49 +3938,38 @@
 				characterPanel = document.createElement('aside');
 				characterPanel.className = 'character-trn-panel';
 				characterPanel.dataset.appId = `${app.id}-character`;
-				const portrait = document.createElement('div');
-				portrait.className = 'character-trn-image';
 				if (app.characterImage) {
-					applyBackgroundImage(portrait, app.characterImage);
+					applyBackgroundImage(characterPanel, app.characterImage);
 				} else {
-					portrait.classList.add('empty');
-					portrait.textContent = 'Character Portrait';
+					characterPanel.classList.add('empty');
 				}
-				characterPanel.appendChild(portrait);
-				const stats = document.createElement('div');
-				stats.className = 'character-trn-stats';
+				const content = document.createElement('div');
+				content.className = 'character-trn-content';
 				const characterName = document.createElement('h4');
 				characterName.className = 'character-trn-name';
 				characterName.textContent = app.characterName || 'Character Name';
-				stats.appendChild(characterName);
-				const summary = document.createElement('p');
-				summary.className = 'character-trn-summary';
-				const displayName = (app.characterName || 'This character').trim() || 'This character';
-				summary.textContent = `${displayName} is synced from Tracker Network.`;
-				stats.appendChild(summary);
+				content.appendChild(characterName);
 				const meta = document.createElement('div');
 				meta.className = 'character-trn-meta';
 				const statItems = [
 					{ label: 'Playtime', value: '124h 32m' },
-					{ label: 'K/D Ratio', value: '2.45' },
-					{ label: 'Win Rate', value: '64%' },
-					{ label: 'Matches Played', value: '312' }
+					{ label: 'K/D Ratio', value: '2.45' }
 				];
 				statItems.forEach(stat => {
-					const card = document.createElement('div');
-					card.className = 'character-trn-meta-item';
+					const item = document.createElement('div');
+					item.className = 'character-trn-meta-item';
 					const statLabel = document.createElement('span');
 					statLabel.className = 'character-trn-meta-label';
 					statLabel.textContent = stat.label;
 					const statValue = document.createElement('span');
 					statValue.className = 'character-trn-meta-value';
 					statValue.textContent = stat.value;
-					card.appendChild(statLabel);
-					card.appendChild(statValue);
-					meta.appendChild(card);
+					item.appendChild(statLabel);
+					item.appendChild(statValue);
+					meta.appendChild(item);
 				});
-				stats.appendChild(meta);
-				characterPanel.appendChild(stats);
+				content.appendChild(meta);
+				characterPanel.appendChild(content);
 			}
 			return { main: detailCard, side: characterPanel };
 		}
@@ -3996,7 +3983,6 @@
 			const characterTitle = document.getElementById('settingsCharacterDetailTitle');
 			const title = document.getElementById('settingsAppDetailTitle');
 			const category = document.getElementById('settingsAppDetailCategory');
-			const characterSubtitle = document.querySelector('#settingsCharacterDetailPanel .character-detail-subtitle');
 			if (!popup || !body) return;
 
 			body.innerHTML = '';
@@ -4008,7 +3994,7 @@
 				body.appendChild(detailContent.main);
 			}
 			const hasCharacter = !!detailContent.side;
-				if (characterPanel) {
+			if (characterPanel) {
 				if (hasCharacter && characterBody) {
 					characterPanel.style.display = '';
 					characterPanel.removeAttribute('aria-hidden');
@@ -4016,24 +4002,12 @@
 					if (characterTitle) {
 						characterTitle.textContent = app.characterName || `${app.name || 'App'} Character`;
 					}
-					if (characterSubtitle) {
-						const rawName = (app.characterName || '').trim();
-						if (rawName) {
-							const possessive = /s$/i.test(rawName) ? `${rawName}'` : `${rawName}'s`;
-							characterSubtitle.textContent = `${possessive} tracked stats`;
-						} else {
-							characterSubtitle.textContent = 'Tracked Stats';
-						}
-					}
 				} else {
 					characterPanel.setAttribute('aria-hidden', 'true');
 					characterPanel.style.display = 'none';
 					if (characterTitle) {
 						characterTitle.textContent = 'Character Overview';
 					}
-						if (characterSubtitle) {
-							characterSubtitle.textContent = 'Tracked Stats';
-						}
 				}
 			}
 			popup.classList.toggle('has-character', hasCharacter);
@@ -4057,7 +4031,6 @@
 			const characterTitle = document.getElementById('settingsCharacterDetailTitle');
 			const title = document.getElementById('settingsAppDetailTitle');
 			const category = document.getElementById('settingsAppDetailCategory');
-			const characterSubtitle = document.querySelector('#settingsCharacterDetailPanel .character-detail-subtitle');
 			if (!popup) return;
 
 			popup.style.display = 'none';
@@ -4074,9 +4047,6 @@
 			popup.classList.remove('has-character');
 			if (characterTitle) {
 				characterTitle.textContent = 'Character Overview';
-			}
-			if (characterSubtitle) {
-				characterSubtitle.textContent = 'Tracked Stats';
 			}
 			if (title) {
 				title.textContent = 'App Settings';
@@ -4806,7 +4776,6 @@
 				<div class="popup-header">
 					<div>
 						<h3 id="settingsCharacterDetailTitle">Character Overview</h3>
-						<small class="character-detail-subtitle">Tracked Stats</small>
 					</div>
 					<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close character detail">&times;</button>
 				</div>
