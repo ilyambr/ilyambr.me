@@ -3019,7 +3019,7 @@
 		}
 		
 		.effect-grayscale {
-			/* Grayscale is applied selectively via JS filters to support color-preserved regions. */
+			/* Grayscale is applied via inline filters when the toggle is active. */
 			--effect-grayscale-active: 1;
 		}
 		
@@ -5454,7 +5454,6 @@
 		function buildSettingsAppCard(app) {
 			const card = document.createElement('div');
 			card.className = 'settings-app-card';
-			card.dataset.preserveColor = 'true';
 			card.dataset.appId = app.id;
 			card.tabIndex = 0;
 			card.setAttribute('role', 'button');
@@ -5462,12 +5461,11 @@
 			applyBackgroundImage(card, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay';
-			overlay.dataset.preserveColor = 'true';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
-				logo.dataset.preserveColor = 'true';
+				logo.dataset.keepColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -9605,15 +9603,20 @@
 			notify.success('Theme tint saved globally.');
 		}
 
-		const PRESERVE_COLOR_SELECTOR = '[data-preserve-color], .preserve-color';
-		let selectiveGrayscaleObserver = null;
-		let selectiveGrayscaleActive = false;
+		const GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
+		const APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
+		const APP_TEXT_SELECTORS = [
+			'.settings-app-card .app-card-name',
+			'.settings-app-card .app-card-badge',
+			'.settings-app-card .app-card-actions',
+			'.settings-app-card .app-card-action',
+			'.settings-app-card .app-card-overlay > *:not(img)'
+		];
+		let grayscaleObserver = null;
+		let grayscaleActive = false;
 
-		function processSelectiveGrayscaleNode(node) {
+		function applyGrayscaleToNode(node) {
 			if (!(node instanceof Element)) return;
-			if (node === document.body) return;
-			if (!document.body.contains(node)) return;
-			if (node.closest(PRESERVE_COLOR_SELECTOR)) return;
 			if (node.dataset.grayscaleApplied === 'true') return;
 			const currentFilter = node.style.filter || '';
 			if (currentFilter.includes('grayscale(')) return;
@@ -9623,19 +9626,35 @@
 			node.dataset.grayscaleApplied = 'true';
 		}
 
-		function processAddedNodeForSelectiveGrayscale(node) {
-			if (!node) return;
-			if (node instanceof Element) {
-				processSelectiveGrayscaleNode(node);
-				node.querySelectorAll('*').forEach(child => processSelectiveGrayscaleNode(child));
-				return;
-			}
-			if (typeof DocumentFragment !== 'undefined' && node instanceof DocumentFragment) {
-				Array.from(node.childNodes).forEach(child => processAddedNodeForSelectiveGrayscale(child));
-			}
+		function shouldSkipGlobalGrayscale(node) {
+			if (!(node instanceof Element)) return true;
+			if (node === document.body) return false;
+			if (!document.body.contains(node)) return true;
+			if (GRAYSCALE_SKIP_TAGS.has(node.tagName)) return true;
+			if (node.matches(APP_IMAGE_SELECTOR)) return true;
+			if (node.closest('.settings-app-card')) return true;
+			return false;
 		}
 
-		function clearSelectiveGrayscale() {
+		function applyHardcodedGrayscale(root = document.body) {
+			if (!(root instanceof Element) && root !== document.body) return;
+			const scope = root === document.body ? document.body : root;
+			if (scope instanceof Element && scope !== document.body && !shouldSkipGlobalGrayscale(scope)) {
+				applyGrayscaleToNode(scope);
+			}
+			scope.querySelectorAll('*').forEach(node => {
+				if (shouldSkipGlobalGrayscale(node)) return;
+				applyGrayscaleToNode(node);
+			});
+			APP_TEXT_SELECTORS.forEach(selector => {
+				scope.querySelectorAll(selector).forEach(node => {
+					if (node.matches(APP_IMAGE_SELECTOR)) return;
+					applyGrayscaleToNode(node);
+				});
+			});
+		}
+
+		function clearHardcodedGrayscale() {
 			document.querySelectorAll('[data-grayscale-applied="true"]').forEach(node => {
 				const original = node.dataset.grayscaleOriginalFilter;
 				if (original !== undefined) {
@@ -9650,44 +9669,50 @@
 			});
 		}
 
-		function refreshSelectiveGrayscale() {
-			if (!document.body.classList.contains('effect-grayscale')) return;
-			clearSelectiveGrayscale();
-			document.body.querySelectorAll('*').forEach(node => processSelectiveGrayscaleNode(node));
-		}
-
-		function ensureSelectiveGrayscaleObserver() {
-			if (selectiveGrayscaleObserver) return;
-			selectiveGrayscaleObserver = new MutationObserver(mutations => {
-				if (!document.body.classList.contains('effect-grayscale')) return;
-				mutations.forEach(mutation => {
-					mutation.addedNodes.forEach(node => processAddedNodeForSelectiveGrayscale(node));
-				});
-			});
-			selectiveGrayscaleObserver.observe(document.body, { childList: true, subtree: true });
-		}
-
-		function teardownSelectiveGrayscaleObserver() {
-			if (!selectiveGrayscaleObserver) return;
-			selectiveGrayscaleObserver.disconnect();
-			selectiveGrayscaleObserver = null;
-		}
-
-		function handleSelectiveGrayscaleState(force = false) {
-			const isActive = document.body.classList.contains('effect-grayscale');
-			if (!isActive) {
-				if (selectiveGrayscaleActive || force) {
-					clearSelectiveGrayscale();
-				}
-				selectiveGrayscaleActive = false;
-				teardownSelectiveGrayscaleObserver();
+		function processAddedNodesForGrayscale(node) {
+			if (!grayscaleActive) return;
+			if (!node) return;
+			if (node instanceof Element) {
+				applyHardcodedGrayscale(node);
 				return;
 			}
-			ensureSelectiveGrayscaleObserver();
-			if (!selectiveGrayscaleActive || force) {
-				refreshSelectiveGrayscale();
+			if (typeof DocumentFragment !== 'undefined' && node instanceof DocumentFragment) {
+				Array.from(node.childNodes).forEach(child => processAddedNodesForGrayscale(child));
 			}
-			selectiveGrayscaleActive = true;
+		}
+
+		function ensureGrayscaleObserver() {
+			if (grayscaleObserver) return;
+			grayscaleObserver = new MutationObserver(mutations => {
+				if (!grayscaleActive) return;
+				mutations.forEach(mutation => {
+					mutation.addedNodes.forEach(node => processAddedNodesForGrayscale(node));
+				});
+			});
+			grayscaleObserver.observe(document.body, { childList: true, subtree: true });
+		}
+
+		function teardownGrayscaleObserver() {
+			if (!grayscaleObserver) return;
+			grayscaleObserver.disconnect();
+			grayscaleObserver = null;
+		}
+
+		function updateHardcodedGrayscaleState(force = false) {
+			const isActive = document.body.classList.contains('effect-grayscale');
+			if (!isActive) {
+				if (grayscaleActive || force) {
+					clearHardcodedGrayscale();
+				}
+				grayscaleActive = false;
+				teardownGrayscaleObserver();
+				return;
+			}
+			ensureGrayscaleObserver();
+			if (!grayscaleActive || force) {
+				applyHardcodedGrayscale();
+			}
+			grayscaleActive = true;
 		}
 
 		// Website Effects Functions
@@ -9709,7 +9734,7 @@
 			} else {
 				document.body.classList.remove('effect-grayscale');
 			}
-			handleSelectiveGrayscaleState(true);
+			updateHardcodedGrayscaleState(true);
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
 		}
@@ -9786,7 +9811,7 @@
 			} else {
 				document.body.style.filter = '';
 			}
-			handleSelectiveGrayscaleState();
+			updateHardcodedGrayscaleState();
 		}
 
 		function setColorFilterFromHue(hue) {
@@ -9831,7 +9856,7 @@
 			// Hide the blur overlay
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
-			handleSelectiveGrayscaleState(true);
+			updateHardcodedGrayscaleState(true);
 			
 			notify.info('All visual effects have been reset.');
 		}
@@ -9929,7 +9954,7 @@
 				}
 				setColorFilterFromHue(45);
 			}
-			handleSelectiveGrayscaleState(true);
+			updateHardcodedGrayscaleState(true);
 			if (!effectsApplied) {
 				// Ensure body classes reflect toggle state when no saved effects were applied
 				if (!document.getElementById('colorEffectToggle')?.checked) document.body.classList.remove('effect-color');
