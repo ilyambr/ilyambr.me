@@ -460,6 +460,58 @@
 			padding:32px;
 			overflow-y:auto;
 		}
+		.popup-content.game-settings-panel .settings-layout{
+			display:grid;
+			grid-template-columns:220px 1fr;
+			gap:24px;
+			min-height:420px;
+			align-items:start;
+		}
+		.popup-content.game-settings-panel .settings-tabs{
+			display:flex;
+			flex-direction:column;
+			gap:8px;
+			padding:18px;
+			background:rgba(255,255,255,0.05);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:16px;
+			min-height:100%;
+		}
+		.popup-content.game-settings-panel .settings-tab{
+			appearance:none;
+			border:none;
+			background:rgba(255,255,255,0.04);
+			color:var(--text);
+			padding:12px 14px;
+			border-radius:12px;
+			font-weight:600;
+			text-align:left;
+			cursor:pointer;
+			transition:all .15s ease;
+		}
+		.popup-content.game-settings-panel .settings-tab:hover{
+			background:rgba(255,255,255,0.1);
+		}
+		.popup-content.game-settings-panel .settings-tab.active{
+			background:linear-gradient(90deg, rgba(140,140,140,0.65), rgba(200,200,200,0.35));
+			box-shadow:0 8px 24px rgba(0,0,0,0.2);
+		}
+		.popup-content.game-settings-panel .settings-content{
+			background:rgba(255,255,255,0.04);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:16px;
+			padding:28px;
+			min-height:420px;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+		}
+		.popup-content.game-settings-panel .settings-placeholder{
+			margin:0;
+			color:var(--muted);
+			text-align:center;
+			line-height:1.6;
+		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
 				padding:32px 0;
@@ -471,6 +523,21 @@
 			}
 			.popup-content.game-settings-panel .popup-body{
 				padding:24px;
+			}
+			.popup-content.game-settings-panel .settings-layout{
+				grid-template-columns:1fr;
+			}
+			.popup-content.game-settings-panel .settings-tabs{
+				flex-direction:row;
+				flex-wrap:wrap;
+				justify-content:flex-start;
+			}
+			.popup-content.game-settings-panel .settings-tab{
+				flex:1 1 calc(50% - 8px);
+				text-align:center;
+			}
+			.popup-content.game-settings-panel .settings-content{
+				min-height:320px;
 			}
 		}
 		
@@ -2443,7 +2510,19 @@
 				</div>
 				<button class="close-btn" onclick="closeGameSettingsPopup()" aria-label="Close all settings">&times;</button>
 			</div>
-			<div class="popup-body" id="gameSettingsBody"></div>
+			<div class="popup-body" id="gameSettingsBody">
+				<div class="settings-layout">
+					<nav class="settings-tabs" aria-label="Settings categories">
+						<button type="button" class="settings-tab active" data-section="games">Games</button>
+						<button type="button" class="settings-tab" data-section="utility">Utility</button>
+						<button type="button" class="settings-tab" data-section="hardware">Hardware</button>
+						<button type="button" class="settings-tab" data-section="internet">Internet</button>
+					</nav>
+					<div class="settings-content" id="gameSettingsContent">
+						<p class="settings-placeholder">Tabs are ready—content coming soon.</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
