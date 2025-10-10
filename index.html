@@ -443,6 +443,36 @@
 		.discord-link img{width:20px; height:20px; display:block; object-fit:contain; background:transparent; filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); mix-blend-mode:screen}
 		.settings-link{background:linear-gradient(90deg, rgba(88,88,88,0.85), rgba(150,150,150,0.7)); border:1px solid rgba(255,255,255,0.14); color:#ffffff;}
 		.settings-link svg{width:20px; height:20px; display:block; color:#ffffff}
+		.popup-content.admin-panel.expanded{
+			width:min(96vw, 1080px);
+			max-width:1080px;
+			min-width:min(92vw, 980px);
+			max-height:calc(100vh - 80px);
+			margin:0 auto;
+		}
+		.popup-content.admin-panel.expanded .admin-panel-body{
+			max-height:calc(100vh - 200px);
+			padding-right:16px;
+		}
+		#adminPanelPopup.expanded-mode{
+			padding:40px 0;
+			align-items:center;
+		}
+		#adminPanelPopup.expanded-mode .popup-content.admin-panel{
+			width:min(96vw, 1080px);
+			max-width:1080px;
+			min-width:min(92vw, 980px);
+		}
+		@media (max-width: 1024px){
+			.popup-content.admin-panel.expanded,
+			#adminPanelPopup.expanded-mode .popup-content.admin-panel{
+				width:94vw;
+				min-width:0;
+			}
+			.popup-content.admin-panel.expanded .admin-panel-body{
+				padding-right:10px;
+			}
+		}
 		
 		.stream-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px}
 		.stream-switcher{display:flex; background:rgba(255,255,255,0.08); border-radius:8px; padding:2px; gap:2px}
@@ -1665,12 +1695,12 @@
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
 					</a>
-					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openAdminLogin()" aria-label="Open all settings">
+					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettings()" aria-label="Open game settings">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 							<circle cx="12" cy="12" r="3"/>
 						</svg>
-						All Settings
+						Game Settings Game Settings
 					</a>
 				</div>
 				<h3 style="margin-top:18px">Schedule</h3>
@@ -1706,7 +1736,7 @@
 	</div>
 
 	<!-- Admin Console Button -->
-	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminLogin()">
+	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminConsole()">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 			<circle cx="12" cy="12" r="3"/>
@@ -3674,22 +3704,48 @@
 		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
 		// Collaborators list (hoisted early to avoid TDZ)
 		let collaborators = [];
+		let pendingAdminPanelMode = 'default';
+
+		function openAdminConsole() {
+			pendingAdminPanelMode = 'default';
+			openAdminLogin();
+		}
+
+		function openGameSettings() {
+			pendingAdminPanelMode = 'game';
+			openAdminLogin();
+		}
+
+		function showAdminPanel(expanded = false) {
+			console.log('🛠 Displaying admin panel. Expanded:', expanded);
+			loadCurrentSettings();
+			renderCollaborators();
+			updateTintRows();
+			renderActionLinksList('follow');
+			renderActionLinksList('subscribe');
+
+			const overlay = document.getElementById('adminPanelPopup');
+			const panel = overlay ? overlay.querySelector('.popup-content.admin-panel') : null;
+			const heading = overlay ? overlay.querySelector('.popup-header h3') : null;
+			if (overlay && panel) {
+				overlay.style.display = 'flex';
+				overlay.classList.toggle('expanded-mode', expanded);
+				panel.classList.toggle('expanded', expanded);
+				if (heading) {
+					heading.textContent = expanded ? 'Game Settings' : 'Admin Panel';
+				}
+			}
+			setBodyScrollState(true);
+		}
 
 		function openAdminLogin() {
-			console.log('🔧 Admin button clicked!');
-			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
+			if (!pendingAdminPanelMode) pendingAdminPanelMode = 'default';
+			console.log('🔧 Admin access requested!');
+			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn, '| mode:', pendingAdminPanelMode);
 			
 			if (isAdminLoggedIn) {
 				console.log('✅ User is logged in, opening admin panel');
-				loadCurrentSettings();
-				// Render collaborators list and ensure tint rows state
-				renderCollaborators();
-				updateTintRows();
-				// Ensure action links lists are rendered inside panel
-				renderActionLinksList('follow');
-				renderActionLinksList('subscribe');
-				document.getElementById('adminPanelPopup').style.display = 'flex';
-				setBodyScrollState(true);
+				showAdminPanel(pendingAdminPanelMode === 'game');
 			} else {
 				console.log('🔐 User not logged in, opening login popup');
 				const loginPopup = document.getElementById('adminLoginPopup');
@@ -3704,7 +3760,21 @@
 		}
 
 		function closeAdminPopup(popupId) {
-			document.getElementById(popupId).style.display = 'none';
+			const popup = document.getElementById(popupId);
+			if (!popup) return;
+			popup.style.display = 'none';
+			if (popupId === 'adminPanelPopup') {
+				popup.classList.remove('expanded-mode');
+				const panel = popup.querySelector('.popup-content.admin-panel');
+				if (panel) {
+					panel.classList.remove('expanded');
+				}
+				const heading = popup.querySelector('.popup-header h3');
+				if (heading) {
+					heading.textContent = 'Admin Panel';
+				}
+				pendingAdminPanelMode = 'default';
+			}
 			setBodyScrollState(false);
 		}
 
