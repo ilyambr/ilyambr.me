@@ -198,6 +198,7 @@
 				flex-direction:column;
 				justify-content:flex-end;
 				flex:0 0 360px;
+				align-self:flex-end;
 			}
 			.short-video-card{
 				position:relative;
@@ -436,7 +437,14 @@
 		.slot .time{color:var(--muted)}
 
 		.footer{
-			margin-top:20px; text-align:center; color:var(--muted); font-size:13px; position:relative; z-index:2;
+			max-width:1100px;
+			margin:20px auto 80px;
+			padding:0 20px;
+			text-align:center;
+			color:var(--muted);
+			font-size:13px;
+			position:relative;
+			z-index:2;
 		}
 		#counter{position:relative; z-index:2}
 
@@ -1625,14 +1633,8 @@
 					</div>
 				</div>
 			</aside>
-				</div>
-
-				<div class="footer">
-					<div id="counter"></div>
-					© 2025 ilyambr, made with love <3
-				</div>
-			</div>
-			<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
+		</div>
+		<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
 				<div class="card short-video-card">
 					<h3>Featured Short</h3>
 					<div class="short-video-embed">
@@ -1645,6 +1647,11 @@
 				</div>
 			</aside>
 		</div>
+
+	<div class="footer">
+		<div id="counter"></div>
+		© 2025 ilyambr, made with love <3
+	</div>
 
 	<!-- Admin Console Button -->
 	<div class="admin-button" onclick="openAdminLogin()">
