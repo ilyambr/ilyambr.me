@@ -443,34 +443,59 @@
 		.discord-link img{width:20px; height:20px; display:block; object-fit:contain; background:transparent; filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); mix-blend-mode:screen}
 		.settings-link{background:linear-gradient(90deg, rgba(88,88,88,0.85), rgba(150,150,150,0.7)); border:1px solid rgba(255,255,255,0.14); color:#ffffff;}
 		.settings-link svg{width:20px; height:20px; display:block; color:#ffffff}
-		.popup-content.admin-panel.expanded{
-			width:min(96vw, 1080px);
-			max-width:1080px;
-			min-width:min(92vw, 980px);
-			max-height:calc(100vh - 80px);
-			margin:0 auto;
-		}
-		.popup-content.admin-panel.expanded .admin-panel-body{
-			max-height:calc(100vh - 200px);
-			padding-right:16px;
-		}
-		#adminPanelPopup.expanded-mode{
+		.popup-overlay.game-settings-overlay{
+			align-items:flex-start;
 			padding:40px 0;
-			align-items:center;
 		}
-		#adminPanelPopup.expanded-mode .popup-content.admin-panel{
-			width:min(96vw, 1080px);
-			max-width:1080px;
-			min-width:min(92vw, 980px);
+		.popup-content.game-settings-panel{
+			width:min(96vw, 1100px);
+			max-width:1100px;
+			min-height:70vh;
+			max-height:calc(100vh - 120px);
+			margin:0 auto;
+			display:flex;
+			flex-direction:column;
 		}
-		@media (max-width: 1024px){
-			.popup-content.admin-panel.expanded,
-			#adminPanelPopup.expanded-mode .popup-content.admin-panel{
-				width:94vw;
-				min-width:0;
+		.popup-content.game-settings-panel .popup-body{
+			padding:24px;
+			overflow-y:auto;
+			display:grid;
+			gap:18px;
+		}
+		.popup-content.game-settings-panel .settings-grid{
+			display:grid;
+			grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+			gap:18px;
+		}
+		.popup-content.game-settings-panel .settings-card{
+			background:rgba(255,255,255,0.05);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:16px;
+			padding:18px;
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+		}
+		.popup-content.game-settings-panel .settings-card h4{
+			margin:0;
+			font-size:16px;
+		}
+		.popup-content.game-settings-panel .settings-card p{
+			margin:0;
+			color:var(--muted);
+			line-height:1.5;
+		}
+		@media (max-width: 900px){
+			.popup-overlay.game-settings-overlay{
+				padding:24px 0;
 			}
-			.popup-content.admin-panel.expanded .admin-panel-body{
-				padding-right:10px;
+			.popup-content.game-settings-panel{
+				min-height:60vh;
+				width:94vw;
+				max-height:calc(100vh - 80px);
+			}
+			.popup-content.game-settings-panel .popup-body{
+				padding:20px;
 			}
 		}
 		
@@ -1695,12 +1720,12 @@
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
 					</a>
-					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettings()" aria-label="Open game settings">
+					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettingsPopup()" aria-label="Open game settings">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 							<circle cx="12" cy="12" r="3"/>
 						</svg>
-						Game Settings Game Settings
+						Game Settings
 					</a>
 				</div>
 				<h3 style="margin-top:18px">Schedule</h3>
@@ -1736,7 +1761,7 @@
 	</div>
 
 	<!-- Admin Console Button -->
-	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminConsole()">
+	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminLogin()">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 			<circle cx="12" cy="12" r="3"/>
@@ -2333,11 +2358,28 @@
 			}
 		}
 
+		function openGameSettingsPopup() {
+			const popup = document.getElementById('gameSettingsPopup');
+			if (popup) {
+				popup.style.display = 'flex';
+				setBodyScrollState(true);
+			}
+		}
+
+		function closeGameSettingsPopup() {
+			const popup = document.getElementById('gameSettingsPopup');
+			if (popup) {
+				popup.style.display = 'none';
+				setBodyScrollState(false);
+			}
+		}
+
 		// Close popup when clicking outside
 		document.addEventListener('click', function(event) {
 			var followPopup = document.getElementById('followPopup');
 			var subscribePopup = document.getElementById('subscribePopup');
 			var colorsPopup = document.getElementById('colorsPopup');
+			var gameSettingsPopup = document.getElementById('gameSettingsPopup');
 			
 			if (event.target === followPopup) {
 				closePopup('followPopup');
@@ -2347,6 +2389,9 @@
 			}
 			if (event.target === colorsPopup) {
 				closePopup('colorsPopup');
+			}
+			if (event.target === gameSettingsPopup) {
+				closeGameSettingsPopup();
 			}
 		});
 
@@ -2401,6 +2446,57 @@
 					<div style="display:flex; gap:10px; margin-top:12px;">
 						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
 						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Game Settings Popup -->
+	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay">
+		<div class="popup-content game-settings-panel">
+			<div class="popup-header">
+				<div>
+					<h3>Game Settings</h3>
+					<small style="color:var(--muted);">Tweak in-game preferences without leaving the page.</small>
+				</div>
+				<button class="close-btn" onclick="closeGameSettingsPopup()" aria-label="Close game settings">&times;</button>
+			</div>
+			<div class="popup-body">
+				<div class="settings-grid">
+					<div class="settings-card">
+						<h4>Controller Layout</h4>
+						<p>Choose from presets or build a custom layout that fits your playstyle.</p>
+						<button class="admin-logout-btn alt-light" onclick="notify.info('Controller layout editor coming soon!')">Customize</button>
+					</div>
+					<div class="settings-card">
+						<h4>Graphics Presets</h4>
+						<p>Balance performance and fidelity with quick preset switches.</p>
+						<div style="display:flex; gap:10px; flex-wrap:wrap;">
+							<button class="admin-logout-btn" onclick="notify.success('Ultra preset applied!')">Ultra</button>
+							<button class="admin-logout-btn alt-light" onclick="notify.success('Balanced preset applied!')">Balanced</button>
+							<button class="admin-logout-btn alt-light" onclick="notify.success('Performance preset applied!')">Performance</button>
+						</div>
+					</div>
+					<div class="settings-card">
+						<h4>Audio Mix</h4>
+						<p>Fine-tune volume levels for music, effects, and voice chat.</p>
+						<label style="display:flex; flex-direction:column; gap:6px;">
+							<span>Music Volume</span>
+							<input type="range" min="0" max="100" value="70" oninput="notify.info('Music volume: ' + this.value + '%')">
+						</label>
+						<label style="display:flex; flex-direction:column; gap:6px;">
+							<span>SFX Volume</span>
+							<input type="range" min="0" max="100" value="85" oninput="notify.info('SFX volume: ' + this.value + '%')">
+						</label>
+					</div>
+					<div class="settings-card">
+						<h4>Crossplay</h4>
+						<p>Toggle cross-platform matchmaking for your upcoming sessions.</p>
+						<label style="display:flex; align-items:center; gap:10px;">
+							<input type="checkbox" checked onchange="notify.info('Crossplay ' + (this.checked ? 'enabled' : 'disabled'))">
+							<span>Enable Crossplay</span>
+						</label>
 					</div>
 				</div>
 			</div>
@@ -3704,48 +3800,23 @@
 		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
 		// Collaborators list (hoisted early to avoid TDZ)
 		let collaborators = [];
-		let pendingAdminPanelMode = 'default';
-
-		function openAdminConsole() {
-			pendingAdminPanelMode = 'default';
-			openAdminLogin();
-		}
-
-		function openGameSettings() {
-			pendingAdminPanelMode = 'game';
-			openAdminLogin();
-		}
-
-		function showAdminPanel(expanded = false) {
-			console.log('🛠 Displaying admin panel. Expanded:', expanded);
-			loadCurrentSettings();
-			renderCollaborators();
-			updateTintRows();
-			renderActionLinksList('follow');
-			renderActionLinksList('subscribe');
-
-			const overlay = document.getElementById('adminPanelPopup');
-			const panel = overlay ? overlay.querySelector('.popup-content.admin-panel') : null;
-			const heading = overlay ? overlay.querySelector('.popup-header h3') : null;
-			if (overlay && panel) {
-				overlay.style.display = 'flex';
-				overlay.classList.toggle('expanded-mode', expanded);
-				panel.classList.toggle('expanded', expanded);
-				if (heading) {
-					heading.textContent = expanded ? 'Game Settings' : 'Admin Panel';
-				}
-			}
-			setBodyScrollState(true);
-		}
 
 		function openAdminLogin() {
-			if (!pendingAdminPanelMode) pendingAdminPanelMode = 'default';
-			console.log('🔧 Admin access requested!');
-			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn, '| mode:', pendingAdminPanelMode);
+			console.log('🔧 Admin button clicked!');
+			console.log('📊 isAdminLoggedIn:', isAdminLoggedIn);
 			
 			if (isAdminLoggedIn) {
 				console.log('✅ User is logged in, opening admin panel');
-				showAdminPanel(pendingAdminPanelMode === 'game');
+				loadCurrentSettings();
+				renderCollaborators();
+				updateTintRows();
+				renderActionLinksList('follow');
+				renderActionLinksList('subscribe');
+				const adminPanel = document.getElementById('adminPanelPopup');
+				if (adminPanel) {
+					adminPanel.style.display = 'flex';
+				}
+				setBodyScrollState(true);
 			} else {
 				console.log('🔐 User not logged in, opening login popup');
 				const loginPopup = document.getElementById('adminLoginPopup');
@@ -3763,18 +3834,6 @@
 			const popup = document.getElementById(popupId);
 			if (!popup) return;
 			popup.style.display = 'none';
-			if (popupId === 'adminPanelPopup') {
-				popup.classList.remove('expanded-mode');
-				const panel = popup.querySelector('.popup-content.admin-panel');
-				if (panel) {
-					panel.classList.remove('expanded');
-				}
-				const heading = popup.querySelector('.popup-header h3');
-				if (heading) {
-					heading.textContent = 'Admin Panel';
-				}
-				pendingAdminPanelMode = 'default';
-			}
 			setBodyScrollState(false);
 		}
 
@@ -6307,6 +6366,7 @@
 			if (event.key === 'Escape') {
 				closeAdminPopup('adminLoginPopup');
 				closeAdminPopup('adminPanelPopup');
+				closeGameSettingsPopup();
 			}
 		});
 
