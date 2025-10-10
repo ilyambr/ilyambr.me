@@ -41,11 +41,15 @@
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
 			background: #1a1a2e;
-			overflow:hidden;
+			overflow-x:hidden;
+			overflow-y:hidden;
 		}
 		@media (max-width: 1024px){
 			html, body{
 				overflow-x:hidden;
+				overflow-y:auto;
+				width:100%;
+				max-width:100vw;
 			}
 		}
 
