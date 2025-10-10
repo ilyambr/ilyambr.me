@@ -8,10 +8,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" referrerpolicy="no-referrer">
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<!-- Firebase SDK -->
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" referrerpolicy="no-referrer"></script>
 	<style>
 		:root{
 			--bg-1:#0b0b12;
@@ -722,14 +724,20 @@
 			gap:18px;
 		}
 		.app-name-field{
-			display:flex;
-			flex-direction:column;
-			gap:10px;
+			display:grid;
+			grid-template-columns:minmax(0, 1fr) auto;
+			gap:18px;
+			align-items:flex-start;
 			background:rgba(255,255,255,0.05);
 			border:1px solid rgba(255,255,255,0.16);
 			border-radius:16px;
 			padding:16px 18px;
 			box-shadow:0 18px 28px rgba(0,0,0,0.18);
+		}
+		.app-name-main{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
 		}
 		.app-name-label{
 			display:flex;
@@ -799,13 +807,32 @@
 			min-height:0;
 			max-height:420px;
 		}
+		.app-inline-logo{
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			gap:6px;
+			min-width:110px;
+		}
+		.app-inline-logo .app-media-upload{
+			width:calc(100% - 16px);
+			max-width:none;
+			font-size:11px;
+			padding:8px 10px;
+		}
 		.app-form-logo-preview{
-			width:104px;
-			height:104px;
-			align-self:center;
-			background-color:rgba(0,0,0,0.12);
+			width:92px;
+			height:92px;
+			background-color:rgba(0,0,0,0.16);
 			backdrop-filter:blur(4px);
 			border:1px dashed rgba(255,255,255,0.25);
+		}
+		.app-inline-logo-hint{
+			font-size:10px;
+			text-transform:uppercase;
+			letter-spacing:0.4px;
+			color:rgba(255,255,255,0.55);
+			text-align:center;
 		}
 		.app-media-upload{
 			position:absolute;
@@ -878,12 +905,493 @@
 			border-color:rgba(0,199,255,0.6);
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
+		.app-form-layout{
+			display:grid;
+			grid-template-columns:minmax(0, 1.6fr) minmax(0, 1fr);
+			gap:28px;
+			align-items:flex-start;
+		}
+		.app-settings-editor{
+			grid-column:1 / -1;
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+			padding:22px;
+			border-radius:22px;
+			background:linear-gradient(165deg, rgba(20,24,46,0.84) 0%, rgba(12,14,28,0.94) 100%);
+			border:1px solid rgba(132,164,255,0.16);
+			box-shadow:0 26px 46px rgba(6,10,30,0.32), inset 0 0 0 1px rgba(255,255,255,0.02);
+		}
+		.app-settings-editor-header{
+			display:flex;
+			justify-content:space-between;
+			align-items:flex-start;
+			gap:22px;
+		}
+		.app-settings-editor-actions{
+			display:flex;
+			align-items:center;
+			gap:12px;
+		}
+		.app-settings-editor-header h4{
+			margin:0;
+			font-size:18px;
+			font-weight:700;
+			letter-spacing:0.4px;
+			color:#ffffff;
+		}
+		.app-settings-editor-header p{
+			margin:6px 0 0;
+			font-size:13px;
+			color:rgba(186,204,232,0.72);
+			line-height:1.6;
+		}
+		.app-settings-editor-body{
+			display:grid;
+			grid-template-columns:minmax(200px, 280px) minmax(0, 1fr);
+			gap:20px;
+		}
+		.app-settings-tab-list{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			max-height:480px;
+			overflow:auto;
+			padding-right:4px;
+		}
+		.app-settings-tab-item{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			padding:14px;
+			border-radius:16px;
+			background:rgba(12,16,32,0.82);
+			border:1px solid rgba(132,164,255,0.12);
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);
+		}
+		.app-settings-tab-select{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:12px;
+			padding:12px 14px;
+			border-radius:12px;
+			border:none;
+			background:rgba(255,255,255,0.05);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+			cursor:pointer;
+			transition:all 0.2s ease;
+		}
+		.app-settings-tab-select.active{
+			background:linear-gradient(140deg, rgba(0,199,255,0.32), rgba(0,132,255,0.26));
+			box-shadow:0 18px 30px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.42);
+		}
+		.app-settings-tab-select span.status{
+			font-size:11px;
+			font-weight:600;
+			letter-spacing:0.4px;
+			text-transform:uppercase;
+			color:rgba(173,222,255,0.75);
+		}
+		.app-settings-tab-fields{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+		}
+		.app-settings-tab-fields label{
+			display:flex;
+			flex-direction:column;
+			gap:6px;
+			font-size:12px;
+			font-weight:600;
+			color:rgba(174,205,255,0.7);
+		}
+		.app-settings-tab-fields input[type="text"]{
+			width:100%;
+			padding:10px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.3);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-tab-fields input[type="text"]:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-settings-tab-toggle{
+			display:flex;
+			align-items:center;
+			gap:8px;
+			font-size:12px;
+			font-weight:600;
+			color:rgba(186,204,232,0.75);
+		}
+		.app-settings-tab-footer{
+			display:flex;
+			justify-content:flex-end;
+			gap:10px;
+		}
+		.app-settings-tab-footer button{
+			padding:6px 10px;
+			border-radius:8px;
+			border:none;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-tab-footer .danger{
+			background:rgba(255,99,132,0.18);
+			color:#ff6b81;
+		}
+		.app-settings-tab-footer .danger:hover{
+			background:rgba(255,99,132,0.32);
+		}
+		.app-settings-tab-detail{
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+			padding:18px;
+			border-radius:18px;
+			background:rgba(10,14,28,0.78);
+			border:1px solid rgba(132,164,255,0.12);
+			min-height:320px;
+		}
+		.app-settings-tab-detail header{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:16px;
+		}
+		.app-settings-tab-detail header h5{
+			margin:0;
+			font-size:16px;
+			font-weight:700;
+			color:#ffffff;
+		}
+		.app-settings-section-list{
+			display:flex;
+			flex-direction:column;
+			gap:14px;
+		}
+		.app-settings-section-card{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			padding:16px;
+			border-radius:14px;
+			background:rgba(12,18,36,0.85);
+			border:1px solid rgba(255,255,255,0.08);
+		}
+		.app-settings-section-card header{
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			gap:12px;
+		}
+		.app-settings-section-card header input[type="text"]{
+			flex:1 1 auto;
+			padding:10px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.3);
+			color:#ffffff;
+		}
+		.app-settings-section-card header button{
+			border:none;
+			background:rgba(255,99,132,0.18);
+			color:#ff6b81;
+			border-radius:10px;
+			padding:8px 12px;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-section-actions{
+			display:flex;
+			align-items:center;
+			gap:10px;
+		}
+		.app-settings-section-actions select{
+			padding:9px 12px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.35);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-section-actions select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-settings-option-list{
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+		}
+		.app-settings-option-row{
+			display:grid;
+			grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) auto;
+			gap:8px;
+			align-items:center;
+		}
+		.app-settings-option-row input[type="text"]{
+			padding:9px 11px;
+			border-radius:10px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:13px;
+		}
+		.app-settings-option-row button{
+			border:none;
+			background:rgba(255,99,132,0.2);
+			color:#ff6b81;
+			border-radius:8px;
+			padding:8px;
+			cursor:pointer;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			gap:6px;
+		}
+		.app-settings-option-row button svg{
+			width:14px;
+			height:14px;
+		}
+		.app-settings-option-actions{
+			display:flex;
+			justify-content:flex-end;
+			gap:8px;
+		}
+		.app-settings-option-actions button{
+			border:none;
+			border-radius:10px;
+			padding:9px 14px;
+			font-size:12px;
+			font-weight:600;
+			cursor:pointer;
+		}
+		.app-settings-option-actions .add-option{
+			background:rgba(0,199,255,0.24);
+			color:#ffffff;
+		}
+		.app-settings-option-actions .add-option:hover{
+			background:rgba(0,199,255,0.34);
+		}
+		.app-settings-empty-state{
+			padding:24px;
+			border-radius:14px;
+			background:rgba(255,255,255,0.04);
+			border:1px dashed rgba(255,255,255,0.12);
+			text-align:center;
+			font-size:14px;
+			color:rgba(186,204,232,0.72);
+		}
+		.app-form-left{
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+		}
+		.app-form-previews{
+			display:grid;
+			grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+			gap:18px;
+		}
+		.app-form-right{
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+		}
+		.app-special-media{
+			display:none;
+		}
+		.app-special-media.active{
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+		}
+		.app-special-preview{
+			min-height:280px;
+		}
+		#imageCropperModal{
+			z-index:1400;
+		}
+		.cropper-popup{
+			width:min(96vw, 1320px);
+			max-width:none;
+		}
+		.image-cropper-body{
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+		}
+		.image-cropper-stage{
+			position:relative;
+			width:100%;
+			height:clamp(360px, 68vh, 780px);
+			border-radius:18px;
+			overflow:hidden;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(8,8,18,0.82);
+			max-width:100%;
+		}
+		.image-cropper-stage .cropper-container,
+		.image-cropper-stage .cropper-wrap-box,
+		.image-cropper-stage .cropper-canvas,
+		.image-cropper-stage .cropper-view-box,
+		.image-cropper-stage .cropper-drag-box,
+		.image-cropper-stage .cropper-crop-box,
+		.image-cropper-stage .cropper-modal{
+			border-radius:18px;
+			width:100% !important;
+			height:100% !important;
+			top:0 !important;
+			left:0 !important;
+		}
+		#imageCropperPreview{
+			max-width:100%;
+			max-height:100%;
+			display:block;
+			width:100%;
+		}
+		.image-cropper-hint{
+			font-size:13px;
+			color:rgba(255,255,255,0.65);
+			line-height:1.6;
+		}
+		.image-cropper-controls{
+			display:flex;
+			gap:12px;
+			align-items:center;
+			flex-wrap:wrap;
+			justify-content:flex-end;
+		}
+		.image-cropper-controls .spacer{
+			flex:1 1 auto;
+		}
+		.image-cropper-popup .popup-body{
+			max-height:80vh;
+			overflow:auto;
+			padding-right:4px;
+		}
+		@media (max-width:720px){
+			.cropper-popup{
+				width:calc(100vw - 28px);
+				max-width:calc(100vw - 28px);
+			}
+			.image-cropper-stage{
+				height:clamp(240px, 55vh, 520px);
+			}
+		}
+		.app-form-footer{
+			display:flex;
+			justify-content:flex-end;
+			align-items:center;
+			gap:16px;
+			margin-top:12px;
+		}
+		.special-option-field{
+			display:flex;
+			flex-direction:column;
+			gap:8px;
+		}
+		.character-name-field{
+			display:none;
+			flex-direction:column;
+			gap:8px;
+		}
+		.special-option-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.character-name-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.special-option-select{
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+		}
+		.special-option-select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.character-name-input{
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+		}
+		.character-name-input:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-form-actions{
+			display:flex;
+			gap:10px;
+			flex-wrap:wrap;
+		}
+		.app-form-actions .save-app-btn{
+			background:#ffffff;
+			color:#0d0d19;
+			border-color:transparent;
+			box-shadow:0 10px 20px rgba(0,0,0,0.18);
+		}
+		.app-form-actions .save-app-btn:hover{
+			transform:translateY(-1px);
+			box-shadow:0 14px 26px rgba(0,0,0,0.24);
+		}
+		.app-form-actions .save-app-btn:focus{
+			outline:none;
+			box-shadow:0 0 0 3px rgba(255,255,255,0.35);
+		}
+		@media (max-width: 900px){
+			.app-form-layout{grid-template-columns:1fr;}
+			.app-name-field{grid-template-columns:1fr;}
+			.app-inline-logo{flex-direction:row; justify-content:flex-start; align-items:center; gap:12px; min-width:0; flex-wrap:wrap;}
+			.app-inline-logo-hint{width:100%; text-align:left; margin-top:2px;}
+			.app-inline-logo-hint{margin:0;}
+			.app-settings-editor-body{grid-template-columns:1fr;}
+			.app-settings-tab-list{max-height:none;}
+		}
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
 			.settings-template-row{grid-template-columns:1fr; gap:6px;}
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
+			.app-settings-editor{
+				padding:18px;
+			}
+			.app-settings-editor-body{gap:16px;}
+			.app-settings-tab-select{font-size:13px;}
+			.app-settings-tab-fields input[type="text"]{font-size:12px;}
+			.app-settings-section-actions{flex-direction:column; align-items:flex-start; width:100%;}
+			.app-settings-section-actions select{width:100%;}
+			.app-settings-section-actions button{width:100%;}
+			.app-settings-section-card header{flex-direction:column; align-items:stretch;}
+			.app-settings-section-card header button{width:100%;}
+			.app-settings-option-row{grid-template-columns:1fr;}
+			.app-settings-option-row button{justify-self:flex-start;}
 		}
 		.settings-app-list{
 			width:100%;
@@ -953,156 +1461,418 @@
 		.settings-app-display.selected::after{
 			opacity:0.55;
 		}
-		.settings-app-detail{
+		.character-trn-panel{
+			position:relative;
+			display:flex;
+			flex-direction:column;
+			justify-content:flex-end;
+			flex:1 1 auto;
+			min-height:440px;
 			width:100%;
-			background:rgba(10,12,24,0.92);
-			border:1px solid rgba(255,255,255,0.1);
-			border-radius:20px;
-			box-shadow:0 28px 44px rgba(0,0,0,0.45);
-			max-height:100%;
-			overflow:auto;
+			height:100%;
+			padding:40px 32px 48px;
+			border-radius:inherit;
+			overflow:hidden;
+			background:rgba(10,12,26,0.92) center/cover no-repeat;
+			box-shadow:none;
+		}
+		.character-trn-panel::after{
+			content:"";
+			position:absolute;
+			inset:0;
+			background:linear-gradient(190deg, rgba(6,8,18,0.05) 0%, rgba(6,8,18,0.78) 60%, rgba(6,8,18,0.96) 100%);
+			z-index:0;
+		}
+		.character-trn-panel.empty{
+			background:linear-gradient(160deg, rgba(26,30,54,0.92), rgba(12,14,28,0.96));
+		}
+		.character-trn-panel.empty::before{
+			content:"Character Portrait";
+			position:absolute;
+			top:50%;
+			left:50%;
+			transform:translate(-50%, -50%);
+			font-size:14px;
+			font-weight:600;
+			letter-spacing:0.12em;
+			color:rgba(255,255,255,0.6);
+			text-transform:uppercase;
+			z-index:1;
+			pointer-events:none;
+		}
+		.character-trn-content{
+			position:relative;
+			z-index:1;
+			display:flex;
+			flex-direction:column;
+			align-items:flex-start;
+			justify-content:flex-end;
+			gap:24px;
+			width:100%;
+		}
+		.character-trn-name{
+			margin:0;
+			font-size:34px;
+			font-weight:700;
+			letter-spacing:-0.02em;
+			color:#ffffff;
+			text-align:left;
+			text-shadow:0 18px 38px rgba(0,0,0,0.55);
+		}
+		.character-trn-meta{
+			display:flex;
+			justify-content:flex-start;
+			gap:40px;
+			flex-wrap:wrap;
+		}
+		.character-trn-meta-item{
+			display:flex;
+			flex-direction:column;
+			gap:6px;
+			align-items:flex-start;
+		}
+		.character-trn-meta-label{
+			font-size:12px;
+			font-weight:600;
+			letter-spacing:0.36em;
+			text-transform:uppercase;
+			color:rgba(186,208,255,0.68);
+		}
+		.character-trn-meta-value{
+			font-size:24px;
+			font-weight:700;
+			color:#ffffff;
+			line-height:1.2;
+		}
+		.settings-detail-overlay{
+			justify-content:center;
+			align-items:flex-start;
+			padding:48px clamp(24px, 4vw, 72px);
+		}
+		.settings-detail-columns{
+			display:flex;
+			gap:28px;
+			align-items:stretch;
+			flex-wrap:wrap;
+			width:min(1380px, 96vw);
+		}
+		.settings-detail-overlay:not(.has-character) .settings-detail-columns{
+			justify-content:center;
+			width:min(980px, 92vw);
 		}
 		.settings-detail-panel{
-			background:rgba(12,14,28,0.96);
-			border:1px solid rgba(255,255,255,0.08);
-			border-radius:24px;
+			background:linear-gradient(160deg, rgba(20,24,44,0.95) 0%, rgba(12,14,28,0.98) 100%);
+			border:1px solid rgba(132,164,255,0.18);
+			border-radius:28px;
 			padding:0;
-			max-width:960px;
-			width:min(960px, 92vw);
+			width:min(920px, 72vw);
+			display:flex;
+			flex-direction:column;
 			overflow:hidden;
-			box-shadow:0 32px 60px rgba(0,0,0,0.55);
+			box-shadow:0 34px 60px rgba(8,10,24,0.55), inset 0 0 0 1px rgba(255,255,255,0.03);
+			backdrop-filter:blur(18px);
 		}
 		.settings-detail-panel .popup-header{
-			padding:26px 32px;
+			padding:30px 38px 22px;
 			border-bottom:1px solid rgba(255,255,255,0.08);
 		}
 		.settings-detail-panel .popup-body{
 			padding:0;
-			max-height:70vh;
+			max-height:calc(82vh - 110px);
 			overflow:auto;
+			display:flex;
+			flex-direction:column;
 		}
 		.settings-detail-panel .close-btn{
-			top:22px;
-			right:22px;
+			top:26px;
+			right:28px;
 		}
-		.settings-detail-panel .settings-app-detail{
+		.character-detail-panel{
+			position:relative;
+			display:flex;
+			flex-direction:column;
+			width:min(420px, 26vw);
+			padding:0;
 			background:transparent;
 			border:none;
-			border-radius:0;
-			box-shadow:none;
-			max-height:none;
+			border-radius:26px;
+			overflow:hidden;
+			box-shadow:0 34px 60px rgba(8,10,24,0.55);
+		}
+		.character-detail-body{
+			position:relative;
+			flex:1 1 auto;
+			min-height:100%;
+			width:100%;
+			display:flex;
+			align-items:stretch;
+		}
+		.character-detail-panel[aria-hidden="true"]{
+			display:none;
+		}
+		.settings-app-detail{
+			display:flex;
+			flex-direction:column;
+			gap:32px;
+			padding:0 0 42px;
+			margin:0;
 		}
 		.settings-app-template{
 			display:flex;
 			flex-direction:column;
-			gap:0;
+			gap:28px;
 		}
 		.settings-template-hero{
 			position:relative;
-			height:220px;
-			background:rgba(255,255,255,0.04) center/cover no-repeat;
+			height:260px;
+			width:100%;
+			border-radius:28px 28px 0 0;
+			overflow:hidden;
+			background:rgba(255,255,255,0.06) center/cover no-repeat;
+			border-bottom:1px solid rgba(132,164,255,0.18);
 		}
 		.settings-template-hero::after{
 			content:"";
 			position:absolute;
 			inset:0;
-			background:linear-gradient(180deg, rgba(5,6,12,0.15) 0%, rgba(5,6,12,0.9) 100%);
+			background:linear-gradient(190deg, rgba(4,6,12,0.08) 0%, rgba(4,6,12,0.92) 100%);
 		}
 		.settings-template-hero-overlay{
 			position:absolute;
 			inset:auto 0 0 0;
-			padding:28px 32px;
+			padding:34px 40px;
 			display:flex;
 			align-items:center;
-			gap:18px;
+			gap:22px;
 			z-index:1;
+		}
+		.settings-template-body{
+			display:flex;
+			flex-direction:column;
+			gap:0;
+		}
+		.app-settings-tab-bar{
+			display:flex;
+			gap:12px;
+			padding:26px 38px 0;
+			overflow-x:auto;
+			scrollbar-width:thin;
+		}
+		.app-settings-tab-bar.empty{
+			min-height:48px;
+		}
+		.app-settings-tab{
+			border:none;
+			background:rgba(255,255,255,0.05);
+			color:rgba(255,255,255,0.78);
+			padding:12px 18px;
+			border-radius:14px;
+			font-size:13px;
+			font-weight:600;
+			letter-spacing:0.32px;
+			text-transform:uppercase;
+			cursor:pointer;
+			transition:all 0.2s ease;
+			white-space:nowrap;
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+		}
+		.app-settings-tab:hover{
+			background:rgba(0,199,255,0.18);
+			color:#ffffff;
+			box-shadow:inset 0 0 0 1px rgba(0,199,255,0.36);
+		}
+		.app-settings-tab.active{
+			background:linear-gradient(135deg, rgba(0,199,255,0.32), rgba(0,132,255,0.28));
+			color:#ffffff;
+			box-shadow:0 18px 32px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.46);
+			transform:translateY(-2px);
 		}
 		.settings-template-hero-overlay img,
 		.settings-template-logo-fallback{
-			width:58px;
-			height:58px;
-			border-radius:16px;
-			box-shadow:0 18px 28px rgba(0,0,0,0.45);
-			background:rgba(255,255,255,0.08);
+			width:68px;
+			height:68px;
+			border-radius:0;
+			box-shadow:0 24px 46px rgba(6,10,30,0.55);
+			background:rgba(8,10,20,0.72);
 			display:flex;
 			align-items:center;
 			justify-content:center;
-			font-size:24px;
+			font-size:26px;
 			font-weight:700;
 			color:#ffffff;
 		}
 		.settings-template-hero-overlay h4{
 			margin:0;
-			font-size:22px;
+			font-size:26px;
 			font-weight:700;
+			letter-spacing:0.02em;
 			color:#ffffff;
-			text-shadow:0 12px 24px rgba(0,0,0,0.45);
+			text-shadow:0 12px 30px rgba(0,0,0,0.45);
 		}
 		.settings-template-badge{
 			display:inline-flex;
 			align-items:center;
-			padding:6px 12px;
-			background:rgba(0,199,255,0.16);
+			padding:8px 16px;
+			background:linear-gradient(135deg, rgba(0,199,255,0.26), rgba(0,132,255,0.14));
+			border:1px solid rgba(0,199,255,0.32);
 			border-radius:999px;
 			font-size:11px;
-			letter-spacing:0.3px;
+			letter-spacing:0.45px;
 			text-transform:uppercase;
-			color:#9be8ff;
+			color:#9ae7ff;
 			margin-left:auto;
+			box-shadow:0 12px 24px rgba(0,122,255,0.24);
 		}
 		.settings-template-sections{
 			display:flex;
 			flex-direction:column;
-			gap:22px;
-			padding:28px 32px 32px;
+			gap:26px;
+			padding:24px 38px 38px;
 		}
 		.settings-template-section{
 			display:flex;
 			flex-direction:column;
-			gap:14px;
-			background:rgba(16,18,32,0.78);
-			border:1px solid rgba(255,255,255,0.06);
-			border-radius:16px;
-			padding:18px 22px;
-			box-shadow:0 16px 28px rgba(0,0,0,0.28);
+			gap:18px;
+			background:linear-gradient(165deg, rgba(20,24,46,0.86) 0%, rgba(12,14,28,0.94) 100%);
+			border:1px solid rgba(132,164,255,0.16);
+			border-radius:22px;
+			padding:24px 28px 26px;
+			box-shadow:0 26px 46px rgba(6,10,30,0.32), inset 0 0 0 1px rgba(255,255,255,0.02);
+			backdrop-filter:blur(12px);
 		}
 		.settings-template-section h5{
 			margin:0;
-			font-size:15px;
+			font-size:14px;
 			font-weight:700;
-			letter-spacing:0.4px;
+			letter-spacing:0.48px;
 			text-transform:uppercase;
-			color:rgba(178,230,255,0.9);
+			color:rgba(173,222,255,0.86);
 		}
 		.settings-template-grid{
 			display:grid;
-			gap:12px;
+			gap:16px;
 			margin:0;
 		}
 		.settings-template-row{
 			display:grid;
-			grid-template-columns:160px 1fr;
-			gap:16px;
-			align-items:center;
+			grid-template-columns:minmax(140px, 200px) minmax(0, 1fr);
+			gap:18px;
+			align-items:start;
 		}
 		.settings-template-row dt{
 			margin:0;
-			font-size:13px;
+			font-size:12px;
 			font-weight:600;
-			color:rgba(198,225,244,0.78);
+			color:rgba(174,205,255,0.72);
 			text-transform:uppercase;
-			letter-spacing:0.3px;
+			letter-spacing:0.42px;
+			min-width:0;
 		}
 		.settings-template-row dd{
 			margin:0;
-			font-size:15px;
+			font-size:16px;
 			font-weight:600;
-			color:#ffffff;
+			color:rgba(255,255,255,0.96);
+			line-height:1.5;
+			word-break:break-word;
+			min-width:0;
 		}
 		.settings-template-placeholder{
 			margin:0;
-			color:var(--muted);
+			color:rgba(186,204,232,0.66);
 			font-size:14px;
+		}
+		@media (max-width: 1280px){
+			.settings-detail-columns{
+				flex-direction:column;
+				width:min(1000px, 92vw);
+			}
+			.settings-detail-panel,
+			.character-detail-panel{
+				width:100%;
+			}
+		}
+		@media (max-width: 900px){
+			.settings-detail-overlay{
+				padding:36px 20px;
+			}
+			.settings-template-hero{
+				height:220px;
+			}
+			.settings-template-sections{
+				padding:26px 24px 34px;
+			}
+			.settings-template-row{
+				grid-template-columns:1fr;
+			}
+			.character-trn-panel{
+				min-height:360px;
+				padding:32px 24px 40px;
+			}
+			.character-trn-meta{
+				gap:32px;
+			}
+		}
+		@media (max-width: 720px){
+			.settings-detail-panel .popup-header{
+				padding:24px 26px 18px;
+			}
+			.settings-detail-panel .popup-body{
+				padding:0 0 26px;
+				max-height:none;
+			}
+			.app-settings-tab-bar{
+				padding:18px 24px 0;
+				gap:8px;
+			}
+			.app-settings-tab{
+				padding:10px 14px;
+				font-size:12px;
+			}
+			.character-trn-panel{
+				padding:28px 22px 36px;
+			}
+			.settings-template-hero-overlay{
+				padding:26px;
+				flex-direction:column;
+				align-items:flex-start;
+			}
+			.settings-template-sections{
+				padding:20px 20px 26px;
+			}
+			.settings-template-hero-overlay img,
+			.settings-template-logo-fallback{
+				width:56px;
+				height:56px;
+			}
+			.character-trn-meta{
+				gap:26px;
+			}
+		}
+		@media (max-width: 520px){
+			.settings-app-detail{
+				padding:0 0 30px;
+			}
+			.settings-template-section{
+				padding:20px;
+			}
+			.settings-template-sections{
+				padding:18px 16px 26px;
+			}
+			.settings-template-hero-overlay h4{
+				font-size:22px;
+			}
+			.character-trn-panel{
+				min-height:300px;
+				padding:26px 18px 32px;
+			}
+			.character-trn-meta{
+				flex-direction:column;
+				gap:18px;
+			}
+			.character-trn-name{
+				font-size:28px;
+			}
 		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
@@ -1137,8 +1907,8 @@
 				grid-template-columns:1fr;
 				gap:18px;
 			}
-			.settings-app-detail{
-				order: -1;
+			.settings-app-layout .settings-app-detail{
+				order:-1;
 			}
 			.settings-app-list{
 				max-height:none;
@@ -3022,8 +3792,267 @@
 
 		let allSettingsApps = [];
 		let editingAllSettingsAppId = null;
-		let pendingAllSettingsAppMedia = { banner: null, logo: null };
+		let pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
+		let editingAppSettingsTabs = [];
+		let activeEditingSettingsTabId = null;
+		let appSettingsEditorHandlersBound = false;
 		let allSettingsMediaHandlersBound = false;
+		let allSettingsSpecialHandlersBound = false;
+		let imageCropperInstance = null;
+		let imageCropperResolve = null;
+		let imageCropperReject = null;
+		let imageCropperOptions = null;
+		let imageCropperHandlersBound = false;
+
+		const ALL_SETTINGS_SPECIAL_OPTIONS = [
+			{ id: 'none', label: 'None' },
+			{ id: 'character-trn', label: 'Character (TRN)' }
+		];
+
+		const IMAGE_CROP_CONFIG = {
+			banner: {
+				title: 'Crop banner',
+				hint: 'Keep the subject centered. Banner crops vertically at 1080 × 1640.',
+				aspectRatio: 1080 / 1640,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.92
+			},
+			logo: {
+				title: 'Crop logo',
+				hint: 'Square format works best for logos.',
+				aspectRatio: 1
+			},
+			character: {
+				title: 'Crop character portrait',
+				hint: 'Use a tall crop (1080 × 1440). Keep the character centered.',
+				aspectRatio: 1080 / 1440,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.92
+			},
+			profile: {
+				title: 'Crop profile picture',
+				hint: 'Square avatars look best across the site.',
+				aspectRatio: 1
+			},
+			background: {
+				title: 'Crop background image',
+				hint: 'Choose the portion of the image you want behind everything.',
+				viewMode: 0,
+				autoCropArea: 1,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.9
+			},
+			actionLogo: {
+				title: 'Crop button logo',
+				hint: 'Square icons align best with the follow/subscribe buttons.',
+				aspectRatio: 1
+			}
+		};
+
+		function ensureImageCropperHandlers() {
+			if (imageCropperHandlersBound) return;
+			const modal = document.getElementById('imageCropperModal');
+			if (!modal) return;
+			const buttons = modal.querySelectorAll('[data-cropper-action]');
+			buttons.forEach(button => {
+				button.addEventListener('click', event => {
+					event.preventDefault();
+					const action = button.dataset.cropperAction;
+					handleImageCropperAction(action);
+				});
+			});
+			modal.addEventListener('click', event => {
+				if (event.target === modal) {
+					handleImageCropperAction('cancel');
+				}
+			});
+			document.addEventListener('keydown', event => {
+				if (event.key === 'Escape') {
+					const isVisible = modal.style.display !== 'none';
+					if (isVisible) {
+						handleImageCropperAction('cancel');
+					}
+				}
+			});
+			imageCropperHandlersBound = true;
+		}
+
+		function handleImageCropperAction(action) {
+			if (!action) return;
+			switch (action) {
+				case 'cancel': {
+					if (typeof imageCropperReject === 'function') {
+						imageCropperReject(new Error('crop-canceled'));
+					}
+					closeImageCropper();
+					break;
+				}
+				case 'reset': {
+					if (imageCropperInstance) {
+						imageCropperInstance.reset();
+					}
+					break;
+				}
+				case 'apply': {
+					if (!imageCropperInstance) return;
+					try {
+						const canvasOptions = imageCropperOptions?.canvas || {};
+						const canvas = imageCropperInstance.getCroppedCanvas(canvasOptions);
+						if (!canvas) throw new Error('canvas-unavailable');
+						if (canvas.getContext) {
+							const ctx = canvas.getContext('2d');
+							if (ctx && 'imageSmoothingQuality' in ctx) {
+								ctx.imageSmoothingQuality = 'high';
+							}
+						}
+						const format = imageCropperOptions?.outputFormat || 'image/png';
+						const quality = typeof imageCropperOptions?.outputQuality === 'number' ? imageCropperOptions.outputQuality : undefined;
+						const dataUrl = typeof quality === 'number'
+							? canvas.toDataURL(format, quality)
+							: canvas.toDataURL(format);
+						if (typeof imageCropperResolve === 'function') {
+							imageCropperResolve(dataUrl);
+						}
+						closeImageCropper();
+					} catch (error) {
+						console.error('Failed to crop image:', error);
+						if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+							notify.error('Could not crop that image. Try again.');
+						}
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		}
+
+		function closeImageCropper() {
+			const modal = document.getElementById('imageCropperModal');
+			const preview = document.getElementById('imageCropperPreview');
+			if (imageCropperInstance) {
+				imageCropperInstance.destroy();
+				imageCropperInstance = null;
+			}
+			if (preview) {
+				preview.onload = null;
+				preview.onerror = null;
+				preview.src = '';
+			}
+			if (modal) {
+				modal.style.display = 'none';
+				modal.classList.remove('active-cropper');
+			}
+			imageCropperOptions = null;
+			imageCropperResolve = null;
+			imageCropperReject = null;
+		}
+
+		function openImageCropper(dataUrl, options = {}) {
+			ensureImageCropperHandlers();
+			const modal = document.getElementById('imageCropperModal');
+			const preview = document.getElementById('imageCropperPreview');
+			const titleEl = document.getElementById('imageCropperTitle');
+			const hintEl = document.getElementById('imageCropperHint');
+			if (!modal || !preview) {
+				return Promise.reject(new Error('cropper-modal-missing'));
+			}
+			const applyBtn = modal.querySelector('[data-cropper-action="apply"]');
+			return new Promise((resolve, reject) => {
+				imageCropperResolve = resolve;
+				imageCropperReject = reject;
+				imageCropperOptions = options || {};
+				modal.style.display = 'flex';
+				modal.classList.add('active-cropper');
+				modal.scrollTop = 0;
+				if (applyBtn) applyBtn.disabled = true;
+				if (titleEl) titleEl.textContent = options?.title || 'Adjust image crop';
+				if (hintEl) hintEl.textContent = options?.hint || 'Drag to reposition the image. Use your mouse wheel or pinch to zoom.';
+				const cleanup = () => {
+					preview.onload = null;
+					preview.onerror = null;
+				};
+				preview.onload = () => {
+					cleanup();
+					if (imageCropperInstance) {
+						imageCropperInstance.destroy();
+					}
+					const aspectRatio = Number.isFinite(options?.aspectRatio) ? options.aspectRatio : undefined;
+					const cropOptions = {
+						aspectRatio,
+						initialAspectRatio: aspectRatio,
+						viewMode: typeof options?.viewMode === 'number' ? options.viewMode : 1,
+						autoCropArea: typeof options?.autoCropArea === 'number' ? options.autoCropArea : 0.92,
+						background: false,
+						movable: true,
+						zoomable: true,
+						wheelZoomRatio: 0.12,
+						dragMode: 'move',
+						responsive: true,
+						checkOrientation: false,
+						ready() {
+							const stage = modal.querySelector('.image-cropper-stage');
+							if (!stage) return;
+							const bounds = stage.getBoundingClientRect();
+							const imageData = this.getImageData();
+							if (!imageData || !imageData.naturalWidth || !imageData.naturalHeight) {
+								if (applyBtn) applyBtn.disabled = false;
+								return;
+							}
+							this.reset();
+							const scale = Math.min(
+								bounds.width / imageData.naturalWidth,
+								bounds.height / imageData.naturalHeight
+							);
+							if (Number.isFinite(scale) && scale > 0) {
+								this.zoomTo(scale);
+							}
+							this.setDragMode('move');
+							if (applyBtn) applyBtn.disabled = false;
+						}
+					};
+					imageCropperInstance = new Cropper(preview, cropOptions);
+				};
+				preview.onerror = () => {
+					cleanup();
+					if (applyBtn) applyBtn.disabled = false;
+					reject(new Error('crop-load-failed'));
+					closeImageCropper();
+				};
+				preview.src = '';
+				preview.src = dataUrl;
+			});
+		}
+
+		function readFileAsDataURL(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result);
+				reader.onerror = () => reject(new Error('file-read-failed'));
+				reader.readAsDataURL(file);
+			});
+		}
+
+		async function requestImageCrop(dataUrl, key) {
+			if (!dataUrl) return null;
+			if (typeof Cropper === 'undefined') {
+				return dataUrl;
+			}
+			const config = IMAGE_CROP_CONFIG[key] || {};
+			try {
+				const result = await openImageCropper(dataUrl, config);
+				return result;
+			} catch (error) {
+				if (error && error.message === 'crop-canceled') {
+					return null;
+				}
+				console.warn('Image crop failed; falling back to original image.', error);
+				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
+					notify.warning('Using the original upload because cropping failed.');
+				}
+				return dataUrl;
+			}
+		}
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
 			{ id: 'games', label: 'Games', type: 'default' },
@@ -3036,42 +4065,140 @@
 		let currentGameSettingsTabId = null;
 		let selectedAllSettingsAppId = null;
 
-		const DEFAULT_SETTINGS_TEMPLATE = [
+		const DEFAULT_APP_SETTINGS_TABS = [
+			{ id: 'general', label: 'General', hidden: false, sections: [] },
+			{ id: 'other', label: 'Other', hidden: false, sections: [] },
+			{ id: 'controls-actions', label: 'Controls > Actions', hidden: false, sections: [] },
+			{ id: 'controls-equipment', label: 'Controls > Equipment', hidden: false, sections: [] },
+			{ id: 'crosshair', label: 'Crosshair', hidden: false, sections: [] },
+			{ id: 'video-general', label: 'Video > General', hidden: false, sections: [] },
+			{ id: 'video-graphics', label: 'Video > Graphics Quality', hidden: false, sections: [] }
+		];
+
+		const SETTINGS_SECTION_TEMPLATES = [
 			{
-				title: 'Accessibility',
-				items: [
-					{ label: 'Text Language', value: 'English (United States)' },
-					{ label: 'Enemy Highlight Color', value: 'Yellow (Protanopia)' }
-				]
+				id: 'blank',
+				label: 'Blank section',
+				build: () => ({
+					id: generateSettingsSectionId(),
+					title: 'New Section',
+					items: []
+				})
 			},
 			{
-				title: 'Mouse',
-				items: [
-					{ label: 'Sensitivity: Aim', value: '0.17' },
-					{ label: 'Scoped Sensitivity Multiplier', value: '1.0' },
-					{ label: 'Invert Mouse', value: 'Off' },
-					{ label: 'Raw Input Buffer', value: 'On' }
-				]
-			},
-			{
-				title: 'Video – General',
-				items: [
-					{ label: 'Display Mode', value: 'Fullscreen' },
-					{ label: 'Resolution', value: '1920×1080 16:9 (240 Hz)' },
-					{ label: 'Frame Rate Limit', value: 'Unlocked' },
-					{ label: 'V-Sync', value: 'Off' }
-				]
-			},
-			{
-				title: 'Map',
-				items: [
-					{ label: 'Rotate', value: 'Rotate' },
-					{ label: 'Keep Player Centered', value: 'On' },
-					{ label: 'Minimap Size', value: '1.2' },
-					{ label: 'Minimap Zoom', value: '1' }
-				]
+				id: 'basic-pairs',
+				label: 'Value pairs (label + value)',
+				build: () => ({
+					id: generateSettingsSectionId(),
+					title: 'New Section',
+					items: [
+						{ id: generateSettingsItemId(), label: 'Setting name', value: 'Value' }
+					]
+				})
 			}
 		];
+
+		function generateSettingsTabId(label = 'tab') {
+			const slug = String(label || 'tab').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'tab';
+			return `tab-${slug}-${Math.random().toString(36).slice(2, 6)}${Date.now().toString(36).slice(-3)}`;
+		}
+
+		function generateSettingsSectionId() {
+			return `section-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+		}
+
+		function generateSettingsItemId() {
+			return `item-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+		}
+
+		function cloneDefaultAppSettingsTabs() {
+			return DEFAULT_APP_SETTINGS_TABS.map(tab => ({
+				id: tab.id,
+				label: tab.label,
+				hidden: !!tab.hidden,
+				sections: []
+			}));
+		}
+
+		function cloneAppSettingsTabs(tabs) {
+			return normalizeAppSettingsTabs(tabs || []).map(tab => ({
+				id: tab.id,
+				label: tab.label,
+				hidden: !!tab.hidden,
+				sections: (tab.sections || []).map(section => ({
+					id: section.id || generateSettingsSectionId(),
+					title: section.title || 'Untitled Section',
+					items: (section.items || []).map(item => ({
+						id: item.id || generateSettingsItemId(),
+						label: item.label || '',
+						value: item.value || ''
+					}))
+				}))
+			}));
+		}
+
+		function normalizeAppSettingsTabs(rawTabs, legacyTemplate = []) {
+			const ensureItems = (items) => {
+				if (!Array.isArray(items)) return [];
+				return items.map(item => ({
+					id: item?.id || generateSettingsItemId(),
+					label: (item?.label || '').trim(),
+					value: (item?.value || '').trim()
+				}));
+			};
+			const ensureSections = (sections) => {
+				if (!Array.isArray(sections)) return [];
+				return sections.map(section => ({
+					id: section?.id || generateSettingsSectionId(),
+					title: (section?.title || '').trim() || 'Untitled Section',
+					items: ensureItems(section?.items)
+				}));
+			};
+			const fallbackFromLegacy = () => {
+				if (!Array.isArray(legacyTemplate) || !legacyTemplate.length) {
+					return cloneDefaultAppSettingsTabs();
+				}
+				const tabClone = cloneDefaultAppSettingsTabs();
+				tabClone[0].sections = ensureSections(legacyTemplate);
+				return tabClone;
+			};
+			const source = Array.isArray(rawTabs) && rawTabs.length ? rawTabs : fallbackFromLegacy();
+			const normalized = [];
+			const seen = new Set();
+			source.forEach(tab => {
+				const id = (tab?.id || '').trim() || generateSettingsTabId(tab?.label);
+				if (seen.has(id)) return;
+				seen.add(id);
+				normalized.push({
+					id,
+					label: (tab?.label || '').trim() || 'Untitled Tab',
+					hidden: !!tab?.hidden,
+					sections: ensureSections(tab?.sections)
+				});
+			});
+			if (!normalized.length) {
+				return cloneDefaultAppSettingsTabs();
+			}
+			return normalized;
+		}
+
+		function flattenSettingsTabsToTemplate(tabs) {
+			const normalized = normalizeAppSettingsTabs(tabs || []);
+			const template = [];
+			normalized.forEach(tab => {
+				tab.sections.forEach(section => {
+					const items = section.items
+						.filter(item => item.label || item.value)
+						.map(item => ({ label: item.label, value: item.value }));
+					if (!items.length) return;
+					template.push({
+						title: `${tab.label} • ${section.title}`,
+						items
+					});
+				});
+			});
+			return template;
+		}
 
 		function normalizeUrlForCss(url) {
 			if (!url) return '';
@@ -3157,7 +4284,10 @@
 		}
 
 		function buildSettingsDetail(app) {
-			const template = Array.isArray(app?.settingsTemplate) && app.settingsTemplate.length ? app.settingsTemplate : DEFAULT_SETTINGS_TEMPLATE;
+			const tabs = normalizeAppSettingsTabs(app?.settingsTabs, app?.settingsTemplate);
+			const visibleTabs = tabs.filter(tab => !tab.hidden);
+			let activeTabId = visibleTabs[0]?.id || tabs[0]?.id || null;
+
 			const container = document.createElement('section');
 			container.className = 'settings-app-template';
 			container.dataset.appId = app.id;
@@ -3193,16 +4323,41 @@
 			hero.appendChild(heroOverlay);
 			container.appendChild(hero);
 
+			const templateBody = document.createElement('div');
+			templateBody.className = 'settings-template-body';
+
+			const tabBar = document.createElement('div');
+			tabBar.className = 'app-settings-tab-bar';
+			templateBody.appendChild(tabBar);
+
 			const sectionsWrap = document.createElement('div');
 			sectionsWrap.className = 'settings-template-sections';
+			templateBody.appendChild(sectionsWrap);
 
-			if (!template.length) {
+			container.appendChild(templateBody);
+
+			const tabButtons = new Map();
+
+			const renderEmptyState = (message) => {
+				sectionsWrap.innerHTML = '';
 				const placeholder = document.createElement('p');
 				placeholder.className = 'settings-template-placeholder';
-				placeholder.textContent = 'Settings template coming soon.';
+				placeholder.textContent = message;
 				sectionsWrap.appendChild(placeholder);
-			} else {
-				template.forEach(section => {
+			};
+
+			const renderTabContent = (tabId) => {
+				sectionsWrap.innerHTML = '';
+				const tab = tabs.find(item => item.id === tabId) || tabs[0] || null;
+				if (!tab) {
+					renderEmptyState('No settings configured yet.');
+					return;
+				}
+				if (!tab.sections.length) {
+					renderEmptyState('No sections added for this tab yet.');
+					return;
+				}
+				tab.sections.forEach(section => {
 					const sectionEl = document.createElement('section');
 					sectionEl.className = 'settings-template-section';
 
@@ -3239,30 +4394,122 @@
 					sectionEl.appendChild(grid);
 					sectionsWrap.appendChild(sectionEl);
 				});
+			};
+
+			if (!visibleTabs.length) {
+				tabBar.classList.add('empty');
+				renderEmptyState('All tabs are hidden. Update settings to display content.');
+			} else {
+				if (!visibleTabs.some(tab => tab.id === activeTabId)) {
+					activeTabId = visibleTabs[0]?.id || null;
+				}
+				visibleTabs.forEach((tab, index) => {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'app-settings-tab';
+					button.dataset.tabId = tab.id;
+					button.textContent = tab.label || 'Untitled Tab';
+					if (index === 0 && !activeTabId) {
+						activeTabId = tab.id;
+					}
+					if (tab.id === activeTabId) {
+						button.classList.add('active');
+					}
+					button.addEventListener('click', () => {
+						activeTabId = tab.id;
+						tabButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+						renderTabContent(tab.id);
+					});
+					tabButtons.set(tab.id, button);
+					tabBar.appendChild(button);
+				});
+				renderTabContent(activeTabId);
 			}
 
-			container.appendChild(sectionsWrap);
-			return container;
+			const detailCard = document.createElement('div');
+			detailCard.className = 'settings-app-detail';
+			detailCard.dataset.appId = app.id;
+			detailCard.appendChild(container);
+			const specialOption = normalizeAllSettingsSpecialOption(app?.specialOption);
+			let characterPanel = null;
+			if (specialOption === 'character-trn') {
+				characterPanel = document.createElement('aside');
+				characterPanel.className = 'character-trn-panel';
+				characterPanel.dataset.appId = `${app.id}-character`;
+				if (app.characterImage) {
+					applyBackgroundImage(characterPanel, app.characterImage);
+				} else {
+					characterPanel.classList.add('empty');
+				}
+				const content = document.createElement('div');
+				content.className = 'character-trn-content';
+				const characterName = document.createElement('h4');
+				characterName.className = 'character-trn-name';
+				characterName.textContent = app.characterName || 'Character Name';
+				content.appendChild(characterName);
+				const meta = document.createElement('div');
+				meta.className = 'character-trn-meta';
+				const statItems = [
+					{ label: 'Playtime', value: '124h 32m' },
+					{ label: 'K/D Ratio', value: '2.45' }
+				];
+				statItems.forEach(stat => {
+					const item = document.createElement('div');
+					item.className = 'character-trn-meta-item';
+					const statLabel = document.createElement('span');
+					statLabel.className = 'character-trn-meta-label';
+					statLabel.textContent = stat.label;
+					const statValue = document.createElement('span');
+					statValue.className = 'character-trn-meta-value';
+					statValue.textContent = stat.value;
+					item.appendChild(statLabel);
+					item.appendChild(statValue);
+					meta.appendChild(item);
+				});
+				content.appendChild(meta);
+				characterPanel.appendChild(content);
+			}
+			return { main: detailCard, side: characterPanel };
 		}
 
 		function openSettingsAppDetailPopup(app) {
 			if (!app) return;
 			const popup = document.getElementById('settingsAppDetailPopup');
 			const body = document.getElementById('settingsAppDetailBody');
+			const characterPanel = document.getElementById('settingsCharacterDetailPanel');
+			const characterBody = document.getElementById('settingsCharacterDetailBody');
 			const title = document.getElementById('settingsAppDetailTitle');
 			const category = document.getElementById('settingsAppDetailCategory');
 			if (!popup || !body) return;
+
 			body.innerHTML = '';
-			const detailWrapper = document.createElement('div');
-			detailWrapper.className = 'settings-app-detail';
-			detailWrapper.appendChild(buildSettingsDetail(app));
-			body.appendChild(detailWrapper);
+			if (characterBody) {
+				characterBody.innerHTML = '';
+			}
+			const detailContent = buildSettingsDetail(app);
+			if (detailContent.main) {
+				body.appendChild(detailContent.main);
+			}
+			const hasCharacter = !!detailContent.side;
+			if (characterPanel) {
+				if (hasCharacter && characterBody) {
+					characterPanel.style.display = '';
+					characterPanel.removeAttribute('aria-hidden');
+					characterBody.appendChild(detailContent.side);
+				} else {
+					characterPanel.setAttribute('aria-hidden', 'true');
+					characterPanel.style.display = 'none';
+				}
+			}
+			popup.classList.toggle('has-character', hasCharacter);
+
 			if (title) {
 				title.textContent = app.name || 'App Settings';
 			}
 			if (category) {
 				category.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
 			}
+
 			popup.style.display = 'flex';
 			setBodyScrollState(true);
 		}
@@ -3270,26 +4517,39 @@
 		function closeSettingsAppDetailPopup(preserveScrollLock = false) {
 			const popup = document.getElementById('settingsAppDetailPopup');
 			const body = document.getElementById('settingsAppDetailBody');
-			const category = document.getElementById('settingsAppDetailCategory');
+			const characterPanel = document.getElementById('settingsCharacterDetailPanel');
+			const characterBody = document.getElementById('settingsCharacterDetailBody');
 			const title = document.getElementById('settingsAppDetailTitle');
+			const category = document.getElementById('settingsAppDetailCategory');
 			if (!popup) return;
+
 			popup.style.display = 'none';
 			if (body) {
 				body.innerHTML = '';
 			}
-			if (category) {
-				category.textContent = '\u00A0';
+			if (characterBody) {
+				characterBody.innerHTML = '';
 			}
+			if (characterPanel) {
+				characterPanel.setAttribute('aria-hidden', 'true');
+				characterPanel.style.display = 'none';
+			}
+			popup.classList.remove('has-character');
 			if (title) {
 				title.textContent = 'App Settings';
 			}
-			if (!preserveScrollLock) {
-				const mainPopup = document.getElementById('gameSettingsPopup');
-				if (mainPopup && mainPopup.style.display === 'flex') {
-					setBodyScrollState(true);
-				} else {
-					setBodyScrollState(false);
-				}
+			if (category) {
+				category.textContent = '\u00A0';
+			}
+
+			if (preserveScrollLock) {
+				return;
+			}
+			const mainPopup = document.getElementById('gameSettingsPopup');
+			if (mainPopup && mainPopup.style.display === 'flex') {
+				setBodyScrollState(true);
+			} else {
+				setBodyScrollState(false);
 			}
 		}
 
@@ -3404,13 +4664,18 @@
 				if (!value || value === 'N/A') return '';
 				return String(value).trim();
 			};
+			const normalizedTabs = normalizeAppSettingsTabs(raw?.settingsTabs, raw?.settingsTemplate);
 			const normalized = {
 				id: String(raw.id || '').trim(),
 				name: (raw.name || '').trim(),
 				logo: sanitizeMedia(raw.logo),
 				banner: sanitizeMedia(raw.banner),
 				tabId: resolveGameSettingsTabId(raw.tabId),
-				settingsTemplate: Array.isArray(raw.settingsTemplate) ? raw.settingsTemplate : [],
+				settingsTabs: normalizedTabs,
+				settingsTemplate: flattenSettingsTabsToTemplate(normalizedTabs),
+				specialOption: normalizeAllSettingsSpecialOption(raw.specialOption),
+				characterImage: sanitizeMedia(raw.characterImage),
+				characterName: (raw.characterName || '').trim(),
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -3422,6 +4687,10 @@
 			if (!normalized.name) {
 				normalized.name = 'Untitled App';
 			}
+			if (normalized.specialOption !== 'character-trn') {
+				normalized.characterImage = '';
+				normalized.characterName = '';
+			}
 			return normalized;
 		}
 
@@ -3432,8 +4701,44 @@
 
 		const ALL_SETTINGS_MEDIA_CONFIG = {
 			banner: { previewId: 'allSettingsAppBannerPreview', inputSelector: '#allSettingsBannerInput' },
-			logo: { previewId: 'allSettingsAppLogoPreview', inputSelector: '#allSettingsLogoInput' }
+			logo: { previewId: 'allSettingsAppLogoPreview', inputSelector: '#allSettingsLogoInput' },
+			character: { previewId: 'allSettingsCharacterPreview', inputSelector: '#allSettingsCharacterInput' }
 		};
+
+		function normalizeAllSettingsSpecialOption(value) {
+			const normalized = String(value || '').trim().toLowerCase();
+			return ALL_SETTINGS_SPECIAL_OPTIONS.some(option => option.id === normalized)
+				? normalized
+				: ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
+		}
+
+		function updateAllSettingsSpecialOptionUI(option) {
+			const resolved = normalizeAllSettingsSpecialOption(option);
+			const specialMedia = document.getElementById('allSettingsSpecialMedia');
+			if (specialMedia) {
+				specialMedia.classList.toggle('active', resolved === 'character-trn');
+			}
+			const nameField = document.getElementById('allSettingsCharacterNameField');
+			if (nameField) {
+				const isCharacter = resolved === 'character-trn';
+				nameField.classList.toggle('active', isCharacter);
+				if (!isCharacter) {
+					const input = nameField.querySelector('input');
+					if (input) input.value = '';
+				}
+			}
+		}
+
+		function ensureAllSettingsSpecialHandlers() {
+			if (allSettingsSpecialHandlersBound) return;
+			const select = document.getElementById('allSettingsSpecialOption');
+			if (select) {
+				select.addEventListener('change', event => {
+					updateAllSettingsSpecialOptionUI(event.target.value);
+				});
+			}
+			allSettingsSpecialHandlersBound = true;
+		}
 
 		function setAllSettingsMediaPreview(type, value) {
 			const config = ALL_SETTINGS_MEDIA_CONFIG[type];
@@ -3456,6 +4761,461 @@
 		function updateAllSettingsAppPreview() {
 			setAllSettingsMediaPreview('banner', pendingAllSettingsAppMedia.banner);
 			setAllSettingsMediaPreview('logo', pendingAllSettingsAppMedia.logo);
+			setAllSettingsMediaPreview('character', pendingAllSettingsAppMedia.character);
+		}
+
+		function resolveUniqueTabLabel(baseLabel, tabs) {
+			const base = (baseLabel || 'New Tab').trim() || 'New Tab';
+			const existing = new Set((tabs || []).map(tab => (tab.label || '').toLowerCase()));
+			if (!existing.has(base.toLowerCase())) {
+				return base;
+			}
+			let index = 2;
+			while (existing.has(`${base} ${index}`.toLowerCase())) {
+				index += 1;
+			}
+			return `${base} ${index}`;
+		}
+
+		function buildSectionFromTemplate(templateId) {
+			const template = SETTINGS_SECTION_TEMPLATES.find(item => item.id === templateId) || SETTINGS_SECTION_TEMPLATES[0];
+			if (!template) {
+				return { id: generateSettingsSectionId(), title: 'New Section', items: [] };
+			}
+			const section = template.build();
+			return {
+				id: section.id || generateSettingsSectionId(),
+				title: section.title || 'New Section',
+				items: Array.isArray(section.items) ? section.items.map(item => ({
+					id: item.id || generateSettingsItemId(),
+					label: item.label || '',
+					value: item.value || ''
+				})) : []
+			};
+		}
+
+		function renderAppSettingsEditor() {
+			renderAppSettingsTabList();
+			renderAppSettingsTabDetail();
+		}
+
+		function renderAppSettingsTabList() {
+			const list = document.getElementById('allSettingsSettingsTabList');
+			if (!list) return;
+			list.innerHTML = '';
+			if (!editingAppSettingsTabs.length) {
+				const empty = document.createElement('div');
+				empty.className = 'app-settings-empty-state';
+				empty.textContent = 'No tabs yet. Add one to start configuring settings.';
+				list.appendChild(empty);
+				return;
+			}
+			const activeId = activeEditingSettingsTabId;
+			editingAppSettingsTabs.forEach(tab => {
+				const item = document.createElement('div');
+				item.className = 'app-settings-tab-item';
+				item.dataset.tabId = tab.id;
+
+				const selectBtn = document.createElement('button');
+				selectBtn.type = 'button';
+				selectBtn.className = 'app-settings-tab-select';
+				if (tab.id === activeId) {
+					selectBtn.classList.add('active');
+				}
+				selectBtn.dataset.action = 'select-tab';
+				selectBtn.dataset.tabId = tab.id;
+				const labelSpan = document.createElement('span');
+				labelSpan.textContent = tab.label || 'Untitled Tab';
+				const statusSpan = document.createElement('span');
+				statusSpan.className = 'status';
+				statusSpan.textContent = tab.hidden ? 'Hidden' : 'Visible';
+				selectBtn.appendChild(labelSpan);
+				selectBtn.appendChild(statusSpan);
+				item.appendChild(selectBtn);
+
+				const fields = document.createElement('div');
+				fields.className = 'app-settings-tab-fields';
+				const nameLabel = document.createElement('label');
+				nameLabel.textContent = 'Tab name';
+				const nameInput = document.createElement('input');
+				nameInput.type = 'text';
+				nameInput.value = tab.label || '';
+				nameInput.dataset.role = 'tab-label';
+				nameInput.dataset.tabId = tab.id;
+				nameLabel.appendChild(nameInput);
+				fields.appendChild(nameLabel);
+
+				const toggleLabel = document.createElement('label');
+				toggleLabel.className = 'app-settings-tab-toggle';
+				const toggleInput = document.createElement('input');
+				toggleInput.type = 'checkbox';
+				toggleInput.checked = !!tab.hidden;
+				toggleInput.dataset.role = 'tab-hidden';
+				toggleInput.dataset.tabId = tab.id;
+				toggleLabel.appendChild(toggleInput);
+				const toggleText = document.createElement('span');
+				toggleText.textContent = 'Hide this tab';
+				toggleLabel.appendChild(toggleText);
+				fields.appendChild(toggleLabel);
+
+				item.appendChild(fields);
+
+				const footer = document.createElement('div');
+				footer.className = 'app-settings-tab-footer';
+				const deleteBtn = document.createElement('button');
+				deleteBtn.type = 'button';
+				deleteBtn.className = 'danger';
+				deleteBtn.dataset.action = 'delete-tab';
+				deleteBtn.dataset.tabId = tab.id;
+				deleteBtn.textContent = 'Delete';
+				deleteBtn.setAttribute('aria-label', `Delete ${tab.label || 'tab'}`);
+				footer.appendChild(deleteBtn);
+				item.appendChild(footer);
+
+				list.appendChild(item);
+			});
+		}
+
+		function renderAppSettingsTabDetail() {
+			const detail = document.getElementById('allSettingsSettingsTabDetail');
+			if (!detail) return;
+			detail.innerHTML = '';
+			if (!editingAppSettingsTabs.length) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'Add a tab to start managing sections and options.';
+				detail.appendChild(placeholder);
+				return;
+			}
+			let tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) {
+				tab = editingAppSettingsTabs[0];
+				activeEditingSettingsTabId = tab?.id || null;
+			}
+			if (!tab) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'No tab selected.';
+				detail.appendChild(placeholder);
+				return;
+			}
+
+			const header = document.createElement('header');
+			const heading = document.createElement('h5');
+			heading.textContent = `${tab.label || 'Untitled Tab'} sections`;
+			header.appendChild(heading);
+			const sectionActions = document.createElement('div');
+			sectionActions.className = 'app-settings-section-actions';
+			const templateSelect = document.createElement('select');
+			templateSelect.dataset.role = 'section-template';
+			SETTINGS_SECTION_TEMPLATES.forEach(template => {
+				const opt = document.createElement('option');
+				opt.value = template.id;
+				opt.textContent = template.label;
+				templateSelect.appendChild(opt);
+			});
+			const addSectionBtn = document.createElement('button');
+			addSectionBtn.type = 'button';
+			addSectionBtn.className = 'admin-logout-btn alt-light';
+			addSectionBtn.dataset.action = 'add-section';
+			addSectionBtn.textContent = 'Add section';
+			sectionActions.appendChild(templateSelect);
+			sectionActions.appendChild(addSectionBtn);
+			header.appendChild(sectionActions);
+			detail.appendChild(header);
+
+			if (!tab.sections.length) {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'app-settings-empty-state';
+				placeholder.textContent = 'No sections yet. Use the dropdown above to add one.';
+				detail.appendChild(placeholder);
+				return;
+			}
+
+			const sectionList = document.createElement('div');
+			sectionList.className = 'app-settings-section-list';
+			tab.sections.forEach(section => {
+				const card = document.createElement('div');
+				card.className = 'app-settings-section-card';
+				card.dataset.sectionId = section.id;
+
+				const cardHeader = document.createElement('header');
+				const sectionTitleInput = document.createElement('input');
+				sectionTitleInput.type = 'text';
+				sectionTitleInput.value = section.title || '';
+				sectionTitleInput.dataset.role = 'section-title';
+				sectionTitleInput.dataset.sectionId = section.id;
+				cardHeader.appendChild(sectionTitleInput);
+
+				const removeSectionBtn = document.createElement('button');
+				removeSectionBtn.type = 'button';
+				removeSectionBtn.dataset.action = 'delete-section';
+				removeSectionBtn.dataset.sectionId = section.id;
+				removeSectionBtn.textContent = 'Remove section';
+				removeSectionBtn.setAttribute('aria-label', 'Remove this section');
+				cardHeader.appendChild(removeSectionBtn);
+				card.appendChild(cardHeader);
+
+				const optionList = document.createElement('div');
+				optionList.className = 'app-settings-option-list';
+				if (!section.items.length) {
+					const emptyOption = document.createElement('div');
+					emptyOption.className = 'app-settings-empty-state';
+					emptyOption.textContent = 'No options yet. Add one below.';
+					optionList.appendChild(emptyOption);
+				} else {
+					section.items.forEach(item => {
+						const row = document.createElement('div');
+						row.className = 'app-settings-option-row';
+						row.dataset.itemId = item.id;
+
+						const labelInput = document.createElement('input');
+						labelInput.type = 'text';
+						labelInput.value = item.label || '';
+						labelInput.placeholder = 'Setting';
+						labelInput.dataset.role = 'option-field';
+						labelInput.dataset.field = 'label';
+						labelInput.dataset.sectionId = section.id;
+						labelInput.dataset.itemId = item.id;
+
+						const valueInput = document.createElement('input');
+						valueInput.type = 'text';
+						valueInput.value = item.value || '';
+						valueInput.placeholder = 'Value';
+						valueInput.dataset.role = 'option-field';
+						valueInput.dataset.field = 'value';
+						valueInput.dataset.sectionId = section.id;
+						valueInput.dataset.itemId = item.id;
+
+						const deleteOptionBtn = document.createElement('button');
+						deleteOptionBtn.type = 'button';
+						deleteOptionBtn.dataset.action = 'delete-option';
+						deleteOptionBtn.dataset.sectionId = section.id;
+						deleteOptionBtn.dataset.itemId = item.id;
+						deleteOptionBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6l1-3h4l1 3"/></svg>';
+						deleteOptionBtn.setAttribute('aria-label', 'Remove option');
+
+						row.appendChild(labelInput);
+						row.appendChild(valueInput);
+						row.appendChild(deleteOptionBtn);
+						optionList.appendChild(row);
+					});
+				}
+				card.appendChild(optionList);
+
+				const optionActions = document.createElement('div');
+				optionActions.className = 'app-settings-option-actions';
+				const addOptionBtn = document.createElement('button');
+				addOptionBtn.type = 'button';
+				addOptionBtn.className = 'add-option';
+				addOptionBtn.dataset.action = 'add-option';
+				addOptionBtn.dataset.sectionId = section.id;
+				addOptionBtn.textContent = 'Add option';
+				optionActions.appendChild(addOptionBtn);
+				card.appendChild(optionActions);
+
+				sectionList.appendChild(card);
+			});
+			detail.appendChild(sectionList);
+		}
+
+		function ensureAppSettingsEditorHandlers() {
+			if (appSettingsEditorHandlersBound) return;
+			const editor = document.getElementById('allSettingsAppSettingsEditor');
+			if (!editor) return;
+			editor.addEventListener('input', handleAppSettingsEditorInput);
+			editor.addEventListener('change', handleAppSettingsEditorChange);
+			editor.addEventListener('click', handleAppSettingsEditorClick);
+			const addTabBtn = document.getElementById('addSettingsTabBtn');
+			if (addTabBtn) {
+				addTabBtn.addEventListener('click', () => {
+					addNewAppSettingsTab();
+				});
+			}
+			appSettingsEditorHandlersBound = true;
+		}
+
+		function handleAppSettingsEditorInput(event) {
+			const target = event.target;
+			if (!target) return;
+			const role = target.dataset.role;
+			if (role === 'tab-label') {
+				const tabId = target.dataset.tabId;
+				const tab = editingAppSettingsTabs.find(item => item.id === tabId);
+				if (tab) {
+					tab.label = target.value;
+					const selectBtn = document.querySelector(`.app-settings-tab-select[data-tab-id="${tabId}"] span:first-child`);
+					if (selectBtn) {
+						selectBtn.textContent = target.value || 'Untitled Tab';
+					}
+					if (tabId === activeEditingSettingsTabId) {
+						const detailHeader = document.querySelector('#allSettingsSettingsTabDetail header h5');
+						if (detailHeader) {
+							detailHeader.textContent = `${tab.label || 'Untitled Tab'} sections`;
+						}
+					}
+				}
+			}
+			if (role === 'section-title') {
+				const sectionId = target.dataset.sectionId;
+				const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+				if (!tab) return;
+				const section = tab.sections.find(item => item.id === sectionId);
+				if (section) {
+					section.title = target.value;
+				}
+			}
+			if (role === 'option-field') {
+				const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+				if (!tab) return;
+				const section = tab.sections.find(item => item.id === target.dataset.sectionId);
+				if (!section) return;
+				const item = section.items.find(option => option.id === target.dataset.itemId);
+				if (!item) return;
+				if (target.dataset.field === 'label') {
+					item.label = target.value;
+				} else if (target.dataset.field === 'value') {
+					item.value = target.value;
+				}
+			}
+		}
+
+		function handleAppSettingsEditorChange(event) {
+			const target = event.target;
+			if (!target) return;
+			const role = target.dataset.role;
+			if (role === 'tab-hidden') {
+				const tab = editingAppSettingsTabs.find(item => item.id === target.dataset.tabId);
+				if (tab) {
+					tab.hidden = target.checked;
+					renderAppSettingsTabList();
+				}
+			}
+		}
+
+		function handleAppSettingsEditorClick(event) {
+			const actionTarget = event.target.closest('[data-action]');
+			if (!actionTarget) return;
+			const action = actionTarget.dataset.action;
+			switch(action) {
+				case 'select-tab': {
+					const tabId = actionTarget.dataset.tabId;
+					setActiveEditingTab(tabId);
+					break;
+				}
+				case 'delete-tab': {
+					const tabId = actionTarget.dataset.tabId;
+					removeAppSettingsTab(tabId);
+					break;
+				}
+				case 'add-section': {
+					const detail = document.getElementById('allSettingsSettingsTabDetail');
+					const select = detail ? detail.querySelector('select[data-role="section-template"]') : null;
+					const templateId = select ? select.value : SETTINGS_SECTION_TEMPLATES[0].id;
+					addSectionToActiveTab(templateId);
+					break;
+				}
+				case 'delete-section': {
+					const sectionId = actionTarget.dataset.sectionId;
+					removeSectionFromActiveTab(sectionId);
+					break;
+				}
+				case 'add-option': {
+					const sectionId = actionTarget.dataset.sectionId;
+					addOptionToSection(sectionId);
+					break;
+				}
+				case 'delete-option': {
+					const sectionId = actionTarget.dataset.sectionId;
+					const itemId = actionTarget.dataset.itemId;
+					removeOptionFromSection(sectionId, itemId);
+					break;
+				}
+			}
+		}
+
+		function setActiveEditingTab(tabId) {
+			if (!tabId) return;
+			if (!editingAppSettingsTabs.some(tab => tab.id === tabId)) return;
+			activeEditingSettingsTabId = tabId;
+			renderAppSettingsEditor();
+		}
+
+		function addNewAppSettingsTab() {
+			const label = resolveUniqueTabLabel('New Tab', editingAppSettingsTabs);
+			const newTab = {
+				id: generateSettingsTabId(label),
+				label,
+				hidden: false,
+				sections: []
+			};
+			editingAppSettingsTabs.push(newTab);
+			activeEditingSettingsTabId = newTab.id;
+			renderAppSettingsEditor();
+		}
+
+		function removeAppSettingsTab(tabId) {
+			if (!tabId) return;
+			if (editingAppSettingsTabs.length <= 1) {
+				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
+					notify.warning('Keep at least one tab. Hide it if you do not want to show it.');
+				} else {
+					console.warn('Keep at least one tab. Hide it if you do not want to show it.');
+				}
+				return;
+			}
+			const tab = editingAppSettingsTabs.find(item => item.id === tabId);
+			const shouldRemove = window.confirm ? window.confirm(`Remove the “${tab?.label || 'Untitled Tab'}” tab?`) : true;
+			if (!shouldRemove) return;
+			editingAppSettingsTabs = editingAppSettingsTabs.filter(item => item.id !== tabId);
+			if (!editingAppSettingsTabs.some(item => item.id === activeEditingSettingsTabId)) {
+				activeEditingSettingsTabId = editingAppSettingsTabs[0]?.id || null;
+			}
+			renderAppSettingsEditor();
+		}
+
+		function addSectionToActiveTab(templateId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = buildSectionFromTemplate(templateId);
+			tab.sections.push(section);
+			renderAppSettingsTabDetail();
+		}
+
+		function removeSectionFromActiveTab(sectionId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			tab.sections = tab.sections.filter(section => section.id !== sectionId);
+			renderAppSettingsTabDetail();
+		}
+
+		function addOptionToSection(sectionId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = tab.sections.find(item => item.id === sectionId);
+			if (!section) return;
+			section.items.push({ id: generateSettingsItemId(), label: '', value: '' });
+			renderAppSettingsTabDetail();
+		}
+
+		function removeOptionFromSection(sectionId, itemId) {
+			const tab = editingAppSettingsTabs.find(item => item.id === activeEditingSettingsTabId);
+			if (!tab) return;
+			const section = tab.sections.find(item => item.id === sectionId);
+			if (!section) return;
+			section.items = section.items.filter(item => item.id !== itemId);
+			renderAppSettingsTabDetail();
+		}
+
+		function initializeAppSettingsEditor(initialTabs, legacyTemplate = []) {
+			const normalized = normalizeAppSettingsTabs(initialTabs, legacyTemplate);
+			editingAppSettingsTabs = cloneAppSettingsTabs(normalized.length ? normalized : cloneDefaultAppSettingsTabs());
+			if (!editingAppSettingsTabs.length) {
+				editingAppSettingsTabs = cloneDefaultAppSettingsTabs();
+			}
+			activeEditingSettingsTabId = editingAppSettingsTabs[0]?.id || null;
+			renderAppSettingsEditor();
+			ensureAppSettingsEditorHandlers();
 		}
 
 		function triggerAllSettingsMediaInput(type) {
@@ -3465,22 +5225,28 @@
 			if (input) input.click();
 		}
 
-		function onAllSettingsMediaInputChange(event) {
+		async function onAllSettingsMediaInputChange(event) {
 			const input = event.target;
 			const type = input?.dataset?.mediaType;
 			if (!type || !ALL_SETTINGS_MEDIA_CONFIG[type]) return;
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = e => {
-				pendingAllSettingsAppMedia[type] = e.target?.result || null;
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, type);
+				if (!cropped) {
+					return;
+				}
+				pendingAllSettingsAppMedia[type] = cropped;
 				setAllSettingsMediaPreview(type, pendingAllSettingsAppMedia[type]);
-			};
-			reader.onerror = () => {
-				notify.error('Could not read that image. Try a different file.');
-			};
-			reader.readAsDataURL(file);
-			input.value = '';
+			} catch (error) {
+				console.error('Failed to process media upload:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not process that image. Try again with a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
 		}
 
 		function ensureAllSettingsMediaHandlers() {
@@ -3517,8 +5283,14 @@
 			if (nameInput) nameInput.value = '';
 			const categorySelect = document.getElementById('allSettingsAppCategory');
 			if (categorySelect) categorySelect.value = DEFAULT_GAME_SETTINGS_TABS[0].id;
-			pendingAllSettingsAppMedia = { banner: null, logo: null };
+			const specialSelect = document.getElementById('allSettingsSpecialOption');
+			if (specialSelect) specialSelect.value = ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
+			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
+			if (characterNameInput) characterNameInput.value = '';
+			pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 			updateAllSettingsAppPreview();
+			updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
+			initializeAppSettingsEditor([]);
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			if (title) title.textContent = 'Add App to All Settings';
 		}
@@ -3536,6 +5308,7 @@
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			editingAllSettingsAppId = appId || null;
 			ensureAllSettingsMediaHandlers();
+			ensureAllSettingsSpecialHandlers();
 			if (appId) {
 				const app = allSettingsApps.find(item => item.id === appId);
 				if (app) {
@@ -3543,10 +5316,17 @@
 					if (nameInput) nameInput.value = app.name || '';
 					const categorySelect = document.getElementById('allSettingsAppCategory');
 					if (categorySelect) categorySelect.value = resolveGameSettingsTabId(app.tabId);
+					const specialSelect = document.getElementById('allSettingsSpecialOption');
+					if (specialSelect) specialSelect.value = normalizeAllSettingsSpecialOption(app.specialOption);
+					const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
+					if (characterNameInput) characterNameInput.value = app.characterName || '';
 					pendingAllSettingsAppMedia = {
 						banner: (app.banner && app.banner !== 'N/A') ? app.banner : null,
-						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null
+						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null,
+						character: (app.characterImage && app.characterImage !== 'N/A') ? app.characterImage : null
 					};
+					initializeAppSettingsEditor(app.settingsTabs, app.settingsTemplate);
+					updateAllSettingsSpecialOptionUI(specialSelect ? specialSelect.value : ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
 					if (title) title.textContent = `Edit ${app.name || 'App'}`;
 				} else {
 					resetAllSettingsAppForm();
@@ -3555,6 +5335,9 @@
 				resetAllSettingsAppForm();
 			}
 			updateAllSettingsAppPreview();
+			if (!appId) {
+				updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
+			}
 			openPopup('allSettingsAppFormPopup');
 		}
 
@@ -3677,15 +5460,26 @@
 		async function saveAllSettingsApp() {
 			const nameInput = document.getElementById('allSettingsAppName');
 			const categorySelect = document.getElementById('allSettingsAppCategory');
+			const specialSelect = document.getElementById('allSettingsSpecialOption');
+			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
 			const name = (nameInput?.value || '').trim();
 			const logo = pendingAllSettingsAppMedia.logo || '';
 			const banner = pendingAllSettingsAppMedia.banner || '';
 			const tabId = resolveGameSettingsTabId(categorySelect?.value);
+			const specialOption = normalizeAllSettingsSpecialOption(specialSelect?.value);
+			let characterName = (characterNameInput?.value || '').trim();
+			let characterImage = pendingAllSettingsAppMedia.character || '';
+			if (specialOption !== 'character-trn') {
+				characterImage = '';
+				characterName = '';
+			}
 			if (!name) {
 				notify.error('Give the app a name before saving.');
 				nameInput?.focus();
 				return;
 			}
+			const settingsTabs = cloneAppSettingsTabs(editingAppSettingsTabs);
+			const settingsTemplate = flattenSettingsTabsToTemplate(settingsTabs);
 			let targetId = editingAllSettingsAppId;
 			const timestamp = Date.now();
 			if (editingAllSettingsAppId) {
@@ -3697,6 +5491,11 @@
 						logo,
 						banner,
 						tabId,
+						settingsTabs,
+						settingsTemplate,
+						specialOption,
+						characterImage,
+						characterName,
 						updatedAt: timestamp
 					};
 				} else {
@@ -3708,7 +5507,11 @@
 						logo,
 						banner,
 						tabId,
-						settingsTemplate: [],
+						settingsTabs,
+						settingsTemplate,
+						specialOption,
+						characterImage,
+						characterName,
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -3721,7 +5524,11 @@
 					logo,
 					banner,
 					tabId,
-					settingsTemplate: [],
+					settingsTabs,
+					settingsTemplate,
+					specialOption,
+					characterImage,
+					characterName,
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
@@ -3902,17 +5709,45 @@
 		</div>
 	</div>
 
-	<div id="settingsAppDetailPopup" class="popup-overlay">
-		<div class="popup-content settings-detail-panel">
-			<div class="popup-header">
-				<div>
-					<h3 id="settingsAppDetailTitle">App Settings</h3>
-					<small id="settingsAppDetailCategory" style="color:var(--muted); display:block;">&nbsp;</small>
+	<div id="settingsAppDetailPopup" class="popup-overlay settings-detail-overlay">
+		<div class="settings-detail-columns" id="settingsDetailColumns">
+			<div class="popup-content settings-detail-panel" id="settingsDetailMainPanel">
+				<div class="popup-header">
+					<div>
+						<h3 id="settingsAppDetailTitle">App Settings</h3>
+						<small id="settingsAppDetailCategory" style="color:var(--muted); display:block;">&nbsp;</small>
+					</div>
+					<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close app settings detail">&times;</button>
 				</div>
-				<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close app settings detail">&times;</button>
+				<div class="popup-body">
+					<div id="settingsAppDetailBody"></div>
+				</div>
+			</div>
+			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true">
+				<div class="character-detail-body" id="settingsCharacterDetailBody"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="imageCropperModal" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="imageCropperTitle" style="display:none;">
+		<div class="popup-content cropper-popup image-cropper-popup">
+			<div class="popup-header">
+				<h3 id="imageCropperTitle">Adjust image crop</h3>
+				<button class="close-btn" type="button" data-cropper-action="cancel" aria-label="Cancel image cropping">&times;</button>
 			</div>
 			<div class="popup-body">
-				<div id="settingsAppDetailBody"></div>
+				<div class="image-cropper-body">
+					<div class="image-cropper-stage">
+						<img id="imageCropperPreview" alt="Image crop preview">
+					</div>
+					<div class="image-cropper-hint" id="imageCropperHint">Drag to reposition the image. Use your mouse wheel or pinch to zoom in/out.</div>
+					<div class="image-cropper-controls">
+						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="cancel">Cancel</button>
+						<span class="spacer"></span>
+						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="reset">Reset</button>
+						<button type="button" class="admin-logout-btn" data-cropper-action="apply">Use Image</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -3933,7 +5768,7 @@
 
 		<!-- Add All Settings App Popup -->
 		<div id="allSettingsAppFormPopup" class="popup-overlay">
-			<div class="popup-content admin-popup" style="max-width:520px; max-height:90vh;">
+			<div class="popup-content admin-popup" style="max-width:960px; max-height:90vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
 					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
@@ -3941,8 +5776,20 @@
 				<div class="popup-body" style="display:flex; flex-direction:column; gap:22px; overflow-y:auto;">
 					<div class="app-form-grid">
 						<div class="app-name-field">
-							<label for="allSettingsAppName" class="app-name-label">App Name</label>
-							<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
+							<div class="app-name-main">
+								<label for="allSettingsAppName" class="app-name-label">App Name</label>
+								<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
+							</div>
+							<div class="app-inline-logo">
+								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+									<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+										Upload
+									</button>
+									<input type="file" accept="image/*" id="allSettingsLogoInput" class="app-media-input" data-media-type="logo">
+								</div>
+								<span class="app-inline-logo-hint">Logo • 512 × 512</span>
+							</div>
 						</div>
 						<div class="app-category-field">
 							<label for="allSettingsAppCategory" class="app-category-label">Tab</label>
@@ -3954,31 +5801,67 @@
 							</select>
 						</div>
 					</div>
-					<div class="app-form-previews">
-						<div class="app-media-block">
-							<span class="app-media-hint">Banner • 1080 × 1640</span>
-							<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
-								<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
-									Upload
-								</button>
-								<input type="file" accept="image/*" id="allSettingsBannerInput" class="app-media-input" data-media-type="banner">
+					<div class="app-form-layout">
+						<div class="app-form-left">
+							<div class="app-form-previews">
+								<div class="app-media-block">
+									<span class="app-media-hint">Banner • 1080 × 1640</span>
+									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+										<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+											Upload
+										</button>
+										<input type="file" accept="image/*" id="allSettingsBannerInput" class="app-media-input" data-media-type="banner">
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="app-media-block">
-							<span class="app-media-hint">Logo • 512 × 512</span>
-							<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
-								<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
-									Upload
-								</button>
-								<input type="file" accept="image/*" id="allSettingsLogoInput" class="app-media-input" data-media-type="logo">
+						<div class="app-form-right">
+							<div class="special-option-field">
+								<label for="allSettingsSpecialOption" class="special-option-label">Special Option</label>
+								<select id="allSettingsSpecialOption" class="special-option-select">
+									<option value="none">None</option>
+									<option value="character-trn">Character (TRN)</option>
+								</select>
+							</div>
+							<div class="character-name-field" id="allSettingsCharacterNameField">
+								<label for="allSettingsCharacterNameInput" class="character-name-label">Character Name</label>
+								<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60">
+							</div>
+							<div class="app-special-media" id="allSettingsSpecialMedia">
+								<div class="app-media-block">
+									<span class="app-media-hint">Character Image • 1080 × 1440</span>
+									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
+										<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+											Upload
+										</button>
+										<input type="file" accept="image/*" id="allSettingsCharacterInput" class="app-media-input" data-media-type="character">
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-					<div style="display:flex; justify-content:flex-end; gap:10px;">
-						<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
-						<button class="admin-logout-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
+					<div class="app-settings-editor" id="allSettingsAppSettingsEditor">
+						<div class="app-settings-editor-header">
+							<div>
+								<h4>Settings Tabs & Sections</h4>
+								<p>Organize every tab, control visibility, and add sections and options for each configuration page.</p>
+							</div>
+							<div class="app-settings-editor-actions">
+								<button type="button" class="admin-logout-btn alt-light" id="addSettingsTabBtn">Add Tab</button>
+							</div>
+						</div>
+						<div class="app-settings-editor-body">
+							<aside class="app-settings-tab-list" id="allSettingsSettingsTabList" aria-label="Settings tabs"></aside>
+							<section class="app-settings-tab-detail" id="allSettingsSettingsTabDetail" aria-live="polite"></section>
+						</div>
+					</div>
+					<div class="app-form-footer">
+						<div class="app-form-actions">
+							<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
+							<button class="admin-logout-btn save-app-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -5665,15 +7548,31 @@
 			openPopup('actionLinkPopup');
 		}
 
-		function handleActionLogoFile(input) {
+		async function handleActionLogoFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = () => {
-				document.getElementById('actionLogoPreview').src = reader.result;
-				document.getElementById('actionLogoPreviewWrap').style.display = 'flex';
-			};
-			reader.readAsDataURL(file); // store as data URL
+			const preview = document.getElementById('actionLogoPreview');
+			const wrap = document.getElementById('actionLogoPreviewWrap');
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'actionLogo');
+				if (!cropped) {
+					if (preview) preview.removeAttribute('src');
+					if (wrap) wrap.style.display = 'none';
+					return;
+				}
+				if (preview) preview.src = cropped;
+				if (wrap) wrap.style.display = 'flex';
+			} catch (error) {
+				console.error('Failed to process action logo:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not process that logo. Try a different image.');
+				}
+				if (preview) preview.removeAttribute('src');
+				if (wrap) wrap.style.display = 'none';
+			} finally {
+				if (input) input.value = '';
+			}
 		}
 
 		async function saveActionLinkFromPopup() {
@@ -5789,23 +7688,63 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
-		function handleProfileUploadFile(input) {
+		async function handleProfileUploadFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = async () => {
-				const dataUrl = reader.result;
-				document.getElementById('profilePicture').value = dataUrl;
-				await saveGlobalSetting('profile-pic', dataUrl);
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'profile');
+				if (!cropped) {
+					return;
+				}
+				const profileInput = document.getElementById('profilePicture');
+				if (profileInput) profileInput.value = cropped;
+				await saveGlobalSetting('profile-pic', cropped);
 				const avatarImgs = document.querySelectorAll('.avatar img');
-				avatarImgs.forEach(img => (img.src = dataUrl));
-				setProfilePreviewImage(dataUrl);
-				document.getElementById('currentProfilePic').textContent = 'uploaded image';
-				notify.success('Profile image uploaded and applied globally.');
-			};
-			reader.readAsDataURL(file);
+				avatarImgs.forEach(img => (img.src = cropped));
+				setProfilePreviewImage(cropped);
+				const statusEl = document.getElementById('currentProfilePic');
+				if (statusEl) statusEl.textContent = 'uploaded image';
+				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+					notify.success('Profile image uploaded, cropped, and applied globally.');
+				}
+			} catch (error) {
+				console.error('Failed to update profile image:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not update the profile image. Try a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
 		}
-		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; notify.success('Background image uploaded and applied globally.'); }; r.readAsDataURL(file); }
+
+		async function handleBackgroundUploadFile(input) {
+			const file = input.files && input.files[0];
+			if (!file) return;
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'background');
+				if (!cropped) {
+					return;
+				}
+				const backgroundInput = document.getElementById('backgroundImage');
+				if (backgroundInput) backgroundInput.value = cropped;
+				await saveGlobalSetting('background', cropped);
+				document.body.style.background = `url('${cropped}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				const statusEl = document.getElementById('currentBackground');
+				if (statusEl) statusEl.textContent = 'uploaded image';
+				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+					notify.success('Background image uploaded, cropped, and applied globally.');
+				}
+			} catch (error) {
+				console.error('Failed to update background image:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not update the background image. Try again.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
+		}
 
 		async function openFollowPopup() {
 			renderActionPopupButtons('follow');
