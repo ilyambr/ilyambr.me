@@ -515,15 +515,14 @@
 		.popup-content.game-settings-panel .settings-content.has-banner{
 			padding:0;
 		}
-		.popup-content.game-settings-panel .settings-content.detail-mode{
-			display:block;
-			align-items:stretch;
-			justify-content:flex-start;
-			overflow:auto;
-		}
 		.popup-content.game-settings-panel .settings-content.list-mode{
 			display:block;
 			overflow:auto;
+		}
+		.popup-content.game-settings-panel .settings-content.grid-mode{
+			display:block;
+			overflow:auto;
+			padding:28px;
 		}
 		.popup-content.game-settings-panel .settings-placeholder{
 			margin:0;
@@ -886,13 +885,6 @@
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
 		}
-		.settings-app-layout{
-			display:grid;
-			grid-template-columns:minmax(220px, 0.9fr) minmax(0, 2.1fr);
-			gap:24px;
-			width:100%;
-			align-items:start;
-		}
 		.settings-app-list{
 			width:100%;
 			display:grid;
@@ -903,6 +895,12 @@
 			box-sizing:border-box;
 			max-height:100%;
 			overflow:auto;
+		}
+		.settings-grid-hint{
+			margin:0 0 18px;
+			color:var(--muted);
+			font-size:14px;
+			text-align:left;
 		}
 		.settings-app-display{
 			position:relative;
@@ -957,12 +955,42 @@
 		}
 		.settings-app-detail{
 			width:100%;
-			background:rgba(10,12,24,0.85);
+			background:rgba(10,12,24,0.92);
 			border:1px solid rgba(255,255,255,0.1);
 			border-radius:20px;
 			box-shadow:0 28px 44px rgba(0,0,0,0.45);
 			max-height:100%;
 			overflow:auto;
+		}
+		.settings-detail-panel{
+			background:rgba(12,14,28,0.96);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:24px;
+			padding:0;
+			max-width:960px;
+			width:min(960px, 92vw);
+			overflow:hidden;
+			box-shadow:0 32px 60px rgba(0,0,0,0.55);
+		}
+		.settings-detail-panel .popup-header{
+			padding:26px 32px;
+			border-bottom:1px solid rgba(255,255,255,0.08);
+		}
+		.settings-detail-panel .popup-body{
+			padding:0;
+			max-height:70vh;
+			overflow:auto;
+		}
+		.settings-detail-panel .close-btn{
+			top:22px;
+			right:22px;
+		}
+		.settings-detail-panel .settings-app-detail{
+			background:transparent;
+			border:none;
+			border-radius:0;
+			box-shadow:none;
+			max-height:none;
 		}
 		.settings-app-template{
 			display:flex;
@@ -1189,6 +1217,7 @@
 		#colorsPopup { z-index: 1101; }
 		#allSettingsManagerPopup { z-index: 1125; }
 		#allSettingsAppFormPopup { z-index: 1135; }
+		#settingsAppDetailPopup { z-index: 1145; }
 
 		.popup-content {
 			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)), var(--card);
@@ -3119,9 +3148,12 @@
 		}
 
 		function selectSettingsApp(appId) {
-			if (!appId || appId === selectedAllSettingsAppId) return;
+			if (!appId) return;
+			const app = (allSettingsApps || []).find(item => item.id === appId);
+			if (!app) return;
 			selectedAllSettingsAppId = appId;
 			setGameSettingsContent(currentGameSettingsTabId);
+			openSettingsAppDetailPopup(app);
 		}
 
 		function buildSettingsDetail(app) {
@@ -3213,6 +3245,54 @@
 			return container;
 		}
 
+		function openSettingsAppDetailPopup(app) {
+			if (!app) return;
+			const popup = document.getElementById('settingsAppDetailPopup');
+			const body = document.getElementById('settingsAppDetailBody');
+			const title = document.getElementById('settingsAppDetailTitle');
+			const category = document.getElementById('settingsAppDetailCategory');
+			if (!popup || !body) return;
+			body.innerHTML = '';
+			const detailWrapper = document.createElement('div');
+			detailWrapper.className = 'settings-app-detail';
+			detailWrapper.appendChild(buildSettingsDetail(app));
+			body.appendChild(detailWrapper);
+			if (title) {
+				title.textContent = app.name || 'App Settings';
+			}
+			if (category) {
+				category.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
+			}
+			popup.style.display = 'flex';
+			setBodyScrollState(true);
+		}
+
+		function closeSettingsAppDetailPopup(preserveScrollLock = false) {
+			const popup = document.getElementById('settingsAppDetailPopup');
+			const body = document.getElementById('settingsAppDetailBody');
+			const category = document.getElementById('settingsAppDetailCategory');
+			const title = document.getElementById('settingsAppDetailTitle');
+			if (!popup) return;
+			popup.style.display = 'none';
+			if (body) {
+				body.innerHTML = '';
+			}
+			if (category) {
+				category.textContent = '\u00A0';
+			}
+			if (title) {
+				title.textContent = 'App Settings';
+			}
+			if (!preserveScrollLock) {
+				const mainPopup = document.getElementById('gameSettingsPopup');
+				if (mainPopup && mainPopup.style.display === 'flex') {
+					setBodyScrollState(true);
+				} else {
+					setBodyScrollState(false);
+				}
+			}
+		}
+
 		function buildTabAppDisplay(app, isActive = false) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
@@ -3260,7 +3340,7 @@
 			if (!content) return;
 			const canonicalId = resolveGameSettingsTabId(tabId);
 			const tabData = cachedGameSettingsTabs.find(tab => tab.id === canonicalId);
-			content.classList.remove('has-banner', 'list-mode', 'detail-mode');
+			content.classList.remove('has-banner', 'list-mode', 'detail-mode', 'grid-mode');
 			content.innerHTML = '';
 			content.scrollTop = 0;
 			if (!tabData) {
@@ -3283,11 +3363,11 @@
 				content.appendChild(wrap);
 				return;
 			}
-			const activeApp = appsForTab.find(app => app.id === selectedAllSettingsAppId) || appsForTab[0];
-			selectedAllSettingsAppId = activeApp ? activeApp.id : null;
-			content.classList.add('detail-mode');
-			const layout = document.createElement('div');
-			layout.className = 'settings-app-layout';
+			content.classList.add('grid-mode');
+			const hint = document.createElement('p');
+			hint.className = 'settings-grid-hint';
+			hint.textContent = 'Select a card to open detailed settings.';
+			content.appendChild(hint);
 			const grid = document.createElement('div');
 			grid.className = 'settings-app-list';
 			appsForTab.forEach(app => {
@@ -3301,14 +3381,7 @@
 				});
 				grid.appendChild(tile);
 			});
-			layout.appendChild(grid);
-			const detail = document.createElement('div');
-			detail.className = 'settings-app-detail';
-			if (activeApp) {
-				detail.appendChild(buildSettingsDetail(activeApp));
-			}
-			layout.appendChild(detail);
-			content.appendChild(layout);
+			content.appendChild(grid);
 		}
 
 		function initGameSettingsTabs(preferredId) {
@@ -3317,6 +3390,7 @@
 
 		function openGameSettingsPopup(targetTabId = null) {
 			initGameSettingsTabs(targetTabId);
+			closeSettingsAppDetailPopup(true);
 			const popup = document.getElementById('gameSettingsPopup');
 			if (popup) {
 				popup.style.display = 'flex';
@@ -3713,6 +3787,7 @@
 		}
 
 		function closeGameSettingsPopup() {
+			closeSettingsAppDetailPopup(true);
 			const popup = document.getElementById('gameSettingsPopup');
 			if (popup) {
 				popup.style.display = 'none';
@@ -3726,6 +3801,7 @@
 			var subscribePopup = document.getElementById('subscribePopup');
 			var colorsPopup = document.getElementById('colorsPopup');
 			var gameSettingsPopup = document.getElementById('gameSettingsPopup');
+			var settingsDetailPopup = document.getElementById('settingsAppDetailPopup');
 			
 			if (event.target === followPopup) {
 				closePopup('followPopup');
@@ -3739,14 +3815,23 @@
 			if (event.target === gameSettingsPopup) {
 				closeGameSettingsPopup();
 			}
+			if (event.target === settingsDetailPopup) {
+				closeSettingsAppDetailPopup();
+			}
 		});
 
 		// Close popup with Escape key
-			document.addEventListener('keydown', function(event) {
+		document.addEventListener('keydown', function(event) {
 			if (event.key === 'Escape') {
+				const detailPopup = document.getElementById('settingsAppDetailPopup');
+				if (detailPopup && detailPopup.style.display === 'flex') {
+					closeSettingsAppDetailPopup();
+					return;
+				}
+				closeGameSettingsPopup();
 				closePopup('followPopup');
 				closePopup('subscribePopup');
-					closePopup('colorsPopup');
+				closePopup('colorsPopup');
 			}
 		});
 	</script>
@@ -3813,6 +3898,21 @@
 					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories"></nav>
 					<div class="settings-content" id="gameSettingsContent"></div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="settingsAppDetailPopup" class="popup-overlay">
+		<div class="popup-content settings-detail-panel">
+			<div class="popup-header">
+				<div>
+					<h3 id="settingsAppDetailTitle">App Settings</h3>
+					<small id="settingsAppDetailCategory" style="color:var(--muted); display:block;">&nbsp;</small>
+				</div>
+				<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close app settings detail">&times;</button>
+			</div>
+			<div class="popup-body">
+				<div id="settingsAppDetailBody"></div>
 			</div>
 		</div>
 	</div>
