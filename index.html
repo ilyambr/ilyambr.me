@@ -4391,24 +4391,24 @@
 
 			const hero = document.createElement('div');
 			hero.className = 'settings-template-hero';
-			hero.dataset.preserveColor = 'true';
+			hero.dataset.keepColor = 'true';
 			applyBackgroundImage(hero, app.banner);
 
 			const heroOverlay = document.createElement('div');
 			heroOverlay.className = 'settings-template-hero-overlay';
-			heroOverlay.dataset.preserveColor = 'true';
+			heroOverlay.dataset.keepColor = 'true';
 
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
-				logo.dataset.preserveColor = 'true';
+				logo.dataset.keepColor = 'true';
 				heroOverlay.appendChild(logo);
 			} else {
 				const fallback = document.createElement('div');
 				fallback.className = 'settings-template-logo-fallback';
 				fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
-				fallback.dataset.preserveColor = 'true';
+				fallback.dataset.keepColor = 'true';
 				heroOverlay.appendChild(fallback);
 			}
 
@@ -4537,7 +4537,7 @@
 				characterPanel = document.createElement('aside');
 				characterPanel.className = 'character-trn-panel';
 				characterPanel.dataset.appId = `${app.id}-character`;
-				characterPanel.dataset.preserveColor = 'true';
+				characterPanel.dataset.keepColor = 'true';
 				if (app.characterImage) {
 					applyBackgroundImage(characterPanel, app.characterImage);
 				} else {
@@ -4658,7 +4658,7 @@
 		function buildTabAppDisplay(app, isActive = false) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
-			display.dataset.preserveColor = 'true';
+			display.dataset.keepColor = 'true';
 			display.dataset.appId = app.id;
 			display.tabIndex = 0;
 			display.setAttribute('role', 'button');
@@ -4670,12 +4670,12 @@
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay static';
-			overlay.dataset.preserveColor = 'true';
+			overlay.dataset.keepColor = 'true';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
-				logo.dataset.preserveColor = 'true';
+				logo.dataset.keepColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -5887,7 +5887,7 @@
 								<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
 							</div>
 							<div class="app-inline-logo">
-								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload logo image">
+								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" data-keep-color="true" tabindex="0" role="button" aria-label="Upload logo image">
 									<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 										Upload
@@ -5912,7 +5912,7 @@
 							<div class="app-form-previews">
 								<div class="app-media-block">
 									<span class="app-media-hint">Banner • 1080 × 1640</span>
-									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload banner image">
+									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" data-keep-color="true" tabindex="0" role="button" aria-label="Upload banner image">
 										<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -5937,7 +5937,7 @@
 							<div class="app-special-media" id="allSettingsSpecialMedia">
 								<div class="app-media-block">
 									<span class="app-media-hint">Character Image • 1080 × 1440</span>
-									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload character image">
+									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" data-keep-color="true" tabindex="0" role="button" aria-label="Upload character image">
 										<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -9604,13 +9604,18 @@
 		}
 
 		var GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
-		var APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
+		var APP_IMAGE_SELECTOR = '.settings-app-card img, .settings-app-display img';
 		var APP_TEXT_SELECTORS = [
 			'.settings-app-card .app-card-name',
 			'.settings-app-card .app-card-badge',
 			'.settings-app-card .app-card-actions',
 			'.settings-app-card .app-card-action',
-			'.settings-app-card .app-card-overlay > *:not(img)'
+			'.settings-app-card .app-card-overlay > *:not(img)',
+			'.settings-app-display .app-card-name',
+			'.settings-app-display .app-card-badge',
+			'.settings-app-display .app-card-actions',
+			'.settings-app-display .app-card-action',
+			'.settings-app-display .app-card-overlay > *:not(img)'
 		];
 
 		function ensureGrayscaleGlobals() {
@@ -9618,7 +9623,7 @@
 				GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
 			}
 			if (typeof APP_IMAGE_SELECTOR !== 'string') {
-				APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
+				APP_IMAGE_SELECTOR = '.settings-app-card img, .settings-app-display img';
 			}
 			if (!Array.isArray(APP_TEXT_SELECTORS) || !APP_TEXT_SELECTORS.length) {
 				APP_TEXT_SELECTORS = [
@@ -9626,7 +9631,12 @@
 					'.settings-app-card .app-card-badge',
 					'.settings-app-card .app-card-actions',
 					'.settings-app-card .app-card-action',
-					'.settings-app-card .app-card-overlay > *:not(img)'
+					'.settings-app-card .app-card-overlay > *:not(img)',
+					'.settings-app-display .app-card-name',
+					'.settings-app-display .app-card-badge',
+					'.settings-app-display .app-card-actions',
+					'.settings-app-display .app-card-action',
+					'.settings-app-display .app-card-overlay > *:not(img)'
 				];
 			}
 		}
@@ -9652,7 +9662,10 @@
 			if (!document.body.contains(node)) return true;
 			if (GRAYSCALE_SKIP_TAGS.has(node.tagName)) return true;
 			if (node.matches(APP_IMAGE_SELECTOR)) return true;
+			if (node.matches('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
+			if (node.closest('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
 			if (node.closest('.settings-app-card')) return true;
+			if (node.closest('.settings-app-display')) return true;
 			return false;
 		}
 
@@ -9732,6 +9745,7 @@
 			}
 			ensureGrayscaleObserver();
 			if (!grayscaleActive || force) {
+				clearHardcodedGrayscale();
 				applyHardcodedGrayscale();
 			}
 			grayscaleActive = true;
