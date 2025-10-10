@@ -931,22 +931,6 @@
 			background:rgba(255,255,255,0.22);
 			transform:translateY(-1px);
 		}
-		.settings-empty-manage{
-			margin-top:18px;
-			padding:8px 16px;
-			border-radius:999px;
-			border:1px solid rgba(255,255,255,0.18);
-			background:rgba(255,255,255,0.08);
-			color:#ffffff;
-			font-size:13px;
-			font-weight:600;
-			cursor:pointer;
-			transition:background .2s ease, transform .2s ease;
-		}
-		.settings-empty-manage:hover{
-			background:rgba(255,255,255,0.16);
-			transform:translateY(-1px);
-		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
 				padding:32px 0;
@@ -3015,15 +2999,7 @@
 				const message = document.createElement('div');
 				message.className = 'settings-placeholder';
 				message.innerHTML = `No apps in <strong>${getGameSettingsTabLabel(canonicalId)}</strong> yet.`;
-				const manageButton = document.createElement('button');
-				manageButton.type = 'button';
-				manageButton.className = 'settings-empty-manage';
-				manageButton.textContent = 'Manage apps';
-				manageButton.addEventListener('click', () => {
-					openAllSettingsManager();
-				});
 				wrap.appendChild(message);
-				wrap.appendChild(manageButton);
 				content.appendChild(wrap);
 				return;
 			}
