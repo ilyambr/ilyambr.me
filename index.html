@@ -461,21 +461,20 @@
 			overflow-y:auto;
 		}
 		.popup-content.game-settings-panel .settings-layout{
-			display:grid;
-			grid-template-columns:220px 1fr;
+			display:flex;
 			gap:24px;
 			min-height:420px;
-			align-items:start;
+			align-items:stretch;
 		}
 		.popup-content.game-settings-panel .settings-tabs{
 			display:flex;
 			flex-direction:column;
-			gap:8px;
-			padding:18px;
-			background:rgba(255,255,255,0.05);
-			border:1px solid rgba(255,255,255,0.08);
-			border-radius:16px;
-			min-height:100%;
+			gap:10px;
+			padding:0;
+			margin:0;
+			width:220px;
+			background:transparent;
+			border:none;
 		}
 		.popup-content.game-settings-panel .settings-tab{
 			appearance:none;
@@ -497,6 +496,8 @@
 			box-shadow:0 8px 24px rgba(0,0,0,0.2);
 		}
 		.popup-content.game-settings-panel .settings-content{
+			flex:1;
+			width:100%;
 			background:rgba(255,255,255,0.04);
 			border:1px solid rgba(255,255,255,0.08);
 			border-radius:16px;
@@ -525,12 +526,13 @@
 				padding:24px;
 			}
 			.popup-content.game-settings-panel .settings-layout{
-				grid-template-columns:1fr;
+				flex-direction:column;
 			}
 			.popup-content.game-settings-panel .settings-tabs{
+				width:100%;
 				flex-direction:row;
 				flex-wrap:wrap;
-				justify-content:flex-start;
+				gap:8px;
 			}
 			.popup-content.game-settings-panel .settings-tab{
 				flex:1 1 calc(50% - 8px);
@@ -2406,7 +2408,42 @@
 			}
 		}
 
+		const GAME_SETTINGS_TAB_MESSAGES = {
+			games: 'Organize launch options, sensitivity presets, and config exports for every title in one place.',
+			utility: 'Track productivity tools, shortcuts, and overlays you rely on while streaming or gaming.',
+			hardware: 'Document your rig—from peripherals to PC specs—so collaborators know exactly what you use.',
+			internet: 'Monitor connection details, typical speeds, and backup plans to keep your stream online.'
+		};
+
+		function setGameSettingsContent(section) {
+			const content = document.getElementById('gameSettingsContent');
+			if (!content) return;
+			const message = GAME_SETTINGS_TAB_MESSAGES[section] || 'Details coming soon for this category.';
+			content.innerHTML = `<p class="settings-placeholder">${message}</p>`;
+		}
+
+		function initGameSettingsTabs() {
+			const tabs = Array.from(document.querySelectorAll('#gameSettingsBody .settings-tab'));
+			if (!tabs.length) return;
+			tabs.forEach(tab => {
+				if (tab.dataset.initialized === 'true') return;
+				tab.dataset.initialized = 'true';
+				tab.addEventListener('click', () => {
+					if (tab.classList.contains('active')) return;
+					tabs.forEach(btn => btn.classList.remove('active'));
+					tab.classList.add('active');
+					setGameSettingsContent(tab.dataset.section);
+				});
+			});
+			const initial = tabs.find(tab => tab.classList.contains('active')) || tabs[0];
+			if (initial) {
+				initial.classList.add('active');
+				setGameSettingsContent(initial.dataset.section);
+			}
+		}
+
 		function openGameSettingsPopup() {
+			initGameSettingsTabs();
 			const popup = document.getElementById('gameSettingsPopup');
 			if (popup) {
 				popup.style.display = 'flex';
@@ -6451,6 +6488,7 @@
 		
 		// Call setup when page loads
 		setTimeout(setupDateSelectors, 100);
+		setTimeout(initGameSettingsTabs, 0);
 		
 	</script>
 </body>
