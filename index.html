@@ -441,6 +441,8 @@
 		.discord-link:active{transform:translateY(0)}
 		.discord-link svg{width:20px; height:20px; display:block; color:#ffffff}
 		.discord-link img{width:20px; height:20px; display:block; object-fit:contain; background:transparent; filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); mix-blend-mode:screen}
+		.settings-link{background:linear-gradient(90deg, rgba(88,88,88,0.85), rgba(150,150,150,0.7)); border:1px solid rgba(255,255,255,0.14); color:#ffffff;}
+		.settings-link svg{width:20px; height:20px; display:block; color:#ffffff}
 		
 		.stream-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px}
 		.stream-switcher{display:flex; background:rgba(255,255,255,0.08); border-radius:8px; padding:2px; gap:2px}
@@ -1663,6 +1665,13 @@
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
 					</a>
+					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openAdminLogin()" aria-label="Open all settings">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+							<circle cx="12" cy="12" r="3"/>
+						</svg>
+						All Settings
+					</a>
 				</div>
 				<h3 style="margin-top:18px">Schedule</h3>
 				<div class="schedule">
@@ -1705,6 +1714,13 @@
 	</div>
 
 	<script>
+		const ABOUT_MAX_LENGTH = 100;
+
+		const clampAboutText = (text = "") => {
+			const trimmed = text.trim();
+			return trimmed.length > ABOUT_MAX_LENGTH ? trimmed.slice(0, ABOUT_MAX_LENGTH) : trimmed;
+		};
+
 		// Twitch API Configuration
 		const twitchConfig = {
 			// Base64 encoded credentials for security
@@ -2482,7 +2498,7 @@
 					</div>
 					<div class="admin-setting">
 						<label for="aboutText">About Me:</label>
-						<textarea id="aboutText" placeholder="i make stuff, i stream, that's it really..." maxlength="500" rows="3"></textarea>
+						<textarea id="aboutText" placeholder="i make stuff, i stream, that's it really..." maxlength="100" rows="3"></textarea>
 						<button onclick="updateAboutText()">Update</button>
 						<small>About section description</small>
 					</div>
@@ -4396,12 +4412,12 @@
 				console.log('📄 Applying global about text to ALL visitors:', savedAboutText);
 				const aboutElement = document.getElementById('aboutTextContent');
 				if (aboutElement) {
-					aboutElement.textContent = savedAboutText;
+					aboutElement.textContent = clampAboutText(savedAboutText);
 				}
 			} else {
 				const aboutElement = document.getElementById('aboutTextContent');
 				if (aboutElement && !aboutElement.textContent.trim()) {
-					aboutElement.textContent = "i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶";
+					aboutElement.textContent = clampAboutText("i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶");
 				}
 			}
 			
@@ -4745,7 +4761,8 @@
 			const currentPageLogoSize = await loadGlobalSetting('pageLogoSize') || '';
 			const currentLogoInvert = await loadGlobalSetting('logoInvert');
 			const currentBio = await loadGlobalSetting('bioText') || '';
-			const currentAboutText = await loadGlobalSetting('aboutText') || '';
+			const currentAboutTextRaw = await loadGlobalSetting('aboutText') || '';
+			const currentAboutText = clampAboutText(currentAboutTextRaw);
 			const currentStreamingYear = await loadGlobalSetting('streamingYear') || '';
 			const currentFollowerCount = await loadGlobalSetting('followerCount') || '';
 			const currentSubscriberCount = await loadGlobalSetting('subscriberCount') || '';
@@ -4805,7 +4822,7 @@
 			const invToggle = document.getElementById('logoInvertToggle');
 			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
 			setCurrentText('currentBio', shorten(currentBio));
-			setCurrentText('currentAboutText', shorten(currentAboutText));
+			setCurrentText('currentAboutText', shorten(currentAboutText, ABOUT_MAX_LENGTH));
 			setCurrentText('currentStreamingYear', currentStreamingYear || 'N/A');
 			setCurrentText('currentFollowerCount', currentFollowerCount || 'API');
 			setCurrentText('currentSubscriberCount', currentSubscriberCount || 'API');
@@ -5132,11 +5149,17 @@
 		}
 
 		async function updateAboutText() {
-			const aboutText = document.getElementById('aboutText').value.trim();
-			if (!aboutText) {
+			const aboutTextInput = document.getElementById('aboutText');
+			const aboutTextRaw = aboutTextInput.value.trim();
+			if (!aboutTextRaw) {
 				notify.error('Please enter some About text.');
 				return;
 			}
+			if (aboutTextRaw.length > ABOUT_MAX_LENGTH) {
+				notify.error(`About text must be ${ABOUT_MAX_LENGTH} characters or fewer.`);
+				return;
+			}
+			const aboutText = clampAboutText(aboutTextRaw);
 
 			// Save GLOBALLY for ALL users
 			await saveGlobalSetting('aboutText', aboutText);
@@ -5148,8 +5171,8 @@
 			}
 			
 			// Update current settings display
-			document.getElementById('currentAboutText').textContent = aboutText.length > 30 ? aboutText.substring(0, 30) + '...' : aboutText;
-			document.getElementById('aboutText').value = '';
+			document.getElementById('currentAboutText').textContent = aboutText;
+			aboutTextInput.value = '';
 			
 			notify.success('About section updated globally.');
 		}
