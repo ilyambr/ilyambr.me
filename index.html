@@ -644,6 +644,16 @@
 			font-size:15px;
 			font-weight:600;
 		}
+		.settings-app-card .app-card-name,
+		.settings-app-card .app-card-badge{
+			color:#ffffff;
+			text-shadow:
+				0 1px 2px rgba(0,0,0,0.6),
+				0 -1px 2px rgba(0,0,0,0.4),
+				1px 0 2px rgba(0,0,0,0.4),
+				-1px 0 2px rgba(0,0,0,0.4);
+			-webkit-text-stroke:0.6px rgba(0,0,0,0.6);
+		}
 		.app-card-actions{
 			display:flex;
 			gap:8px;
@@ -3331,10 +3341,11 @@
 		async function deleteAllSettingsApp(appId) {
 			const app = allSettingsApps.find(item => item.id === appId);
 			if (!app) return;
-			let confirmed = false;
+			let confirmed = true;
+			const promptMessage = `Remove ${app.name}?`;
 			if (typeof showConfirm === 'function') {
 				try {
-					confirmed = await showConfirm(`Remove ${app.name}?`, {
+					confirmed = await showConfirm(promptMessage, {
 						title: 'Remove settings app',
 						confirmText: 'Remove',
 						cancelText: 'Keep',
@@ -3342,21 +3353,25 @@
 					});
 				} catch (error) {
 					console.warn('Custom confirm failed, falling back to browser confirm.', error);
+					confirmed = window.confirm(promptMessage);
 				}
-			}
-			if (!confirmed) {
-				confirmed = window.confirm(`Remove ${app.name}?`);
+			} else {
+				confirmed = window.confirm(promptMessage);
 			}
 			if (!confirmed) return;
+			const previousApps = allSettingsApps.slice();
 			allSettingsApps = allSettingsApps.filter(item => item.id !== appId);
+			renderAllSettingsManagerGrid();
+			renderGameSettingsTabs(currentGameSettingsTabId);
 			try {
 				await persistAllSettingsApps();
 			} catch (error) {
 				notify.error('Could not remove the app. Please try again.');
+				allSettingsApps = previousApps;
+				renderAllSettingsManagerGrid();
+				renderGameSettingsTabs(currentGameSettingsTabId);
 				return;
 			}
-			renderAllSettingsManagerGrid();
-			renderGameSettingsTabs(currentGameSettingsTabId);
 			notify.success(`${app.name} removed.`);
 		}
 
