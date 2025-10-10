@@ -181,23 +181,27 @@
 		@media (min-width: 1200px){
 			.desktop-shell{
 				display:flex;
-				align-items:flex-start;
+				align-items:stretch;
 				gap:28px;
-				max-width:1400px;
+				max-width:1600px;
 				margin:0 auto;
 				padding:40px 40px 80px;
 			}
 			.desktop-shell .container{
 				margin:0;
-				flex:1 1 auto;
+				flex:1 1 0;
+				max-width:1100px;
+				min-width:0;
 			}
 			.short-video-panel{
-				display:block;
+				display:flex;
+				flex-direction:column;
+				justify-content:flex-end;
 				flex:0 0 360px;
 			}
 			.short-video-card{
-				position:sticky;
-				top:60px;
+				position:relative;
+				width:100%;
 			}
 		}
 
@@ -660,6 +664,12 @@
 			z-index: 999;
 		}
 
+		@media (max-width: 1200px) {
+			.admin-button {
+				position: absolute;
+			}
+		}
+
 		.admin-button:hover {
 			transform: scale(1.1);
 			background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
@@ -683,6 +693,268 @@
 		.admin-panel-body {
 			max-height: 70vh;
 			overflow-y: auto;
+		}
+
+		.notification-center {
+			position: fixed;
+			bottom: 32px;
+			right: 32px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			z-index: 1200;
+			pointer-events: none;
+			width: min(360px, calc(100vw - 24px));
+		}
+
+		.notification-card {
+			position: relative;
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 16px;
+			padding: 16px 18px;
+			background: rgba(16, 16, 28, 0.88);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			border-radius: 14px;
+			box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+			backdrop-filter: blur(14px);
+			color: var(--text);
+			pointer-events: auto;
+			opacity: 0;
+			transform: translateY(12px) scale(0.98);
+			animation: toast-enter 0.35s ease forwards;
+		}
+
+		.notification-card.closing {
+			animation: toast-exit 0.28s ease forwards;
+		}
+
+		.notification-card::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			pointer-events: none;
+		}
+
+		.notification-icon {
+			width: 34px;
+			height: 34px;
+			border-radius: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		.notification-icon svg {
+			width: 18px;
+			height: 18px;
+		}
+
+		.notification-text {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		.notification-title {
+			font-weight: 600;
+			color: #ffffff;
+			font-size: 15px;
+		}
+
+		.notification-message {
+			color: rgba(255, 255, 255, 0.78);
+			font-size: 14px;
+			line-height: 1.4;
+		}
+
+		.notification-input {
+			width: 100%;
+			margin-top: 12px;
+			padding: 10px 12px;
+			border-radius: 9px;
+			border: 1px solid rgba(255, 255, 255, 0.14);
+			background: rgba(255, 255, 255, 0.05);
+			color: #ffffff;
+			font-size: 14px;
+			transition: all 0.2s ease;
+		}
+
+		.notification-input::placeholder {
+			color: rgba(255, 255, 255, 0.55);
+		}
+
+		.notification-input:focus {
+			outline: none;
+			border-color: rgba(255, 255, 255, 0.32);
+			background: rgba(255, 255, 255, 0.08);
+			box-shadow: 0 0 0 3px rgba(111, 182, 255, 0.2);
+		}
+
+		.notification-input.error {
+			border-color: rgba(255, 107, 129, 0.6);
+			box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+		}
+
+		.notification-inline-error {
+			margin-top: 6px;
+			color: #ff6b81;
+			font-size: 12px;
+			line-height: 1.3;
+		}
+
+		.notification-helper {
+			margin-top: 10px;
+			color: rgba(255, 255, 255, 0.6);
+			font-size: 12px;
+			line-height: 1.4;
+		}
+
+		.notification-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			border: none;
+			background: rgba(255, 255, 255, 0.05);
+			color: rgba(255, 255, 255, 0.75);
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.notification-close:hover {
+			background: rgba(255, 255, 255, 0.12);
+			color: #ffffff;
+		}
+
+		.notification-actions {
+			grid-column: 1 / -1;
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+			margin-top: 12px;
+		}
+
+		.notification-action {
+			min-width: 96px;
+			padding: 9px 16px;
+			border-radius: 8px;
+			border: 1px solid rgba(255, 255, 255, 0.16);
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffffff;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.notification-action:hover {
+			background: rgba(255, 255, 255, 0.16);
+			border-color: rgba(255, 255, 255, 0.22);
+		}
+
+		.notification-action.primary {
+			background: #63a4ff;
+			border-color: #63a4ff;
+			color: #0c1424;
+		}
+
+		.notification-action.primary:hover {
+			background: #7ab4ff;
+			border-color: #7ab4ff;
+		}
+
+		.notification-card.notification-success .notification-icon {
+			background: rgba(73, 201, 119, 0.15);
+			border-color: rgba(73, 201, 119, 0.4);
+			color: #49c977;
+		}
+
+		.notification-card.notification-info .notification-icon {
+			background: rgba(111, 182, 255, 0.15);
+			border-color: rgba(111, 182, 255, 0.4);
+			color: #73b7ff;
+		}
+
+		.notification-card.notification-warning .notification-icon {
+			background: rgba(253, 196, 90, 0.18);
+			border-color: rgba(253, 196, 90, 0.45);
+			color: #fdc45a;
+		}
+
+		.notification-card.notification-error .notification-icon {
+			background: rgba(255, 107, 129, 0.18);
+			border-color: rgba(255, 107, 129, 0.45);
+			color: #ff6b81;
+		}
+
+		.notification-card.notification-success {
+			border-color: rgba(73, 201, 119, 0.35);
+			box-shadow: 0 18px 38px rgba(73, 201, 119, 0.25);
+		}
+
+		.notification-card.notification-info {
+			border-color: rgba(111, 182, 255, 0.3);
+			box-shadow: 0 18px 38px rgba(111, 182, 255, 0.2);
+		}
+
+		.notification-card.notification-warning {
+			border-color: rgba(253, 196, 90, 0.35);
+			box-shadow: 0 18px 38px rgba(253, 196, 90, 0.22);
+		}
+
+		.notification-card.notification-error {
+			border-color: rgba(255, 107, 129, 0.35);
+			box-shadow: 0 18px 38px rgba(255, 107, 129, 0.25);
+		}
+
+		.notification-card.has-actions {
+			padding-bottom: 14px;
+		}
+
+		@media (max-width: 720px) {
+			.notification-center {
+				right: 50%;
+				transform: translateX(50%);
+				bottom: 20px;
+				width: min(92vw, 380px);
+				align-items: center;
+			}
+
+			.notification-card {
+				width: 100%;
+			}
+		}
+
+		@keyframes toast-enter {
+			0% {
+				opacity: 0;
+				transform: translateY(18px) scale(0.96);
+			}
+			100% {
+				opacity: 1;
+				transform: translateY(0) scale(1);
+			}
+		}
+
+		@keyframes toast-exit {
+			0% {
+				opacity: 1;
+				transform: translateY(0) scale(1);
+			}
+			100% {
+				opacity: 0;
+				transform: translateY(12px) scale(0.96);
+			}
 		}
 
 		.admin-user-info {
@@ -1229,6 +1501,7 @@
 	</style>
 </head>
 <body class="db-loading">
+	<div class="notification-center" id="notificationCenter" aria-live="polite" aria-atomic="true"></div>
 	<!-- Simple loading screen -->
 	<div class="loading-overlay" id="loadingOverlay">
 		<div class="loading-spinner"></div>
@@ -2722,11 +2995,17 @@
 			const payload = {};
 			COLOR_VARS.forEach(v => { payload[v.key] = getCssVar(v.key); });
 			await saveGlobalSetting('siteColors', JSON.stringify(payload));
-			alert('Colors saved GLOBALLY!');
+			notify.success('Colors saved globally for all visitors.');
 		}
 
 		async function resetColorsToDefaults() {
-			if (!confirm('Reset colors to defaults?')) return;
+			const confirmed = await showConfirm('Reset colors to defaults?', {
+				title: 'Reset site colors',
+				confirmText: 'Reset colors',
+				cancelText: 'Keep current',
+				type: 'warning'
+			});
+			if (!confirmed) return;
 			// defaults align with current CSS at top
 			const defaults = {
 				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
@@ -2735,6 +3014,7 @@
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
+			notify.success('Colors reset to the default palette for everyone.');
 		}
 
 		// Close popup when clicking outside
@@ -2862,6 +3142,383 @@
 		const encryptedUrl = localStorage.getItem('encryptedFirebaseUrl');
 		const customDatabaseUrl = encryptedUrl ? decryptUrl(encryptedUrl) : null;
 		const defaultDatabaseUrl = "https://ilyambr-45403-default-rtdb.firebaseio.com";
+
+		const notificationCenterEl = (() => {
+			const existing = document.getElementById('notificationCenter');
+			if (existing) {
+				return existing;
+			}
+			const node = document.createElement('div');
+			node.id = 'notificationCenter';
+			node.className = 'notification-center';
+			node.setAttribute('aria-live', 'polite');
+			node.setAttribute('aria-atomic', 'true');
+			document.body.appendChild(node);
+			return node;
+		})();
+
+		const notificationIcons = {
+			info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><circle cx="12" cy="16" r="0.9"></circle></svg>',
+			success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>',
+			warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"></path><circle cx="12" cy="17" r="0.9"></circle><path d="M12 3l9 16H3z"></path></svg>',
+			error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>'
+		};
+
+		function showNotification(message, options = {}) {
+			if (!notificationCenterEl) return null;
+
+			const {
+				title = null,
+				type = 'info',
+				duration = 4500,
+				sticky = false,
+				actions = [],
+				role = 'status',
+				onClose = null
+			} = options;
+
+			const card = document.createElement('div');
+			card.className = `notification-card notification-${type}`;
+			card.setAttribute('role', role);
+			card.setAttribute('tabindex', '-1');
+
+			const iconWrap = document.createElement('div');
+			iconWrap.className = 'notification-icon';
+			iconWrap.innerHTML = notificationIcons[type] || notificationIcons.info;
+
+			const textWrap = document.createElement('div');
+			textWrap.className = 'notification-text';
+
+			if (title) {
+				const titleEl = document.createElement('div');
+				titleEl.className = 'notification-title';
+				titleEl.textContent = title;
+				textWrap.appendChild(titleEl);
+			}
+
+			const messageEl = document.createElement('div');
+			messageEl.className = 'notification-message';
+			messageEl.textContent = message;
+			textWrap.appendChild(messageEl);
+
+			let dismissTimer = null;
+			let closed = false;
+
+			const dismiss = () => {
+				if (closed) return;
+				closed = true;
+				if (dismissTimer) {
+					clearTimeout(dismissTimer);
+				}
+				card.classList.add('closing');
+				setTimeout(() => {
+					card.remove();
+					if (typeof onClose === 'function') {
+						onClose();
+					}
+				}, 260);
+			};
+
+			const closeBtn = document.createElement('button');
+			closeBtn.type = 'button';
+			closeBtn.className = 'notification-close';
+			closeBtn.setAttribute('aria-label', 'Close notification');
+			closeBtn.innerHTML = '&times;';
+			closeBtn.addEventListener('click', dismiss);
+
+			card.appendChild(iconWrap);
+			card.appendChild(textWrap);
+			card.appendChild(closeBtn);
+
+			const actionButtons = [];
+
+			if (actions.length > 0) {
+				card.classList.add('has-actions');
+				const actionsWrap = document.createElement('div');
+				actionsWrap.className = 'notification-actions';
+
+				actions.forEach((action, index) => {
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className = 'notification-action';
+					if (action?.primary) {
+						btn.classList.add('primary');
+					}
+					btn.textContent = action?.label ?? `Option ${index + 1}`;
+
+					btn.addEventListener('click', () => {
+						let result;
+						if (typeof action?.onClick === 'function') {
+							result = action.onClick({ close: dismiss, element: card });
+						}
+						if (result !== false) {
+							dismiss();
+						}
+					});
+
+					actionsWrap.appendChild(btn);
+					actionButtons.push(btn);
+				});
+
+				card.appendChild(actionsWrap);
+			}
+
+			if (!sticky && duration > 0) {
+				dismissTimer = setTimeout(dismiss, duration);
+				card.addEventListener('mouseenter', () => {
+					if (dismissTimer) {
+						clearTimeout(dismissTimer);
+					}
+				});
+				card.addEventListener('mouseleave', () => {
+					dismissTimer = setTimeout(dismiss, 1500);
+				});
+			}
+
+			card.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') {
+					dismiss();
+				}
+			});
+
+			notificationCenterEl.appendChild(card);
+			if (role === 'alertdialog' || actions.length > 0) {
+				requestAnimationFrame(() => {
+					card.focus({ preventScroll: true });
+				});
+			}
+
+			return {
+				element: card,
+				close: dismiss,
+				focusFirstAction: () => {
+					if (actionButtons.length > 0) {
+						actionButtons[0].focus();
+					}
+				},
+				focusLastAction: () => {
+					if (actionButtons.length > 0) {
+						actionButtons[actionButtons.length - 1].focus();
+					}
+				}
+			};
+		}
+
+		const notify = {
+			info: (message, options = {}) => showNotification(message, { ...options, type: 'info' }),
+			success: (message, options = {}) => showNotification(message, { ...options, type: 'success' }),
+			warning: (message, options = {}) => showNotification(message, { ...options, type: 'warning' }),
+			error: (message, options = {}) => showNotification(message, { ...options, type: 'error' })
+		};
+
+		function showConfirm(message, options = {}) {
+			const {
+				title = 'Are you sure?',
+				type = 'warning',
+				confirmText = 'Confirm',
+				cancelText = 'Cancel'
+			} = options;
+
+			let handled = false;
+
+			return new Promise((resolve) => {
+				const note = showNotification(message, {
+					title,
+					type,
+					sticky: true,
+					duration: 0,
+					role: 'alertdialog',
+					onClose: () => {
+						if (!handled) {
+							handled = true;
+							resolve(false);
+						}
+					},
+					actions: [
+						{
+							label: cancelText,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(false);
+								}
+							}
+						},
+						{
+							label: confirmText,
+							primary: true,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(true);
+								}
+							}
+						}
+					]
+				});
+
+				if (!note) {
+					resolve(false);
+					return;
+				}
+
+				if (note.element) {
+					note.element.setAttribute('aria-modal', 'true');
+					note.element.setAttribute('aria-live', 'assertive');
+					const messageNode = note.element.querySelector('.notification-message');
+					if (messageNode) {
+						const describedbyId = `notification-${Date.now()}`;
+						messageNode.id = describedbyId;
+						note.element.setAttribute('aria-describedby', describedbyId);
+					}
+					requestAnimationFrame(() => {
+						note.focusLastAction?.();
+					});
+				}
+			});
+		}
+
+		function showPrompt(message, options = {}) {
+			const {
+				title = 'Input required',
+				type = 'info',
+				confirmText = 'Submit',
+				cancelText = 'Cancel',
+				placeholder = '',
+				defaultValue = '',
+				inputType = 'text',
+				allowEmpty = false,
+				validate,
+				helperText
+			} = options;
+
+			let handled = false;
+			let inputRef = null;
+			let errorRef = null;
+
+			const setError = (msg) => {
+				if (errorRef) {
+					errorRef.textContent = msg || '';
+				}
+				if (inputRef) {
+					if (msg) {
+						inputRef.classList.add('error');
+					} else {
+						inputRef.classList.remove('error');
+					}
+				}
+			};
+
+			return new Promise((resolve) => {
+				const note = showNotification(message, {
+					title,
+					type,
+					sticky: true,
+					duration: 0,
+					role: 'dialog',
+					onClose: () => {
+						if (!handled) {
+							handled = true;
+							resolve(null);
+						}
+					},
+					actions: [
+						{
+							label: cancelText,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(null);
+								}
+							}
+						},
+						{
+							label: confirmText,
+							primary: true,
+							onClick: () => {
+								const value = inputRef ? inputRef.value.trim() : '';
+								if (!allowEmpty && !value) {
+									setError('Please enter a value.');
+									inputRef?.focus();
+									return false;
+								}
+								if (typeof validate === 'function') {
+									const validation = validate(value);
+									if (validation !== true) {
+										setError(typeof validation === 'string' ? validation : 'Please enter a valid value.');
+										inputRef?.focus();
+										return false;
+									}
+								}
+								setError('');
+								if (!handled) {
+									handled = true;
+									resolve(value);
+								}
+							}
+						}
+					]
+				});
+
+				if (!note) {
+					resolve(null);
+					return;
+				}
+
+				if (note.element) {
+					note.element.setAttribute('aria-modal', 'true');
+					note.element.setAttribute('aria-live', 'assertive');
+					const messageNode = note.element.querySelector('.notification-message');
+					const textWrap = note.element.querySelector('.notification-text');
+					if (messageNode && textWrap) {
+						const describedbyId = `notification-${Date.now()}`;
+						messageNode.id = describedbyId;
+						note.element.setAttribute('aria-describedby', describedbyId);
+						inputRef = document.createElement('input');
+						inputRef.type = inputType;
+						inputRef.className = 'notification-input';
+						inputRef.placeholder = placeholder;
+						inputRef.value = defaultValue;
+						messageNode.after(inputRef);
+
+						errorRef = document.createElement('div');
+						errorRef.className = 'notification-inline-error';
+						errorRef.setAttribute('aria-live', 'polite');
+						textWrap.appendChild(errorRef);
+
+						if (helperText) {
+							const helperEl = document.createElement('div');
+							helperEl.className = 'notification-helper';
+							helperEl.textContent = helperText;
+							textWrap.appendChild(helperEl);
+						}
+
+						const cancelBtn = note.element.querySelector('.notification-action:not(.primary)');
+						const confirmBtn = note.element.querySelector('.notification-action.primary');
+
+						inputRef.addEventListener('input', () => {
+							if (inputRef?.classList.contains('error')) {
+								setError('');
+							}
+						});
+						inputRef.addEventListener('keydown', (event) => {
+							if (event.key === 'Enter') {
+								event.preventDefault();
+								confirmBtn?.click();
+							} else if (event.key === 'Escape') {
+								event.preventDefault();
+								cancelBtn?.click();
+							}
+						});
+
+						requestAnimationFrame(() => {
+							inputRef?.focus();
+							inputRef?.select?.();
+						});
+					}
+				}
+			});
+		}
 		
 		const firebaseConfig = {
 			apiKey: "AIzaSyCTyk_sZYCXFsFOQK_faVQ5KQiQNtK1Q0",
@@ -3141,7 +3798,7 @@
 						const timeUntilExpiry = session.tokenExp - now;
 						setTimeout(() => {
 							signOut();
-							alert('Session expired. Please sign in again.');
+							notify.warning('Session expired. Please sign in again.', { title: 'Signed out' });
 						}, timeUntilExpiry);
 						
 						return true;
@@ -3162,7 +3819,12 @@
 			
 			// For file:// protocol, show a message about domain restrictions
 			if (window.location.protocol === 'file:') {
-				const useDemo = confirm(`⚠️ OAuth Limitation Detected\n\nGoogle OAuth doesn't work with file:// protocol for security reasons.\n\nTo test OAuth:\n1. Host this file on a web server (localhost:8000, behindthebonnet.me, etc.)\n2. Add your domain to Google Cloud Console authorized origins\n\nWould you like to use demo admin access for testing?\n\nClick OK for demo access, Cancel to try manual email entry.`);
+				const useDemo = await showConfirm('Google OAuth cannot verify credentials from a file:// URL. Use demo admin access instead?', {
+					title: 'OAuth limitation detected',
+					confirmText: 'Use demo access',
+					cancelText: 'Enter email manually',
+					type: 'warning'
+				});
 				
 				if (useDemo) {
 					// Simulate successful admin login for testing
@@ -3185,20 +3847,31 @@
 			}
 			
 			// Manual email verification for demonstration/testing
-			const currentDomain = window.location.origin || window.location.protocol + '//' + window.location.host;
-			const email = prompt(`Enter your email for admin access:\n\nNote: Only ${AUTHORIZED_EMAIL} is authorized.\n\nCurrent domain: ${currentDomain}\n\nIf OAuth isn't working, this might be due to:\n• Domain not authorized in Google Cloud Console\n• Missing HTTPS (required for OAuth)\n• CORS restrictions\n\nFor behindthebonnet.me: Make sure to add the domain to Google Cloud Console authorized origins.`);
+			const currentDomain = window.location.origin || `${window.location.protocol}//${window.location.host}`;
+			const email = await showPrompt(`Enter your email for admin access. Only approved collaborators will be allowed.`, {
+				title: 'Manual admin verification',
+				type: 'warning',
+				inputType: 'email',
+				confirmText: 'Verify email',
+				cancelText: 'Cancel',
+				placeholder: 'name@example.com',
+				defaultValue: AUTHORIZED_EMAIL,
+				validate: (value) => value ? true : 'Email is required.',
+				helperText: `Authorized email: ${AUTHORIZED_EMAIL}. Current domain: ${currentDomain}. Ensure this domain is in your Google Cloud authorized origins and served over HTTPS.`
+			});
 			
 			// Load collaborators before checking
 			await loadCollaborators();
-			if (email && isAuthorizedEmail(email)) {
-				adminUser = { email: email, name: "Admin User (Manual)" };
+			const normalizedEmail = (email || '').trim().toLowerCase();
+			if (normalizedEmail && isAuthorizedEmail(normalizedEmail)) {
+				adminUser = { email: normalizedEmail, name: "Admin User (Manual)" };
 				isAdminLoggedIn = true;
 				showLoginSuccess();
 				setTimeout(() => {
 					closeAdminPopup('adminLoginPopup');
 					openAdminLogin(); // This will now open the admin panel
 				}, 1000);
-			} else if (email) {
+			} else if (normalizedEmail) {
 				showLoginError(`Unauthorized email address.`);
 			}
 		}
@@ -3328,7 +4001,7 @@
 			const url = (document.getElementById('actionLinkUrl').value || '').trim();
 			const img = document.getElementById('actionLogoPreview').src || '';
 			const invert = !!document.getElementById('actionLogoInvert').checked;
-			if (!name || !url || !img) { alert('Please provide logo, name, and URL'); return; }
+			if (!name || !url || !img) { notify.error('Provide a logo, name, and URL before saving.'); return; }
 			const entry = { name, url, img, invert };
 			if (actionLinkContext === 'follow') {
 				followLinks.push(entry);
@@ -3379,18 +4052,26 @@
 			});
 		}
 
-		function clearActionLinks(context) {
-			if (!confirm('Clear all links in this list?')) return;
+		async function clearActionLinks(context) {
+			const confirmed = await showConfirm('Clear all links in this list?', {
+				title: context === 'follow' ? 'Clear follow links' : 'Clear subscribe links',
+				confirmText: 'Clear links',
+				cancelText: 'Keep list',
+				type: 'warning'
+			});
+			if (!confirmed) return;
 			if (context === 'follow') {
 				followLinks = [];
-				saveGlobalSetting('followLinks', JSON.stringify(followLinks));
+				await saveGlobalSetting('followLinks', JSON.stringify(followLinks));
 				renderActionLinksList('follow');
 				renderActionPopupButtons('follow');
+				notify.success('Follow links cleared.');
 			} else {
 				subscribeLinks = [];
-				saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
+				await saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
 				renderActionLinksList('subscribe');
 				renderActionPopupButtons('subscribe');
+				notify.success('Subscribe links cleared.');
 			}
 		}
 
@@ -3440,11 +4121,11 @@
 				avatarImgs.forEach(img => (img.src = dataUrl));
 				setProfilePreviewImage(dataUrl);
 				document.getElementById('currentProfilePic').textContent = 'uploaded image';
-				alert('Profile image uploaded and applied globally');
+				notify.success('Profile image uploaded and applied globally.');
 			};
 			reader.readAsDataURL(file);
 		}
-		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; alert('Background image uploaded and applied globally'); }; r.readAsDataURL(file); }
+		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; notify.success('Background image uploaded and applied globally.'); }; r.readAsDataURL(file); }
 
 		async function openFollowPopup() {
 			renderActionPopupButtons('follow');
@@ -4135,7 +4816,7 @@
 		async function updateProfilePicture() {
 			const url = document.getElementById('profilePicture').value.trim();
 			if (!url) {
-				alert('Please enter a valid image URL');
+				notify.error('Please enter a valid image URL.');
 				return;
 			}
 
@@ -4153,11 +4834,11 @@
 				// Update current settings display
 				document.getElementById('currentProfilePic').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
 				document.getElementById('profilePicture').value = '';
-				
-				alert('Profile picture updated GLOBALLY! All visitors will see this change.');
+			
+				notify.success('Profile picture updated for every visitor.');
 			};
 			img.onerror = function() {
-				alert('Failed to load image. Please check the URL and try again.');
+				notify.error('Failed to load image. Please check the URL and try again.');
 			};
 			img.src = url;
 		}
@@ -4165,7 +4846,7 @@
 		async function updateBackgroundImage() {
 			const url = document.getElementById('backgroundImage').value.trim();
 			if (!url) {
-				alert('Please enter a valid image URL');
+				notify.error('Please enter a valid image URL.');
 				return;
 			}
 
@@ -4181,11 +4862,11 @@
 				// Update current settings display
 				document.getElementById('currentBackground').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
 				document.getElementById('backgroundImage').value = '';
-				
-				alert('Background image updated GLOBALLY! All visitors will see this change.');
+			
+				notify.success('Background image updated for everyone.');
 			};
 			img.onerror = function() {
-				alert('Failed to load image. Please check the URL and try again.');
+				notify.error('Failed to load image. Please check the URL and try again.');
 			};
 			img.src = url;
 		}
@@ -4193,7 +4874,7 @@
 		async function updateDisplayName() {
 			const displayName = document.getElementById('displayName').value.trim();
 			if (!displayName) {
-				alert('Please enter a display name');
+				notify.error('Please enter a display name.');
 				return;
 			}
 
@@ -4217,13 +4898,13 @@
 			document.getElementById('currentDisplayName').textContent = displayName;
 			document.getElementById('displayName').value = '';
 			
-			alert('Display name updated GLOBALLY! All visitors will see this change.');
+			notify.success('Display name updated globally.');
 		}
 
 		async function updateUsername() {
 			const username = document.getElementById('username').value.trim();
 			if (!username) {
-				alert('Please enter a username');
+				notify.error('Please enter a username.');
 				return;
 			}
 
@@ -4256,7 +4937,7 @@
 			console.log('🔄 Username changed, refreshing Twitch followers...');
 			updateTwitchFollowers();
 			
-			alert('Username updated GLOBALLY! All visitors will see this change.');
+			notify.success('Username updated globally.');
 		}
 
 		async function updateTwitchStatus() {
@@ -4285,13 +4966,13 @@
 			document.getElementById('currentTwitchStatus').textContent = statusText.charAt(0).toUpperCase() + statusText.slice(1);
 			
 			console.log(`Twitch status updated to: ${statusText}`);
-			alert(`Twitch status updated GLOBALLY to: ${statusText}! All visitors will see this change.`);
+			notify.success(`Twitch status updated globally to ${statusText}.`);
 		}
 
 		async function updateDiscordLink() {
 			const discordUrl = document.getElementById('discordLink').value.trim();
 			if (!discordUrl) {
-				alert('Please enter a Discord link');
+				notify.error('Please enter a Discord link.');
 				return;
 			}
 
@@ -4310,7 +4991,7 @@
 			document.getElementById('discordLink').value = '';
 			
 			console.log(`Discord link updated to: ${discordUrl}`);
-			alert(`Discord link updated GLOBALLY! All visitors will see this change.`);
+			notify.success('Discord link updated globally.');
 		}
 
 		async function updatePageLogo() {
@@ -4319,18 +5000,18 @@
 			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
 
 			if (!logoUrl && !resolution && !sizeStr) {
-				alert('Please enter at least one field: URL, Resolution, or Size');
+				notify.error('Provide at least one value: URL, resolution, or size.');
 				return;
 			}
 
 			// Optional: basic validation of resolution (WxH)
 			if (resolution && !/^\d{2,5}x\d{2,5}$/i.test(resolution)) {
-				alert('Resolution must be in the format 1920x1080');
+				notify.error('Resolution must use the format 1920x1080.');
 				return;
 			}
 			// Optional: basic validation of size (WxH)
 			if (sizeStr && !/^\d{2,5}x\d{2,5}$/i.test(sizeStr)) {
-				alert('Size must be in the format 135x135');
+				notify.error('Size must use the format 135x135.');
 				return;
 			}
 
@@ -4363,7 +5044,7 @@
 			document.getElementById('pageLogoResolution').value = '';
 			document.getElementById('pageLogoSize').value = '';
 			
-			alert('Page logo updated GLOBALLY! All visitors will see this change.');
+			notify.success('Page logo updated globally.');
 		}
 
 		async function updateLogoInvert() {
@@ -4380,7 +5061,7 @@
 		async function updateBio() {
 			const bio = document.getElementById('bioTextInput').value.trim();
 			if (!bio) {
-				alert('Please enter a bio');
+				notify.error('Please enter a bio.');
 				return;
 			}
 
@@ -4397,13 +5078,13 @@
 			document.getElementById('currentBio').textContent = bio.length > 30 ? bio.substring(0, 30) + '...' : bio;
 			document.getElementById('bioTextInput').value = '';
 			
-			alert('Bio updated GLOBALLY! All visitors will see this change.');
+			notify.success('Bio updated globally.');
 		}
 
 		async function updateAboutText() {
 			const aboutText = document.getElementById('aboutText').value.trim();
 			if (!aboutText) {
-				alert('Please enter about text');
+				notify.error('Please enter some About text.');
 				return;
 			}
 
@@ -4420,13 +5101,13 @@
 			document.getElementById('currentAboutText').textContent = aboutText.length > 30 ? aboutText.substring(0, 30) + '...' : aboutText;
 			document.getElementById('aboutText').value = '';
 			
-			alert('About text updated GLOBALLY! All visitors will see this change.');
+			notify.success('About section updated globally.');
 		}
 
 		async function updateStreamingYear() {
 			const year = document.getElementById('streamingYear').value.trim();
 			if (!year) {
-				alert('Please enter a streaming year');
+				notify.error('Please enter the streaming start year.');
 				return;
 			}
 
@@ -4443,7 +5124,7 @@
 			document.getElementById('currentStreamingYear').textContent = year;
 			document.getElementById('streamingYear').value = '';
 			
-			alert('Streaming year updated GLOBALLY! All visitors will see this change.');
+			notify.success('Streaming year updated globally.');
 		}
 
 		async function updateFollowerCount() {
@@ -4470,7 +5151,11 @@
 			document.getElementById('currentFollowerCount').textContent = count || 'API';
 			document.getElementById('followerCount').value = '';
 			
-			alert(count ? 'Follower count updated GLOBALLY!' : 'Follower count set to use API GLOBALLY!');
+			if (count) {
+				notify.success('Follower count updated globally.');
+			} else {
+				notify.info('Follower count now uses the live API globally.');
+			}
 		}
 
 		async function updateSubscriberCount() {
@@ -4497,33 +5182,37 @@
 			document.getElementById('currentSubscriberCount').textContent = count || 'API';
 			document.getElementById('subscriberCount').value = '';
 			
-			alert(count ? 'Subscriber count updated GLOBALLY!' : 'Subscriber count set to use API GLOBALLY!');
+			if (count) {
+				notify.success('Subscriber count updated globally.');
+			} else {
+				notify.info('Subscriber count now uses the live API globally.');
+			}
 		}
 
 		async function updateTwitchLink() {
 			const url = document.getElementById('twitchLink').value.trim();
 			if (!url) {
-				alert('Please enter a Twitch URL');
+				notify.error('Please enter a Twitch URL.');
 				return;
 			}
 
 			await saveGlobalSetting('twitchLink', url);
 			updateSocialLink('twitch', url);
 			document.getElementById('twitchLink').value = '';
-			alert('Twitch link updated GLOBALLY!');
+			notify.success('Twitch link updated globally.');
 		}
 
 		async function updateYouTubeLink() {
 			const url = document.getElementById('youtubeLink').value.trim();
 			if (!url) {
-				alert('Please enter a YouTube URL');
+				notify.error('Please enter a YouTube URL.');
 				return;
 			}
 
 			await saveGlobalSetting('youtubeLink', url);
 			updateSocialLink('youtube', url);
 			document.getElementById('youtubeLink').value = '';
-			alert('YouTube link updated GLOBALLY!');
+			notify.success('YouTube link updated globally.');
 		}
 
 		async function updateTwitchChannel() {
@@ -4531,13 +5220,13 @@
 			if (!input) return;
 			const rawValue = input.value.trim();
 			if (!rawValue) {
-				alert('Please enter a Twitch channel name');
+				notify.error('Please enter a Twitch channel name.');
 				return;
 			}
 
 			const channel = sanitizeTwitchChannel(rawValue);
 			if (!channel) {
-				alert('Invalid Twitch channel name');
+				notify.error('Invalid Twitch channel name.');
 				return;
 			}
 
@@ -4546,60 +5235,60 @@
 			const currentChannelEl = document.getElementById('currentTwitchChannel');
 			if (currentChannelEl) currentChannelEl.textContent = channel;
 			input.value = '';
-			alert('Twitch channel updated GLOBALLY!');
+			notify.success('Twitch channel updated globally.');
 			updateTwitchFollowers();
 		}
 
 		async function updateTikTokLink() {
 			const url = document.getElementById('tiktokLink').value.trim();
 			if (!url) {
-				alert('Please enter a TikTok URL');
+				notify.error('Please enter a TikTok URL.');
 				return;
 			}
 
 			await saveGlobalSetting('tiktokLink', url);
 			updateSocialLink('tiktok', url);
 			document.getElementById('tiktokLink').value = '';
-			alert('TikTok link updated GLOBALLY!');
+			notify.success('TikTok link updated globally.');
 		}
 
 		async function updateInstagramLink() {
 			const url = document.getElementById('instagramLink').value.trim();
 			if (!url) {
-				alert('Please enter an Instagram URL');
+				notify.error('Please enter an Instagram URL.');
 				return;
 			}
 
 			await saveGlobalSetting('instagramLink', url);
 			updateSocialLink('instagram', url);
 			document.getElementById('instagramLink').value = '';
-			alert('Instagram link updated GLOBALLY!');
+			notify.success('Instagram link updated globally.');
 		}
 
 		async function updateXLink() {
 			const url = document.getElementById('xLink').value.trim();
 			if (!url) {
-				alert('Please enter an X URL');
+				notify.error('Please enter an X URL.');
 				return;
 			}
 
 			await saveGlobalSetting('xLink', url);
 			updateSocialLink('x', url);
 			document.getElementById('xLink').value = '';
-			alert('X link updated GLOBALLY!');
+			notify.success('X link updated globally.');
 		}
 
 		async function updateRedditLink() {
 			const url = document.getElementById('redditLink').value.trim();
 			if (!url) {
-				alert('Please enter a Reddit URL');
+				notify.error('Please enter a Reddit URL.');
 				return;
 			}
 
 			await saveGlobalSetting('redditLink', url);
 			updateSocialLink('reddit', url);
 			document.getElementById('redditLink').value = '';
-			alert('Reddit link updated GLOBALLY!');
+			notify.success('Reddit link updated globally.');
 		}
 
 		function updateSocialLink(platform, url) {
@@ -4626,7 +5315,7 @@
 		async function updateFollowButton() {
 			const text = document.getElementById('followButtonText').value.trim();
 			if (!text) {
-				alert('Please enter follow button text');
+				notify.error('Please enter follow button text.');
 				return;
 			}
 
@@ -4646,13 +5335,13 @@
 			}
 			
 			document.getElementById('followButtonText').value = '';
-			alert('Follow button updated GLOBALLY!');
+			notify.success('Follow button updated globally.');
 		}
 
 		async function updateSubscribeButton() {
 			const text = document.getElementById('subscribeButtonText').value.trim();
 			if (!text) {
-				alert('Please enter subscribe button text');
+				notify.error('Please enter subscribe button text.');
 				return;
 			}
 
@@ -4672,7 +5361,7 @@
 			}
 			
 			document.getElementById('subscribeButtonText').value = '';
-			alert('Subscribe button updated GLOBALLY!');
+			notify.success('Subscribe button updated globally.');
 		}
 
 		async function updateStreamSchedule(streamNumber) {
@@ -4687,7 +5376,7 @@
 			const customDate = customDateInput.value;
 			
 			if (!time) {
-				alert(`Please enter stream ${streamNumber} time`);
+				notify.error(`Please enter stream ${streamNumber} time.`);
 				return;
 			}
 
@@ -4715,7 +5404,7 @@
 			}
 			
 			timeInput.value = '';
-			alert(`Stream ${streamNumber} schedule updated GLOBALLY!`);
+			notify.success(`Stream ${streamNumber} schedule updated globally.`);
 		}
 
 		// Keep old functions for backward compatibility but make them call the new function
@@ -4739,9 +5428,9 @@
 					saturdayElement.textContent = `${dayNames[6]}, ${time}`;
 				}
 				oldTimeInput.value = '';
-				alert('Saturday schedule updated GLOBALLY!');
+				notify.success('Saturday schedule updated globally.');
 			} else {
-				alert('Please enter Saturday stream time');
+				notify.error('Please enter Saturday stream time.');
 			}
 		}
 
@@ -4765,22 +5454,22 @@
 					sundayElement.textContent = `${dayNames[0]}, ${time}`;
 				}
 				oldTimeInput.value = '';
-				alert('Sunday schedule updated GLOBALLY!');
+				notify.success('Sunday schedule updated globally.');
 			} else {
-				alert('Please enter Sunday stream time');
+				notify.error('Please enter Sunday stream time.');
 			}
 		}
 
 		async function updateYouTubeVideo() {
 			const videoId = document.getElementById('youtubeVideoId').value.trim();
 			if (!videoId) {
-				alert('Please enter a YouTube video ID');
+				notify.error('Please enter a YouTube video ID.');
 				return;
 			}
 
 			// Validate video ID format (basic check)
 			if (videoId.length < 8 || videoId.length > 15) {
-				alert('Invalid YouTube video ID format. It should be 8-15 characters.');
+				notify.error('Invalid YouTube video ID format. Use 8-15 characters.');
 				return;
 			}
 
@@ -4793,8 +5482,8 @@
 			// Update current settings display
 			document.getElementById('currentYouTubeVideo').textContent = videoId;
 			document.getElementById('youtubeVideoId').value = '';
-			
-			alert('YouTube video updated GLOBALLY! All visitors will see this video.');
+		
+			notify.success('Featured YouTube video updated globally.');
 		}
 
 		async function updateShortVideoEmbed() {
@@ -4802,13 +5491,13 @@
 			if (!input) return;
 			const link = input.value.trim();
 			if (!link) {
-				alert('Please paste a TikTok or YouTube Shorts link.');
+				notify.error('Please paste a TikTok or YouTube Shorts link.');
 				return;
 			}
 
 			const parsed = parseShortVideoLink(link);
 			if (!parsed) {
-				alert('Unsupported link. Please use a valid YouTube Shorts or TikTok video URL.');
+				notify.error('Unsupported link. Use a valid YouTube Shorts or TikTok URL.');
 				return;
 			}
 
@@ -4817,18 +5506,24 @@
 			applyShortVideoEmbed(parsed);
 			const currentShortVideoEl = document.getElementById('currentShortVideo');
 			if (currentShortVideoEl) currentShortVideoEl.textContent = formatShortVideoLabel(parsed);
-			alert('Featured short video updated GLOBALLY!');
+			notify.success('Featured short video updated globally.');
 		}
 
 		async function clearShortVideoEmbed() {
-			if (!confirm('Remove the featured short video for all visitors?')) return;
+			const confirmed = await showConfirm('Remove the featured short video for all visitors?', {
+				title: 'Remove featured short',
+				confirmText: 'Remove video',
+				cancelText: 'Keep featured video',
+				type: 'warning'
+			});
+			if (!confirmed) return;
 			await saveGlobalSetting('shortVideoEmbed', 'N/A');
 			applyShortVideoEmbed(null);
 			const currentShortVideoEl = document.getElementById('currentShortVideo');
 			if (currentShortVideoEl) currentShortVideoEl.textContent = 'None';
 			const input = document.getElementById('shortVideoLink');
 			if (input) input.value = '';
-			alert('Featured short video cleared.');
+			notify.info('Featured short video cleared.');
 		}
 
 		async function updateFirebaseDatabase() {
@@ -4836,13 +5531,18 @@
 			const siteName = getSelectedSiteLabel();
 			
 			if (!newDatabaseUrl) {
-				alert('Please enter a Firebase database URL');
+				notify.error('Please enter a Firebase database URL.');
 				return;
 			}
 			
 			// Confirm the change
-			const confirmed = confirm(`⚠️ Are you sure you want to switch to a new Firebase database?\n\nNew URL: ${newDatabaseUrl}\n\nThis will:\n- Save the new database URL\n- Reload the page\n- Use the new Firebase project for all settings\n\nContinue?`);
-			
+			const confirmed = await showConfirm(`Switch Firebase database to ${newDatabaseUrl}?`, {
+				title: 'Add database URL to history',
+				confirmText: 'Add to history',
+				cancelText: 'Cancel',
+				type: 'warning'
+			});
+		
 			if (!confirmed) return;
 			
 			try {
@@ -4859,10 +5559,10 @@
 				// Clear input and re-render history so user can click Activate
 				document.getElementById('firebaseDatabaseUrl').value = '';
 				renderFirebaseHistory();
-				alert('Added to history. Click Activate to switch for everyone.');
+				notify.success('Database URL added to history. Click Activate to switch for everyone.');
 			} catch (error) {
 				console.error('Error updating Firebase database:', error);
-				alert('Error adding to history. Please try again.');
+				notify.error('Error adding to history. Please try again.');
 			}
 		}
 
@@ -4975,11 +5675,20 @@
 		async function activateFirebaseDb(index) {
 			try {
 				let raw = await loadGlobalSetting('firebaseDbHistory');
-				if (!raw || raw === 'N/A') return alert('No history found');
+				if (!raw || raw === 'N/A') {
+					notify.error('No database history found.');
+					return;
+				}
 				let list = [];
-				try { list = JSON.parse(raw); } catch { return alert('Invalid history'); }
+				try { list = JSON.parse(raw); } catch {
+					notify.error('Unable to parse database history.');
+					return;
+				}
 				const entry = list[index];
-				if (!entry || !entry.url) return alert('Invalid entry');
+				if (!entry || !entry.url) {
+					notify.error('Invalid history entry.');
+					return;
+				}
 				// Set active per-site map
 				await upsertActiveMap(entry);
 				// Mirror to default DB
@@ -4994,10 +5703,10 @@
 				// Update UI and reload with the selected DB
 				await renderFirebaseHistory(list);
 				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(entry.url));
-				alert('Activated database for this site. Reloading...');
+				notify.success('Activated database for this site. Reloading...');
 				window.location.reload();
 			} catch (e) {
-				alert('Failed to activate database');
+				notify.error('Failed to activate database.');
 			}
 		}
 
@@ -5040,20 +5749,26 @@
 		async function addCollaborator() {
 			const input = document.getElementById('collabEmail');
 			const email = (input.value||'').trim().toLowerCase();
-			if (!email) return alert('Enter an email');
-			if (email === AUTHORIZED_EMAIL) return alert('Owner is already authorized.');
+			if (!email) {
+				notify.error('Enter an email address.');
+				return;
+			}
+			if (email === AUTHORIZED_EMAIL) {
+				notify.info('Owner is already authorized.');
+				return;
+			}
 			await loadCollaborators();
 			if (!collaborators.includes(email)) collaborators.push(email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
 			input.value='';
-			alert('Collaborator added');
+			notify.success('Collaborator added.');
 			renderCollaborators();
 		}
 		async function removeCollaborator(email) {
 			await loadCollaborators();
 			collaborators = collaborators.filter(e=>e!==email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
-			alert('Collaborator removed');
+			notify.success('Collaborator removed.');
 			renderCollaborators();
 		}
 
@@ -5114,7 +5829,7 @@
 			}
 			await saveGlobalSetting('themeTint', JSON.stringify(payload));
 			applyThemeTint(payload); // keep local tint applied after save
-			alert('Theme tint saved GLOBALLY!');
+			notify.success('Theme tint saved globally.');
 		}
 
 		// Website Effects Functions
@@ -5260,7 +5975,7 @@
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
 			
-			alert('All visual effects have been reset!');
+			notify.info('All visual effects have been reset.');
 		}
 
 		async function saveEffectsGlobally() {
@@ -5276,8 +5991,8 @@
 
 			// Save GLOBALLY for ALL users
 			await saveGlobalSetting('websiteEffects', JSON.stringify(effects));
-			
-			alert('Website effects saved GLOBALLY! All visitors will see these effects.');
+	
+			notify.success('Website effects saved globally.');
 		}
 
 		async function loadGlobalEffects() {
@@ -5353,7 +6068,13 @@
 
 		// Add reset functions
 		async function resetToDefaults() {
-			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
+			const confirmed = await showConfirm('Reset all settings to defaults for every visitor? This cannot be undone.', {
+				title: 'Reset entire site',
+				confirmText: 'Reset everything',
+				cancelText: 'Keep current settings',
+				type: 'error'
+			});
+			if (confirmed) {
 				// Clear GLOBAL settings
 				await saveGlobalSetting('display-name', 'N/A');
 				await saveGlobalSetting('username', 'N/A');
@@ -5421,7 +6142,7 @@
 				document.getElementById('currentBackground').textContent = 'N/A';
 				document.getElementById('currentYouTubeVideo').textContent = 'N/A';
 				
-				alert('All settings have been reset to defaults GLOBALLY!');
+				notify.success('All settings have been reset to defaults for every visitor.');
 			}
 		}
 
