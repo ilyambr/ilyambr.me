@@ -878,6 +878,57 @@
 			border-color:rgba(0,199,255,0.6);
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
+		.app-special-media{
+			display:none;
+			margin-top:18px;
+		}
+		.app-special-media.active{
+			display:block;
+		}
+		.app-special-preview{
+			min-height:280px;
+		}
+		.app-form-footer{
+			display:flex;
+			align-items:flex-end;
+			justify-content:space-between;
+			gap:18px;
+			flex-wrap:wrap;
+			margin-top:22px;
+		}
+		.special-option-field{
+			display:flex;
+			flex-direction:column;
+			gap:8px;
+			min-width:220px;
+			flex:1 1 260px;
+		}
+		.special-option-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.special-option-select{
+			min-width:220px;
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+		}
+		.special-option-select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.app-form-actions{
+			display:flex;
+			gap:10px;
+			flex-wrap:wrap;
+		}
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
@@ -961,6 +1012,96 @@
 			box-shadow:0 28px 44px rgba(0,0,0,0.45);
 			max-height:100%;
 			overflow:auto;
+		}
+		.settings-special-layout{
+			display:flex;
+			gap:24px;
+			align-items:stretch;
+		}
+		.settings-special-left{
+			flex:1.2;
+			min-width:0;
+		}
+		.character-trn-panel{
+			flex:1;
+			display:flex;
+			flex-direction:column;
+			gap:0;
+			background:rgba(12,14,28,0.92);
+			border:1px solid rgba(255,255,255,0.1);
+			border-radius:20px;
+			overflow:hidden;
+			box-shadow:0 28px 44px rgba(0,0,0,0.45);
+		}
+		.character-trn-image{
+			position:relative;
+			flex:1 1 auto;
+			min-height:280px;
+			background:rgba(255,255,255,0.04) center/cover no-repeat;
+		}
+		.character-trn-image::after{
+			content:"";
+			position:absolute;
+			inset:0;
+			background:linear-gradient(180deg, rgba(8,10,20,0.0) 0%, rgba(8,10,20,0.8) 75%);
+		}
+		.character-trn-image.empty{
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			color:rgba(255,255,255,0.65);
+			font-weight:600;
+			font-size:16px;
+			text-transform:uppercase;
+			letter-spacing:0.08em;
+		}
+		.character-trn-image.empty::after{
+			display:none;
+		}
+		.character-trn-stats{
+			padding:28px 32px 32px;
+			display:flex;
+			flex-direction:column;
+			gap:22px;
+		}
+		.character-trn-name{
+			margin:0;
+			font-size:28px;
+			font-weight:700;
+			letter-spacing:-0.02em;
+			color:#ffffff;
+		}
+		.character-trn-meta{
+			display:flex;
+			gap:18px;
+			flex-wrap:wrap;
+		}
+		.character-trn-meta-item{
+			flex:1;
+			min-width:120px;
+			display:flex;
+			flex-direction:column;
+			gap:6px;
+		}
+		.character-trn-meta-label{
+			font-size:12px;
+			font-weight:600;
+			letter-spacing:0.12em;
+			text-transform:uppercase;
+			color:rgba(255,255,255,0.55);
+		}
+		.character-trn-meta-value{
+			font-size:22px;
+			font-weight:700;
+			color:#ffffff;
+		}
+		@media (max-width: 1100px){
+			.settings-special-layout{
+				flex-direction:column;
+			}
+			.character-trn-panel{
+				border-radius:18px;
+			}
 		}
 		.settings-detail-panel{
 			background:rgba(12,14,28,0.96);
@@ -3022,8 +3163,14 @@
 
 		let allSettingsApps = [];
 		let editingAllSettingsAppId = null;
-		let pendingAllSettingsAppMedia = { banner: null, logo: null };
+		let pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 		let allSettingsMediaHandlersBound = false;
+		let allSettingsSpecialHandlersBound = false;
+
+		const ALL_SETTINGS_SPECIAL_OPTIONS = [
+			{ id: 'none', label: 'None' },
+			{ id: 'character-trn', label: 'Character (TRN)' }
+		];
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
 			{ id: 'games', label: 'Games', type: 'default' },
@@ -3242,6 +3389,60 @@
 			}
 
 			container.appendChild(sectionsWrap);
+			const specialOption = normalizeAllSettingsSpecialOption(app?.specialOption);
+			if (specialOption === 'character-trn') {
+				const layout = document.createElement('div');
+				layout.className = 'settings-special-layout character-trn-layout';
+				const mainRegion = document.createElement('div');
+				mainRegion.className = 'settings-special-left';
+				mainRegion.appendChild(container);
+				const sidePanel = document.createElement('aside');
+				sidePanel.className = 'character-trn-panel';
+				const portrait = document.createElement('div');
+				portrait.className = 'character-trn-image';
+				if (app.characterImage) {
+					applyBackgroundImage(portrait, app.characterImage);
+				} else {
+					portrait.classList.add('empty');
+					portrait.textContent = 'Character Portrait';
+				}
+				sidePanel.appendChild(portrait);
+				const stats = document.createElement('div');
+				stats.className = 'character-trn-stats';
+				const characterName = document.createElement('h4');
+				characterName.className = 'character-trn-name';
+				characterName.textContent = 'Character Name';
+				stats.appendChild(characterName);
+				const meta = document.createElement('div');
+				meta.className = 'character-trn-meta';
+				const playtime = document.createElement('div');
+				playtime.className = 'character-trn-meta-item';
+				const playtimeLabel = document.createElement('span');
+				playtimeLabel.className = 'character-trn-meta-label';
+				playtimeLabel.textContent = 'Playtime';
+				const playtimeValue = document.createElement('span');
+				playtimeValue.className = 'character-trn-meta-value';
+				playtimeValue.textContent = '124h 32m';
+				playtime.appendChild(playtimeLabel);
+				playtime.appendChild(playtimeValue);
+				const kd = document.createElement('div');
+				kd.className = 'character-trn-meta-item';
+				const kdLabel = document.createElement('span');
+				kdLabel.className = 'character-trn-meta-label';
+				kdLabel.textContent = 'K/D Ratio';
+				const kdValue = document.createElement('span');
+				kdValue.className = 'character-trn-meta-value';
+				kdValue.textContent = '2.45';
+				kd.appendChild(kdLabel);
+				kd.appendChild(kdValue);
+				meta.appendChild(playtime);
+				meta.appendChild(kd);
+				stats.appendChild(meta);
+				sidePanel.appendChild(stats);
+				layout.appendChild(mainRegion);
+				layout.appendChild(sidePanel);
+				return layout;
+			}
 			return container;
 		}
 
@@ -3252,17 +3453,20 @@
 			const title = document.getElementById('settingsAppDetailTitle');
 			const category = document.getElementById('settingsAppDetailCategory');
 			if (!popup || !body) return;
+
 			body.innerHTML = '';
 			const detailWrapper = document.createElement('div');
 			detailWrapper.className = 'settings-app-detail';
 			detailWrapper.appendChild(buildSettingsDetail(app));
 			body.appendChild(detailWrapper);
+
 			if (title) {
 				title.textContent = app.name || 'App Settings';
 			}
 			if (category) {
 				category.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
 			}
+
 			popup.style.display = 'flex';
 			setBodyScrollState(true);
 		}
@@ -3270,26 +3474,29 @@
 		function closeSettingsAppDetailPopup(preserveScrollLock = false) {
 			const popup = document.getElementById('settingsAppDetailPopup');
 			const body = document.getElementById('settingsAppDetailBody');
-			const category = document.getElementById('settingsAppDetailCategory');
 			const title = document.getElementById('settingsAppDetailTitle');
+			const category = document.getElementById('settingsAppDetailCategory');
 			if (!popup) return;
+
 			popup.style.display = 'none';
 			if (body) {
 				body.innerHTML = '';
 			}
-			if (category) {
-				category.textContent = '\u00A0';
-			}
 			if (title) {
 				title.textContent = 'App Settings';
 			}
-			if (!preserveScrollLock) {
-				const mainPopup = document.getElementById('gameSettingsPopup');
-				if (mainPopup && mainPopup.style.display === 'flex') {
-					setBodyScrollState(true);
-				} else {
-					setBodyScrollState(false);
-				}
+			if (category) {
+				category.textContent = '\u00A0';
+			}
+
+			if (preserveScrollLock) {
+				return;
+			}
+			const mainPopup = document.getElementById('gameSettingsPopup');
+			if (mainPopup && mainPopup.style.display === 'flex') {
+				setBodyScrollState(true);
+			} else {
+				setBodyScrollState(false);
 			}
 		}
 
@@ -3411,6 +3618,8 @@
 				banner: sanitizeMedia(raw.banner),
 				tabId: resolveGameSettingsTabId(raw.tabId),
 				settingsTemplate: Array.isArray(raw.settingsTemplate) ? raw.settingsTemplate : [],
+				specialOption: normalizeAllSettingsSpecialOption(raw.specialOption),
+				characterImage: sanitizeMedia(raw.characterImage),
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -3422,6 +3631,9 @@
 			if (!normalized.name) {
 				normalized.name = 'Untitled App';
 			}
+			if (normalized.specialOption !== 'character-trn') {
+				normalized.characterImage = '';
+			}
 			return normalized;
 		}
 
@@ -3432,8 +3644,35 @@
 
 		const ALL_SETTINGS_MEDIA_CONFIG = {
 			banner: { previewId: 'allSettingsAppBannerPreview', inputSelector: '#allSettingsBannerInput' },
-			logo: { previewId: 'allSettingsAppLogoPreview', inputSelector: '#allSettingsLogoInput' }
+			logo: { previewId: 'allSettingsAppLogoPreview', inputSelector: '#allSettingsLogoInput' },
+			character: { previewId: 'allSettingsCharacterPreview', inputSelector: '#allSettingsCharacterInput' }
 		};
+
+		function normalizeAllSettingsSpecialOption(value) {
+			const normalized = String(value || '').trim().toLowerCase();
+			return ALL_SETTINGS_SPECIAL_OPTIONS.some(option => option.id === normalized)
+				? normalized
+				: ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
+		}
+
+		function updateAllSettingsSpecialOptionUI(option) {
+			const resolved = normalizeAllSettingsSpecialOption(option);
+			const specialMedia = document.getElementById('allSettingsSpecialMedia');
+			if (specialMedia) {
+				specialMedia.classList.toggle('active', resolved === 'character-trn');
+			}
+		}
+
+		function ensureAllSettingsSpecialHandlers() {
+			if (allSettingsSpecialHandlersBound) return;
+			const select = document.getElementById('allSettingsSpecialOption');
+			if (select) {
+				select.addEventListener('change', event => {
+					updateAllSettingsSpecialOptionUI(event.target.value);
+				});
+			}
+			allSettingsSpecialHandlersBound = true;
+		}
 
 		function setAllSettingsMediaPreview(type, value) {
 			const config = ALL_SETTINGS_MEDIA_CONFIG[type];
@@ -3456,6 +3695,7 @@
 		function updateAllSettingsAppPreview() {
 			setAllSettingsMediaPreview('banner', pendingAllSettingsAppMedia.banner);
 			setAllSettingsMediaPreview('logo', pendingAllSettingsAppMedia.logo);
+			setAllSettingsMediaPreview('character', pendingAllSettingsAppMedia.character);
 		}
 
 		function triggerAllSettingsMediaInput(type) {
@@ -3517,8 +3757,11 @@
 			if (nameInput) nameInput.value = '';
 			const categorySelect = document.getElementById('allSettingsAppCategory');
 			if (categorySelect) categorySelect.value = DEFAULT_GAME_SETTINGS_TABS[0].id;
-			pendingAllSettingsAppMedia = { banner: null, logo: null };
+			const specialSelect = document.getElementById('allSettingsSpecialOption');
+			if (specialSelect) specialSelect.value = ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
+			pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 			updateAllSettingsAppPreview();
+			updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			if (title) title.textContent = 'Add App to All Settings';
 		}
@@ -3536,6 +3779,7 @@
 			const title = document.querySelector('#allSettingsAppFormPopup .popup-header h3');
 			editingAllSettingsAppId = appId || null;
 			ensureAllSettingsMediaHandlers();
+			ensureAllSettingsSpecialHandlers();
 			if (appId) {
 				const app = allSettingsApps.find(item => item.id === appId);
 				if (app) {
@@ -3543,10 +3787,14 @@
 					if (nameInput) nameInput.value = app.name || '';
 					const categorySelect = document.getElementById('allSettingsAppCategory');
 					if (categorySelect) categorySelect.value = resolveGameSettingsTabId(app.tabId);
+					const specialSelect = document.getElementById('allSettingsSpecialOption');
+					if (specialSelect) specialSelect.value = normalizeAllSettingsSpecialOption(app.specialOption);
 					pendingAllSettingsAppMedia = {
 						banner: (app.banner && app.banner !== 'N/A') ? app.banner : null,
-						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null
+						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null,
+						character: (app.characterImage && app.characterImage !== 'N/A') ? app.characterImage : null
 					};
+					updateAllSettingsSpecialOptionUI(specialSelect ? specialSelect.value : ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
 					if (title) title.textContent = `Edit ${app.name || 'App'}`;
 				} else {
 					resetAllSettingsAppForm();
@@ -3555,6 +3803,9 @@
 				resetAllSettingsAppForm();
 			}
 			updateAllSettingsAppPreview();
+			if (!appId) {
+				updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
+			}
 			openPopup('allSettingsAppFormPopup');
 		}
 
@@ -3677,10 +3928,16 @@
 		async function saveAllSettingsApp() {
 			const nameInput = document.getElementById('allSettingsAppName');
 			const categorySelect = document.getElementById('allSettingsAppCategory');
+			const specialSelect = document.getElementById('allSettingsSpecialOption');
 			const name = (nameInput?.value || '').trim();
 			const logo = pendingAllSettingsAppMedia.logo || '';
 			const banner = pendingAllSettingsAppMedia.banner || '';
 			const tabId = resolveGameSettingsTabId(categorySelect?.value);
+			const specialOption = normalizeAllSettingsSpecialOption(specialSelect?.value);
+			let characterImage = pendingAllSettingsAppMedia.character || '';
+			if (specialOption !== 'character-trn') {
+				characterImage = '';
+			}
 			if (!name) {
 				notify.error('Give the app a name before saving.');
 				nameInput?.focus();
@@ -3697,6 +3954,8 @@
 						logo,
 						banner,
 						tabId,
+						specialOption,
+						characterImage,
 						updatedAt: timestamp
 					};
 				} else {
@@ -3709,6 +3968,8 @@
 						banner,
 						tabId,
 						settingsTemplate: [],
+						specialOption,
+						characterImage,
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -3722,6 +3983,8 @@
 					banner,
 					tabId,
 					settingsTemplate: [],
+					specialOption,
+					characterImage,
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
@@ -3976,9 +4239,30 @@
 							</div>
 						</div>
 					</div>
-					<div style="display:flex; justify-content:flex-end; gap:10px;">
-						<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
-						<button class="admin-logout-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
+					<div class="app-special-media" id="allSettingsSpecialMedia">
+						<div class="app-media-block">
+							<span class="app-media-hint">Character Image • 1080 × 1440</span>
+							<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
+								<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+									Upload
+								</button>
+								<input type="file" accept="image/*" id="allSettingsCharacterInput" class="app-media-input" data-media-type="character">
+							</div>
+						</div>
+					</div>
+					<div class="app-form-footer">
+						<div class="special-option-field">
+							<label for="allSettingsSpecialOption" class="special-option-label">Special Option</label>
+							<select id="allSettingsSpecialOption" class="special-option-select">
+								<option value="none">None</option>
+								<option value="character-trn">Character (TRN)</option>
+							</select>
+						</div>
+						<div class="app-form-actions">
+							<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
+							<button class="admin-logout-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
+						</div>
 					</div>
 				</div>
 			</div>
