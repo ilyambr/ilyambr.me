@@ -1689,59 +1689,57 @@
 		.app-settings-tab-bar{
 			display:flex;
 			gap:12px;
-			padding:12px 32px;
+			padding:10px 38px 6px;
 			margin-top:-20px;
 			position:relative;
 			z-index:2;
 			overflow-x:auto;
 			scrollbar-width:thin;
-			scrollbar-color:rgba(20,24,46,0.25) transparent;
+			scrollbar-color:#ffffff transparent;
 			scroll-snap-type:x proximity;
-			background:#ffffff;
-			border-radius:18px;
-			border:1px solid rgba(20,24,46,0.12);
 		}
 		.app-settings-tab-bar::-webkit-scrollbar{
-			height:6px;
+			height:8px;
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-track{
 			background:transparent;
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-thumb{
-			background:#d5daeb;
+			background:#ffffff;
 			border-radius:999px;
 		}
 		.app-settings-tab-bar::-webkit-scrollbar-thumb:hover{
-			background:#c8cee4;
+			background:#f1f1f1;
 		}
 		.app-settings-tab-bar.empty{
 			min-height:48px;
 		}
 		.app-settings-tab{
-			border:1px solid rgba(20,24,46,0.14);
-			background:#ffffff;
-			color:#152043;
+			border:none;
+			background:rgba(255,255,255,0.05);
+			color:rgba(255,255,255,0.78);
 			padding:12px 18px;
 			border-radius:14px;
 			font-size:13px;
 			font-weight:600;
-			letter-spacing:0.28px;
+			letter-spacing:0.32px;
 			text-transform:uppercase;
 			cursor:pointer;
-			transition:background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+			transition:all 0.2s ease;
 			white-space:nowrap;
 			scroll-snap-align:center;
+			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
 		}
 		.app-settings-tab:hover{
-			background:#f2f5ff;
-			border-color:rgba(20,24,46,0.22);
-			color:#0d1636;
+			background:rgba(0,199,255,0.18);
+			color:#ffffff;
+			box-shadow:inset 0 0 0 1px rgba(0,199,255,0.36);
 		}
 		.app-settings-tab.active{
-			background:#e4e9ff;
-			color:#0c1230;
-			border-color:rgba(20,24,46,0.28);
-			transform:none;
+			background:linear-gradient(135deg, rgba(0,199,255,0.32), rgba(0,132,255,0.28));
+			color:#ffffff;
+			box-shadow:0 18px 32px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,199,255,0.46);
+			transform:translateY(-2px);
 		}
 		.settings-template-hero-overlay img,
 		.settings-template-logo-fallback{
@@ -4392,20 +4390,24 @@
 
 			const hero = document.createElement('div');
 			hero.className = 'settings-template-hero';
+			hero.dataset.preserveColor = 'true';
 			applyBackgroundImage(hero, app.banner);
 
 			const heroOverlay = document.createElement('div');
 			heroOverlay.className = 'settings-template-hero-overlay';
+			heroOverlay.dataset.preserveColor = 'true';
 
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.preserveColor = 'true';
 				heroOverlay.appendChild(logo);
 			} else {
 				const fallback = document.createElement('div');
 				fallback.className = 'settings-template-logo-fallback';
 				fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
+				fallback.dataset.preserveColor = 'true';
 				heroOverlay.appendChild(fallback);
 			}
 
@@ -4534,6 +4536,7 @@
 				characterPanel = document.createElement('aside');
 				characterPanel.className = 'character-trn-panel';
 				characterPanel.dataset.appId = `${app.id}-character`;
+				characterPanel.dataset.preserveColor = 'true';
 				if (app.characterImage) {
 					applyBackgroundImage(characterPanel, app.characterImage);
 				} else {
@@ -4654,6 +4657,7 @@
 		function buildTabAppDisplay(app, isActive = false) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
+			display.dataset.preserveColor = 'true';
 			display.dataset.appId = app.id;
 			display.tabIndex = 0;
 			display.setAttribute('role', 'button');
@@ -4665,10 +4669,12 @@
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay static';
+			overlay.dataset.preserveColor = 'true';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.preserveColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -5447,6 +5453,7 @@
 		function buildSettingsAppCard(app) {
 			const card = document.createElement('div');
 			card.className = 'settings-app-card';
+			card.dataset.preserveColor = 'true';
 			card.dataset.appId = app.id;
 			card.tabIndex = 0;
 			card.setAttribute('role', 'button');
@@ -5454,10 +5461,12 @@
 			applyBackgroundImage(card, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay';
+			overlay.dataset.preserveColor = 'true';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.preserveColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -5879,7 +5888,7 @@
 								<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
 							</div>
 							<div class="app-inline-logo">
-								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload logo image">
 									<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 										Upload
@@ -5904,7 +5913,7 @@
 							<div class="app-form-previews">
 								<div class="app-media-block">
 									<span class="app-media-hint">Banner • 1080 × 1640</span>
-									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload banner image">
 										<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -5929,7 +5938,7 @@
 							<div class="app-special-media" id="allSettingsSpecialMedia">
 								<div class="app-media-block">
 									<span class="app-media-hint">Character Image • 1080 × 1440</span>
-									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
+									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" data-preserve-color="true" tabindex="0" role="button" aria-label="Upload character image">
 										<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -9595,6 +9604,91 @@
 			notify.success('Theme tint saved globally.');
 		}
 
+		const PRESERVE_COLOR_SELECTOR = '[data-preserve-color], .preserve-color';
+		let selectiveGrayscaleObserver = null;
+		let selectiveGrayscaleActive = false;
+
+		function processSelectiveGrayscaleNode(node) {
+			if (!(node instanceof Element)) return;
+			if (node === document.body) return;
+			if (!document.body.contains(node)) return;
+			if (node.closest(PRESERVE_COLOR_SELECTOR)) return;
+			if (node.dataset.grayscaleApplied === 'true') return;
+			const currentFilter = node.style.filter || '';
+			if (currentFilter.includes('grayscale(')) return;
+			node.dataset.grayscaleOriginalFilter = currentFilter;
+			const trimmed = currentFilter.trim();
+			node.style.filter = trimmed ? `${trimmed} grayscale(100%)` : 'grayscale(100%)';
+			node.dataset.grayscaleApplied = 'true';
+		}
+
+		function processAddedNodeForSelectiveGrayscale(node) {
+			if (!node) return;
+			if (node instanceof Element) {
+				processSelectiveGrayscaleNode(node);
+				node.querySelectorAll('*').forEach(child => processSelectiveGrayscaleNode(child));
+				return;
+			}
+			if (typeof DocumentFragment !== 'undefined' && node instanceof DocumentFragment) {
+				Array.from(node.childNodes).forEach(child => processAddedNodeForSelectiveGrayscale(child));
+			}
+		}
+
+		function clearSelectiveGrayscale() {
+			document.querySelectorAll('[data-grayscale-applied="true"]').forEach(node => {
+				const original = node.dataset.grayscaleOriginalFilter;
+				if (original !== undefined) {
+					if (original) {
+						node.style.filter = original;
+					} else {
+						node.style.removeProperty('filter');
+					}
+				}
+				delete node.dataset.grayscaleApplied;
+				delete node.dataset.grayscaleOriginalFilter;
+			});
+		}
+
+		function refreshSelectiveGrayscale() {
+			if (!document.body.classList.contains('effect-grayscale')) return;
+			clearSelectiveGrayscale();
+			document.body.querySelectorAll('*').forEach(node => processSelectiveGrayscaleNode(node));
+		}
+
+		function ensureSelectiveGrayscaleObserver() {
+			if (selectiveGrayscaleObserver) return;
+			selectiveGrayscaleObserver = new MutationObserver(mutations => {
+				if (!document.body.classList.contains('effect-grayscale')) return;
+				mutations.forEach(mutation => {
+					mutation.addedNodes.forEach(node => processAddedNodeForSelectiveGrayscale(node));
+				});
+			});
+			selectiveGrayscaleObserver.observe(document.body, { childList: true, subtree: true });
+		}
+
+		function teardownSelectiveGrayscaleObserver() {
+			if (!selectiveGrayscaleObserver) return;
+			selectiveGrayscaleObserver.disconnect();
+			selectiveGrayscaleObserver = null;
+		}
+
+		function handleSelectiveGrayscaleState(force = false) {
+			const isActive = document.body.classList.contains('effect-grayscale');
+			if (!isActive) {
+				if (selectiveGrayscaleActive || force) {
+					clearSelectiveGrayscale();
+				}
+				selectiveGrayscaleActive = false;
+				teardownSelectiveGrayscaleObserver();
+				return;
+			}
+			ensureSelectiveGrayscaleObserver();
+			if (!selectiveGrayscaleActive || force) {
+				refreshSelectiveGrayscale();
+			}
+			selectiveGrayscaleActive = true;
+		}
+
 		// Website Effects Functions
 		function toggleColorEffect() {
 			const isChecked = document.getElementById('colorEffectToggle').checked;
@@ -9675,9 +9769,6 @@
 				effects.push(`hue-rotate(${isNaN(hue) ? 45 : hue}deg)`);
 				effects.push('saturate(1.5)');
 			}
-			if (document.body.classList.contains('effect-grayscale')) {
-				effects.push('grayscale(100%)');
-			}
 			if (document.body.classList.contains('effect-sepia')) {
 				effects.push('sepia(70%)');
 			}
@@ -9693,6 +9784,7 @@
 			} else {
 				document.body.style.filter = '';
 			}
+			handleSelectiveGrayscaleState();
 		}
 
 		function setColorFilterFromHue(hue) {
@@ -9737,6 +9829,7 @@
 			// Hide the blur overlay
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
+			handleSelectiveGrayscaleState(true);
 			
 			notify.info('All visual effects have been reset.');
 		}
