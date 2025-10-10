@@ -1,17 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-		.filter-scope{
-			--global-filter:none;
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>ilyambr</title>
+	<link rel="icon" type="image/x-icon" href="https://ilyambr.me/favicon.ico">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<!-- Firebase SDK -->
+	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+	<style>
+		:root{
+			--bg-1:#0b0b12;
+			--bg-2:#0e0b1a;
+			--twitch:#3a3a3a;
+			--twitch-2:#777777;
+			--pink:#666666;
+			--cyan:#888888;
+			--glow:#9a9a9a;
+			--text:#e8e8f0;
+			--muted:#b8b8c7;
+			--card:#121226cc;
+			--glass:rgba(18,18,38,0.55);
+			--border:rgba(255,255,255,0.08);
+			--button-glow: rgba(145,70,255,0.35);
+			--shadow:0 10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
+			--radius:18px;
+			--radius-sm:12px;
 		}
-		.filter-scope.filter-active > :not(.filter-exempt){
-			filter:var(--global-filter);
-			transition:filter .3s ease;
+
+		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
+		*::-webkit-scrollbar{width:0; height:0;}
+		html,body{height:100%}
+		html{
+			padding:0;
+			margin:0;
+			background:#1a1a2e;
+			width:100%;
+			height:100%;
+			overflow-x:hidden;
+			overflow-y:hidden;
+			touch-action:pan-y;
+			overscroll-behavior-x:none;
+			overscroll-behavior-y:none;
+			overflow-anchor:auto;
 		}
-		.filter-exempt,
-		.filter-exempt *{
-			filter:none !important;
-		}
+		body{
+			margin:0;
+			padding:0;
+			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
+			color:var(--text);
+			background:#1a1a2e;
+			min-height:100%;
+			overflow-x:hidden;
+			overflow-y:auto;
+			touch-action:pan-y;
+			overscroll-behavior-x:none;
+			overscroll-behavior-y:none;
 			max-width:100vw;
 		}
 		@media (min-width: 1201px){
@@ -2025,8 +2073,7 @@
 	</style>
 </head>
 <body class="db-loading">
-	<div id="filterScope" class="filter-scope">
-		<div class="notification-center" id="notificationCenter" aria-live="polite" aria-atomic="true"></div>
+	<div class="notification-center" id="notificationCenter" aria-live="polite" aria-atomic="true"></div>
 	<!-- Simple loading screen -->
 	<div class="loading-overlay" id="loadingOverlay">
 		<div class="loading-spinner"></div>
@@ -2837,7 +2884,7 @@
 
 		function buildTabAppDisplay(app) {
 			const display = document.createElement('article');
-			display.className = 'settings-app-display filter-exempt';
+			display.className = 'settings-app-display';
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay static';
@@ -3115,7 +3162,7 @@
 
 		function buildSettingsAppCard(app) {
 			const card = document.createElement('div');
-			card.className = 'settings-app-card filter-exempt';
+			card.className = 'settings-app-card';
 			card.dataset.appId = app.id;
 			card.tabIndex = 0;
 			card.setAttribute('role', 'button');
@@ -3168,7 +3215,7 @@
 
 		function buildAddAppCard() {
 			const card = document.createElement('div');
-			card.className = 'settings-app-card add-card filter-exempt';
+			card.className = 'settings-app-card add-card';
 			card.tabIndex = 0;
 			card.setAttribute('role', 'button');
 			card.setAttribute('aria-label', 'Add new app');
@@ -3421,7 +3468,7 @@
 	</div>
 
 	<!-- All Settings Popup -->
-	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay filter-exempt">
+	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay">
 		<div class="popup-content game-settings-panel">
 			<div class="popup-header">
 				<div>
@@ -3440,7 +3487,7 @@
 	</div>
 
 		<!-- All Settings Manager Popup -->
-		<div id="allSettingsManagerPopup" class="popup-overlay filter-exempt">
+		<div id="allSettingsManagerPopup" class="popup-overlay">
 			<div class="popup-content admin-popup" style="max-width:920px;">
 				<div class="popup-header">
 					<h3>All Settings Apps</h3>
@@ -3454,7 +3501,7 @@
 		</div>
 
 		<!-- Add All Settings App Popup -->
-		<div id="allSettingsAppFormPopup" class="popup-overlay filter-exempt">
+		<div id="allSettingsAppFormPopup" class="popup-overlay">
 			<div class="popup-content admin-popup" style="max-width:520px; max-height:90vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
@@ -3479,7 +3526,7 @@
 					<div class="app-form-previews">
 						<div class="app-media-block">
 							<span class="app-media-hint">Banner • 1080 × 1640</span>
-							<div class="app-form-banner-preview app-media-preview empty filter-exempt" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+							<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
 								<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 									Upload
@@ -3489,7 +3536,7 @@
 						</div>
 						<div class="app-media-block">
 							<span class="app-media-hint">Logo • 512 × 512</span>
-							<div class="app-form-logo-preview app-media-preview empty filter-exempt" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+							<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
 								<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 									Upload
@@ -6047,8 +6094,6 @@
 			// Apply custom YouTube video
 			updateYouTubeEmbed(savedVideo);
 		} else {
-			filterScope.style.filter = '';
-			filterScope.classList.remove('filter-active');
 			// Use auto-latest
 			loadLatestYouTubeVideo();
 		}
@@ -7173,14 +7218,12 @@
 			}
 
 			// Apply combined filter if we have multiple effects
-			const filterScope = document.getElementById('filterScope');
-			if (!filterScope) return;
-			if (effects.length) {
-				filterScope.style.setProperty('--global-filter', effects.join(' '));
-				filterScope.classList.add('filter-active');
+			if (effects.length > 1) {
+				document.body.style.filter = effects.join(' ');
+			} else if (effects.length === 1) {
+				document.body.style.filter = effects[0];
 			} else {
-				filterScope.style.setProperty('--global-filter', 'none');
-				filterScope.classList.remove('filter-active');
+				document.body.style.filter = '';
 			}
 		}
 
@@ -7222,11 +7265,7 @@
 			
 			// Remove all effect classes
 			document.body.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
-			const filterScope = document.getElementById('filterScope');
-			if (filterScope) {
-				filterScope.style.setProperty('--global-filter', 'none');
-				filterScope.classList.remove('filter-active');
-			}
+			document.body.style.filter = '';
 			// Hide the blur overlay
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
@@ -7469,7 +7508,9 @@
 		}
 		
 		// Call setup when page loads
+		setTimeout(setupDateSelectors, 100);
+		setTimeout(initGameSettingsTabs, 0);
+		
 	</script>
-	</div>
-	</body>
+</body>
 </html>
