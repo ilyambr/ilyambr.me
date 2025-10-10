@@ -877,59 +877,32 @@
 			overflow:hidden;
 			display:flex;
 			align-items:flex-end;
-			cursor:pointer;
-			transition:transform .2s ease, box-shadow .2s ease;
+			justify-content:center;
 		}
-		.settings-app-display:hover{
-			transform:translateY(-4px);
-			box-shadow:0 18px 32px rgba(0,0,0,0.3);
+		.settings-app-display::after{
+			content:"";
+			position:absolute;
+			inset:0;
+			background:linear-gradient(180deg, rgba(10,10,20,0.05), rgba(10,10,20,0.85));
+			z-index:0;
+			pointer-events:none;
 		}
-		.settings-app-display:focus-visible{
-			outline:2px solid rgba(0,199,255,0.75);
-			outline-offset:3px;
-		}
-		.settings-app-overlay{
-			position:relative;
-			width:100%;
-			padding:22px 20px;
-			background:linear-gradient(180deg, rgba(7,7,12,0.12) 0%, rgba(7,7,12,0.8) 100%);
-			display:flex;
-			flex-direction:column;
+		.settings-app-display .app-card-overlay{
+			z-index:1;
+			opacity:1;
+			transform:none;
+			padding:24px 20px;
+			align-items:center;
+			text-align:center;
 			gap:10px;
-			align-items:flex-start;
 		}
-		.settings-app-overlay img{
-			width:40px;
-			height:40px;
+		.settings-app-display .app-card-overlay.static img{
+			width:44px;
+			height:44px;
 			border-radius:12px;
-			object-fit:cover;
-			box-shadow:0 12px 20px rgba(0,0,0,0.35);
 		}
-		.settings-app-overlay h4{
-			margin:0;
-			font-size:18px;
-			color:#ffffff;
-		}
-		.settings-app-overlay p{
-			margin:0;
-			font-size:13px;
-			color:rgba(255,255,255,0.72);
-		}
-		.settings-app-customize{
-			align-self:flex-start;
-			padding:8px 14px;
-			border-radius:999px;
-			border:1px solid rgba(255,255,255,0.16);
-			background:rgba(255,255,255,0.12);
-			color:#ffffff;
-			font-size:13px;
-			font-weight:600;
-			cursor:pointer;
-			transition:background .2s ease, transform .2s ease;
-		}
-		.settings-app-customize:hover{
-			background:rgba(255,255,255,0.22);
-			transform:translateY(-1px);
+		.settings-app-display .app-card-overlay.static .app-card-name{
+			font-size:16px;
 		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
@@ -2893,42 +2866,20 @@
 		function buildTabAppDisplay(app) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
-			display.tabIndex = 0;
-			display.setAttribute('role', 'button');
-			display.setAttribute('aria-label', `Customize ${app.name}`);
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
-			overlay.className = 'settings-app-overlay';
+			overlay.className = 'app-card-overlay static';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
 				overlay.appendChild(logo);
 			}
-			const title = document.createElement('h4');
-			title.textContent = app.name || 'Untitled App';
-			overlay.appendChild(title);
-			const hint = document.createElement('p');
-			hint.textContent = 'Tap customize to edit this app.';
-			overlay.appendChild(hint);
-			const action = document.createElement('button');
-			action.type = 'button';
-			action.className = 'settings-app-customize';
-			action.textContent = 'Customize';
-			action.addEventListener('click', event => {
-				event.stopPropagation();
-				event.preventDefault();
-				openAddAllSettingsAppPopup(app.id);
-			});
-			overlay.appendChild(action);
+			const nameEl = document.createElement('div');
+			nameEl.className = 'app-card-name';
+			nameEl.textContent = app.name || 'Untitled App';
+			overlay.appendChild(nameEl);
 			display.appendChild(overlay);
-			display.addEventListener('click', () => openAddAllSettingsAppPopup(app.id));
-			display.addEventListener('keydown', event => {
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					openAddAllSettingsAppPopup(app.id);
-				}
-			});
 			return display;
 		}
 
@@ -3216,16 +3167,6 @@
 			overlay.appendChild(badge);
 			const actions = document.createElement('div');
 			actions.className = 'app-card-actions';
-			const editBtn = document.createElement('button');
-			editBtn.type = 'button';
-			editBtn.className = 'app-card-action';
-			editBtn.textContent = 'Edit';
-			editBtn.addEventListener('click', event => {
-				event.stopPropagation();
-				event.preventDefault();
-				openAddAllSettingsAppPopup(app.id);
-			});
-			actions.appendChild(editBtn);
 			const deleteBtn = document.createElement('button');
 			deleteBtn.type = 'button';
 			deleteBtn.className = 'app-card-action delete';
