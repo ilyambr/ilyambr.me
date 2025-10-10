@@ -9666,6 +9666,7 @@
 			if (node.closest('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
 			if (node.closest('.settings-app-card')) return true;
 			if (node.closest('.settings-app-display')) return true;
+			if (node.querySelector && node.querySelector('[data-keep-color="true"], [data-preserve-color="true"], .settings-app-card img, .settings-app-display img')) return true;
 			return false;
 		}
 
