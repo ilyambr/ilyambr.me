@@ -4387,6 +4387,7 @@
 
 			const container = document.createElement('section');
 			container.className = 'settings-app-template';
+			container.dataset.keepColor = 'true';
 			container.dataset.appId = app.id;
 
 			const hero = document.createElement('div');
@@ -4426,13 +4427,16 @@
 
 			const templateBody = document.createElement('div');
 			templateBody.className = 'settings-template-body';
+			templateBody.dataset.keepColor = 'true';
 
 			const tabBar = document.createElement('div');
 			tabBar.className = 'app-settings-tab-bar';
+			tabBar.dataset.keepColor = 'true';
 			templateBody.appendChild(tabBar);
 
 			const sectionsWrap = document.createElement('div');
 			sectionsWrap.className = 'settings-template-sections';
+			sectionsWrap.dataset.keepColor = 'true';
 			templateBody.appendChild(sectionsWrap);
 
 			container.appendChild(templateBody);
@@ -4529,6 +4533,7 @@
 
 			const detailCard = document.createElement('div');
 			detailCard.className = 'settings-app-detail';
+			detailCard.dataset.keepColor = 'true';
 			detailCard.dataset.appId = app.id;
 			detailCard.appendChild(container);
 			const specialOption = normalizeAllSettingsSpecialOption(app?.specialOption);
@@ -4735,6 +4740,7 @@
 			content.appendChild(hint);
 			const grid = document.createElement('div');
 			grid.className = 'settings-app-list';
+			grid.dataset.keepColor = 'true';
 			appsForTab.forEach(app => {
 				const tile = buildTabAppDisplay(app, app.id === selectedAllSettingsAppId);
 				tile.addEventListener('click', () => selectSettingsApp(app.id));
@@ -5797,8 +5803,8 @@
 	</div>
 
 	<!-- All Settings Popup -->
-	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay">
-		<div class="popup-content game-settings-panel">
+	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay" data-keep-color="true">
+		<div class="popup-content game-settings-panel" data-keep-color="true">
 			<div class="popup-header">
 				<div>
 					<h3>All Settings</h3>
@@ -5806,18 +5812,18 @@
 				</div>
 				<button class="close-btn" onclick="closeGameSettingsPopup()" aria-label="Close all settings">&times;</button>
 			</div>
-			<div class="popup-body" id="gameSettingsBody">
-				<div class="settings-layout">
-					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories"></nav>
-					<div class="settings-content" id="gameSettingsContent"></div>
+			<div class="popup-body" id="gameSettingsBody" data-keep-color="true">
+				<div class="settings-layout" data-keep-color="true">
+					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories" data-keep-color="true"></nav>
+					<div class="settings-content" id="gameSettingsContent" data-keep-color="true"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="settingsAppDetailPopup" class="popup-overlay settings-detail-overlay">
-		<div class="settings-detail-columns" id="settingsDetailColumns">
-			<div class="popup-content settings-detail-panel" id="settingsDetailMainPanel">
+	<div id="settingsAppDetailPopup" class="popup-overlay settings-detail-overlay" data-keep-color="true">
+		<div class="settings-detail-columns" id="settingsDetailColumns" data-keep-color="true">
+			<div class="popup-content settings-detail-panel" id="settingsDetailMainPanel" data-keep-color="true">
 				<div class="popup-header">
 					<div>
 						<h3 id="settingsAppDetailTitle">App Settings</h3>
@@ -5825,12 +5831,12 @@
 					</div>
 					<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close app settings detail">&times;</button>
 				</div>
-				<div class="popup-body">
-					<div id="settingsAppDetailBody"></div>
+				<div class="popup-body" data-keep-color="true">
+					<div id="settingsAppDetailBody" data-keep-color="true"></div>
 				</div>
 			</div>
-			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true">
-				<div class="character-detail-body" id="settingsCharacterDetailBody"></div>
+			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true" data-keep-color="true">
+				<div class="character-detail-body" id="settingsCharacterDetailBody" data-keep-color="true"></div>
 			</div>
 		</div>
 	</div>
