@@ -880,16 +880,34 @@
 			border-color:rgba(0,199,255,0.6);
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
+		.app-form-layout{
+			display:grid;
+			grid-template-columns:minmax(0, 1.6fr) minmax(0, 1fr);
+			gap:28px;
+			align-items:flex-start;
+		}
+		.app-form-left{
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+		}
 		.app-form-previews{
 			display:grid;
 			grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+			gap:18px;
+		}
+		.app-form-right{
+			display:flex;
+			flex-direction:column;
 			gap:18px;
 		}
 		.app-special-media{
 			display:none;
 		}
 		.app-special-media.active{
-			display:contents;
+			display:flex;
+			flex-direction:column;
+			gap:12px;
 		}
 		.app-special-preview{
 			min-height:280px;
@@ -954,24 +972,20 @@
 		}
 		.app-form-footer{
 			display:flex;
-			align-items:flex-end;
-			justify-content:space-between;
-			gap:18px;
-			flex-wrap:wrap;
+			justify-content:flex-end;
+			align-items:center;
+			gap:16px;
 			margin-top:22px;
 		}
 		.special-option-field{
 			display:flex;
 			flex-direction:column;
 			gap:8px;
-			min-width:220px;
-			flex:1 1 260px;
 		}
 		.character-name-field{
 			display:none;
 			flex-direction:column;
 			gap:8px;
-			flex:1 1 260px;
 		}
 		.character-name-field.active{
 			display:flex;
@@ -987,7 +1001,6 @@
 			color:rgba(255,255,255,0.75);
 		}
 		.special-option-select{
-			min-width:220px;
 			width:100%;
 			padding:12px 14px;
 			border-radius:12px;
@@ -1003,7 +1016,6 @@
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
 		.character-name-input{
-			min-width:220px;
 			width:100%;
 			padding:12px 14px;
 			border-radius:12px;
@@ -1023,11 +1035,12 @@
 			gap:10px;
 			flex-wrap:wrap;
 		}
+		@media (max-width: 900px){
+			.app-form-layout{grid-template-columns:1fr;}
+		}
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
-			.character-name-field,
-			.special-option-field{flex:1 1 100%;}
 			.settings-template-row{grid-template-columns:1fr; gap:6px;}
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
@@ -4584,7 +4597,7 @@
 
 		<!-- Add All Settings App Popup -->
 		<div id="allSettingsAppFormPopup" class="popup-overlay">
-			<div class="popup-content admin-popup" style="max-width:760px; max-height:90vh;">
+			<div class="popup-content admin-popup" style="max-width:960px; max-height:90vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
 					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
@@ -4605,52 +4618,58 @@
 							</select>
 						</div>
 					</div>
-					<div class="app-form-previews">
-						<div class="app-media-block">
-							<span class="app-media-hint">Banner • 1080 × 1640</span>
-							<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
-								<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
-									Upload
-								</button>
-								<input type="file" accept="image/*" id="allSettingsBannerInput" class="app-media-input" data-media-type="banner">
+					<div class="app-form-layout">
+						<div class="app-form-left">
+							<div class="app-form-previews">
+								<div class="app-media-block">
+									<span class="app-media-hint">Banner • 1080 × 1640</span>
+									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+										<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+											Upload
+										</button>
+										<input type="file" accept="image/*" id="allSettingsBannerInput" class="app-media-input" data-media-type="banner">
+									</div>
+								</div>
+								<div class="app-media-block">
+									<span class="app-media-hint">Logo • 512 × 512</span>
+									<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+										<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+											Upload
+										</button>
+										<input type="file" accept="image/*" id="allSettingsLogoInput" class="app-media-input" data-media-type="logo">
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="app-media-block">
-							<span class="app-media-hint">Logo • 512 × 512</span>
-							<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
-								<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
-									Upload
-								</button>
-								<input type="file" accept="image/*" id="allSettingsLogoInput" class="app-media-input" data-media-type="logo">
+						<div class="app-form-right">
+							<div class="special-option-field">
+								<label for="allSettingsSpecialOption" class="special-option-label">Special Option</label>
+								<select id="allSettingsSpecialOption" class="special-option-select">
+									<option value="none">None</option>
+									<option value="character-trn">Character (TRN)</option>
+								</select>
 							</div>
-						</div>
-					</div>
-					<div class="app-special-media" id="allSettingsSpecialMedia">
-						<div class="app-media-block">
-							<span class="app-media-hint">Character Image • 1080 × 1440</span>
-							<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
-								<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
-									Upload
-								</button>
-								<input type="file" accept="image/*" id="allSettingsCharacterInput" class="app-media-input" data-media-type="character">
+							<div class="character-name-field" id="allSettingsCharacterNameField">
+								<label for="allSettingsCharacterNameInput" class="character-name-label">Character Name</label>
+								<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60">
+							</div>
+							<div class="app-special-media" id="allSettingsSpecialMedia">
+								<div class="app-media-block">
+									<span class="app-media-hint">Character Image • 1080 × 1440</span>
+									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
+										<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
+											Upload
+										</button>
+										<input type="file" accept="image/*" id="allSettingsCharacterInput" class="app-media-input" data-media-type="character">
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="app-form-footer">
-						<div class="special-option-field">
-							<label for="allSettingsSpecialOption" class="special-option-label">Special Option</label>
-							<select id="allSettingsSpecialOption" class="special-option-select">
-								<option value="none">None</option>
-								<option value="character-trn">Character (TRN)</option>
-							</select>
-						</div>
-						<div class="character-name-field" id="allSettingsCharacterNameField">
-							<label for="allSettingsCharacterNameInput" class="character-name-label">Character Name</label>
-							<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60">
-						</div>
 						<div class="app-form-actions">
 							<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
 							<button class="admin-logout-btn" type="button" onclick="saveAllSettingsApp()">Save App</button>
