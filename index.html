@@ -515,6 +515,12 @@
 		.popup-content.game-settings-panel .settings-content.has-banner{
 			padding:0;
 		}
+		.popup-content.game-settings-panel .settings-content.detail-mode{
+			display:block;
+			align-items:stretch;
+			justify-content:flex-start;
+			overflow:auto;
+		}
 		.popup-content.game-settings-panel .settings-content.list-mode{
 			display:block;
 			overflow:auto;
@@ -876,31 +882,44 @@
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
+			.settings-template-row{grid-template-columns:1fr; gap:6px;}
+			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
+			.settings-template-badge{margin-left:0;}
+		}
+		.settings-app-layout{
+			display:grid;
+			grid-template-columns:minmax(220px, 0.9fr) minmax(0, 2.1fr);
+			gap:24px;
+			width:100%;
+			align-items:start;
 		}
 		.settings-app-list{
 			width:100%;
 			display:grid;
-			grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
-			gap:18px;
+			grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+			gap:16px;
 			margin:0;
 			padding:4px;
 			box-sizing:border-box;
+			max-height:100%;
+			overflow:auto;
 		}
 		.settings-app-display{
 			position:relative;
 			min-height:220px;
 			border-radius:18px;
-			border:1px solid rgba(255,255,255,0.09);
-			background:rgba(255,255,255,0.05);
+			border:1px solid rgba(255,255,255,0.12);
+			background:rgba(255,255,255,0.06);
 			background-size:cover;
 			background-position:center;
 			overflow:hidden;
 			display:flex;
 			align-items:flex-end;
 			justify-content:center;
-			width:min(100%, 240px);
+			width:100%;
 			aspect-ratio:1080 / 1640;
-			justify-self:center;
+			cursor:pointer;
+			transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 		}
 		.settings-app-display::after{
 			content:"";
@@ -914,7 +933,7 @@
 			z-index:1;
 			opacity:1;
 			transform:none;
-			padding:24px 20px;
+			padding:22px 18px;
 			align-items:center;
 			text-align:center;
 			gap:10px;
@@ -927,6 +946,135 @@
 		}
 		.settings-app-display .app-card-overlay.static .app-card-name{
 			font-size:16px;
+		}
+		.settings-app-display.selected{
+			border-color:rgba(0,199,255,0.7);
+			box-shadow:0 20px 32px rgba(0,0,0,0.35);
+			transform:translateY(-4px);
+		}
+		.settings-app-display.selected::after{
+			opacity:0.55;
+		}
+		.settings-app-detail{
+			width:100%;
+			background:rgba(10,12,24,0.85);
+			border:1px solid rgba(255,255,255,0.1);
+			border-radius:20px;
+			box-shadow:0 28px 44px rgba(0,0,0,0.45);
+			max-height:100%;
+			overflow:auto;
+		}
+		.settings-app-template{
+			display:flex;
+			flex-direction:column;
+			gap:0;
+		}
+		.settings-template-hero{
+			position:relative;
+			height:220px;
+			background:rgba(255,255,255,0.04) center/cover no-repeat;
+		}
+		.settings-template-hero::after{
+			content:"";
+			position:absolute;
+			inset:0;
+			background:linear-gradient(180deg, rgba(5,6,12,0.15) 0%, rgba(5,6,12,0.9) 100%);
+		}
+		.settings-template-hero-overlay{
+			position:absolute;
+			inset:auto 0 0 0;
+			padding:28px 32px;
+			display:flex;
+			align-items:center;
+			gap:18px;
+			z-index:1;
+		}
+		.settings-template-hero-overlay img,
+		.settings-template-logo-fallback{
+			width:58px;
+			height:58px;
+			border-radius:16px;
+			box-shadow:0 18px 28px rgba(0,0,0,0.45);
+			background:rgba(255,255,255,0.08);
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			font-size:24px;
+			font-weight:700;
+			color:#ffffff;
+		}
+		.settings-template-hero-overlay h4{
+			margin:0;
+			font-size:22px;
+			font-weight:700;
+			color:#ffffff;
+			text-shadow:0 12px 24px rgba(0,0,0,0.45);
+		}
+		.settings-template-badge{
+			display:inline-flex;
+			align-items:center;
+			padding:6px 12px;
+			background:rgba(0,199,255,0.16);
+			border-radius:999px;
+			font-size:11px;
+			letter-spacing:0.3px;
+			text-transform:uppercase;
+			color:#9be8ff;
+			margin-left:auto;
+		}
+		.settings-template-sections{
+			display:flex;
+			flex-direction:column;
+			gap:22px;
+			padding:28px 32px 32px;
+		}
+		.settings-template-section{
+			display:flex;
+			flex-direction:column;
+			gap:14px;
+			background:rgba(16,18,32,0.78);
+			border:1px solid rgba(255,255,255,0.06);
+			border-radius:16px;
+			padding:18px 22px;
+			box-shadow:0 16px 28px rgba(0,0,0,0.28);
+		}
+		.settings-template-section h5{
+			margin:0;
+			font-size:15px;
+			font-weight:700;
+			letter-spacing:0.4px;
+			text-transform:uppercase;
+			color:rgba(178,230,255,0.9);
+		}
+		.settings-template-grid{
+			display:grid;
+			gap:12px;
+			margin:0;
+		}
+		.settings-template-row{
+			display:grid;
+			grid-template-columns:160px 1fr;
+			gap:16px;
+			align-items:center;
+		}
+		.settings-template-row dt{
+			margin:0;
+			font-size:13px;
+			font-weight:600;
+			color:rgba(198,225,244,0.78);
+			text-transform:uppercase;
+			letter-spacing:0.3px;
+		}
+		.settings-template-row dd{
+			margin:0;
+			font-size:15px;
+			font-weight:600;
+			color:#ffffff;
+		}
+		.settings-template-placeholder{
+			margin:0;
+			color:var(--muted);
+			font-size:14px;
 		}
 		@media (max-width: 900px){
 			.popup-overlay.game-settings-overlay{
@@ -956,6 +1104,16 @@
 			}
 			.popup-content.game-settings-panel .settings-content{
 				min-height:320px;
+			}
+			.settings-app-layout{
+				grid-template-columns:1fr;
+				gap:18px;
+			}
+			.settings-app-detail{
+				order: -1;
+			}
+			.settings-app-list{
+				max-height:none;
 			}
 		}
 		
@@ -2847,6 +3005,44 @@
 		const GAME_SETTINGS_TAB_IDS = DEFAULT_GAME_SETTINGS_TABS.map(tab => tab.id);
 		let cachedGameSettingsTabs = [];
 		let currentGameSettingsTabId = null;
+		let selectedAllSettingsAppId = null;
+
+		const DEFAULT_SETTINGS_TEMPLATE = [
+			{
+				title: 'Accessibility',
+				items: [
+					{ label: 'Text Language', value: 'English (United States)' },
+					{ label: 'Enemy Highlight Color', value: 'Yellow (Protanopia)' }
+				]
+			},
+			{
+				title: 'Mouse',
+				items: [
+					{ label: 'Sensitivity: Aim', value: '0.17' },
+					{ label: 'Scoped Sensitivity Multiplier', value: '1.0' },
+					{ label: 'Invert Mouse', value: 'Off' },
+					{ label: 'Raw Input Buffer', value: 'On' }
+				]
+			},
+			{
+				title: 'Video – General',
+				items: [
+					{ label: 'Display Mode', value: 'Fullscreen' },
+					{ label: 'Resolution', value: '1920×1080 16:9 (240 Hz)' },
+					{ label: 'Frame Rate Limit', value: 'Unlocked' },
+					{ label: 'V-Sync', value: 'Off' }
+				]
+			},
+			{
+				title: 'Map',
+				items: [
+					{ label: 'Rotate', value: 'Rotate' },
+					{ label: 'Keep Player Centered', value: 'On' },
+					{ label: 'Minimap Size', value: '1.2' },
+					{ label: 'Minimap Zoom', value: '1' }
+				]
+			}
+		];
 
 		function normalizeUrlForCss(url) {
 			if (!url) return '';
@@ -2887,9 +3083,17 @@
 			return match ? match.label : tabId;
 		}
 
-		function buildTabAppDisplay(app) {
+		function buildTabAppDisplay(app, isActive = false) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
+			display.dataset.appId = app.id;
+			display.tabIndex = 0;
+			display.setAttribute('role', 'button');
+			display.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+			display.setAttribute('aria-label', `View ${app.name || 'app'} settings`);
+			if (isActive) {
+				display.classList.add('selected');
+			}
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay static';
@@ -2916,6 +3120,85 @@
 				const button = document.createElement('button');
 				button.type = 'button';
 				button.className = 'settings-tab';
+
+	function selectSettingsApp(appId) {
+		if (!appId || appId === selectedAllSettingsAppId) return;
+		selectedAllSettingsAppId = appId;
+		setGameSettingsContent(currentGameSettingsTabId);
+	}
+
+	function buildSettingsDetail(app) {
+		const template = Array.isArray(app?.settingsTemplate) && app.settingsTemplate.length ? app.settingsTemplate : DEFAULT_SETTINGS_TEMPLATE;
+		const container = document.createElement('section');
+		container.className = 'settings-app-template';
+		container.dataset.appId = app.id;
+		const hero = document.createElement('div');
+		hero.className = 'settings-template-hero';
+		applyBackgroundImage(hero, app.banner);
+		const heroOverlay = document.createElement('div');
+		heroOverlay.className = 'settings-template-hero-overlay';
+		if (app.logo) {
+			const logo = document.createElement('img');
+			logo.src = app.logo;
+			logo.alt = `${app.name} logo`;
+			heroOverlay.appendChild(logo);
+		} else {
+			const fallback = document.createElement('div');
+			fallback.className = 'settings-template-logo-fallback';
+			fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
+			heroOverlay.appendChild(fallback);
+		}
+		const title = document.createElement('h4');
+		title.textContent = app.name || 'Untitled App';
+		heroOverlay.appendChild(title);
+		const badge = document.createElement('span');
+		badge.className = 'settings-template-badge';
+		badge.textContent = getGameSettingsTabLabel(resolveGameSettingsTabId(app.tabId));
+		heroOverlay.appendChild(badge);
+		hero.appendChild(heroOverlay);
+		container.appendChild(hero);
+		const sectionsWrap = document.createElement('div');
+		sectionsWrap.className = 'settings-template-sections';
+		if (!template.length) {
+			const placeholder = document.createElement('p');
+			placeholder.className = 'settings-template-placeholder';
+			placeholder.textContent = 'Settings template coming soon.';
+			sectionsWrap.appendChild(placeholder);
+		} else {
+			template.forEach(section => {
+				const sectionEl = document.createElement('section');
+				sectionEl.className = 'settings-template-section';
+				const heading = document.createElement('h5');
+				heading.textContent = section.title || 'Untitled Section';
+				sectionEl.appendChild(heading);
+				const grid = document.createElement('dl');
+				grid.className = 'settings-template-grid';
+				const items = Array.isArray(section.items) ? section.items : [];
+				if (!items.length) {
+					const emptyRow = document.createElement('div');
+					emptyRow.className = 'settings-template-row';
+					emptyRow.innerHTML = '<dt>Details</dt><dd>Not provided yet.</dd>';
+					grid.appendChild(emptyRow);
+				} else {
+					items.forEach(item => {
+						const row = document.createElement('div');
+						row.className = 'settings-template-row';
+						const term = document.createElement('dt');
+						term.textContent = item.label || 'Setting';
+						const value = document.createElement('dd');
+						value.textContent = item.value || '—';
+						row.appendChild(term);
+						row.appendChild(value);
+						grid.appendChild(row);
+					});
+				}
+				sectionEl.appendChild(grid);
+				sectionsWrap.appendChild(sectionEl);
+			});
+		}
+		container.appendChild(sectionsWrap);
+		return container;
+	}
 				button.dataset.section = tab.id;
 				button.textContent = tab.label;
 				button.addEventListener('click', () => selectGameSettingsTab(tab.id));
@@ -2948,6 +3231,7 @@
 				btn.classList.toggle('active', btn.dataset.section === canonicalId);
 			});
 			currentGameSettingsTabId = canonicalId;
+			selectedAllSettingsAppId = null;
 			setGameSettingsContent(canonicalId);
 		}
 
@@ -2956,7 +3240,7 @@
 			if (!content) return;
 			const canonicalId = resolveGameSettingsTabId(tabId);
 			const tabData = cachedGameSettingsTabs.find(tab => tab.id === canonicalId);
-			content.classList.remove('has-banner', 'list-mode');
+			content.classList.remove('has-banner', 'list-mode', 'detail-mode');
 			content.innerHTML = '';
 			content.scrollTop = 0;
 			if (!tabData) {
@@ -2966,6 +3250,7 @@
 				.filter(app => resolveGameSettingsTabId(app.tabId) === canonicalId)
 				.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
 			if (!appsForTab.length) {
+				selectedAllSettingsAppId = null;
 				const wrap = document.createElement('div');
 				wrap.style.display = 'flex';
 				wrap.style.flexDirection = 'column';
@@ -2978,14 +3263,32 @@
 				content.appendChild(wrap);
 				return;
 			}
-			content.classList.add('list-mode');
-			const list = document.createElement('div');
-			list.className = 'settings-app-list';
+			const activeApp = appsForTab.find(app => app.id === selectedAllSettingsAppId) || appsForTab[0];
+			selectedAllSettingsAppId = activeApp ? activeApp.id : null;
+			content.classList.add('detail-mode');
+			const layout = document.createElement('div');
+			layout.className = 'settings-app-layout';
+			const grid = document.createElement('div');
+			grid.className = 'settings-app-list';
 			appsForTab.forEach(app => {
-				const display = buildTabAppDisplay(app);
-				list.appendChild(display);
+				const tile = buildTabAppDisplay(app, app.id === selectedAllSettingsAppId);
+				tile.addEventListener('click', () => selectSettingsApp(app.id));
+				tile.addEventListener('keydown', event => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						selectSettingsApp(app.id);
+					}
+				});
+				grid.appendChild(tile);
 			});
-			content.appendChild(list);
+			layout.appendChild(grid);
+			const detail = document.createElement('div');
+			detail.className = 'settings-app-detail';
+			if (activeApp) {
+				detail.appendChild(buildSettingsDetail(activeApp));
+			}
+			layout.appendChild(detail);
+			content.appendChild(layout);
 		}
 
 		function initGameSettingsTabs(preferredId) {
@@ -3013,6 +3316,7 @@
 				logo: sanitizeMedia(raw.logo),
 				banner: sanitizeMedia(raw.banner),
 				tabId: resolveGameSettingsTabId(raw.tabId),
+				settingsTemplate: Array.isArray(raw.settingsTemplate) ? raw.settingsTemplate : [],
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -3310,6 +3614,7 @@
 						logo,
 						banner,
 						tabId,
+						settingsTemplate: [],
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -3322,6 +3627,7 @@
 					logo,
 					banner,
 					tabId,
+					settingsTemplate: [],
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
