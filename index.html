@@ -3019,7 +3019,8 @@
 		}
 		
 		.effect-grayscale {
-			filter: grayscale(100%);
+			/* Grayscale is applied selectively via JS filters to support color-preserved regions. */
+			--effect-grayscale-active: 1;
 		}
 		
 		.effect-sepia {
@@ -3050,7 +3051,7 @@
 		
 		/* Combined effects support */
 		.effect-color.effect-grayscale {
-			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%);
+			filter: hue-rotate(45deg) saturate(1.5);
 		}
 		
 		.effect-color.effect-sepia {
@@ -3058,7 +3059,7 @@
 		}
 		
 		.effect-grayscale.effect-sepia {
-			filter: grayscale(100%) sepia(70%);
+			filter: sepia(70%);
 		}
 		
 		.effect-color.effect-brightness {
@@ -3066,7 +3067,7 @@
 		}
 		
 		.effect-grayscale.effect-brightness {
-			filter: grayscale(100%) brightness(1.3);
+			filter: brightness(1.3);
 		}
 		
 		.effect-sepia.effect-brightness {
@@ -3078,7 +3079,7 @@
 		}
 		
 		.effect-invert.effect-grayscale {
-			filter: invert(1) grayscale(100%);
+			filter: invert(1);
 		}
 		
 		.effect-invert.effect-sepia {
@@ -3091,7 +3092,7 @@
 		
 		/* Triple+ effect combinations */
 		.effect-color.effect-grayscale.effect-brightness {
-			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%) brightness(1.3);
+			filter: hue-rotate(45deg) saturate(1.5) brightness(1.3);
 		}
 		
 		.effect-color.effect-sepia.effect-brightness {
@@ -3099,7 +3100,7 @@
 		}
 		
 		.effect-grayscale.effect-sepia.effect-brightness {
-			filter: grayscale(100%) sepia(70%) brightness(1.3);
+			filter: sepia(70%) brightness(1.3);
 		}
 	</style>
 </head>
@@ -8398,7 +8399,7 @@
 			}
 
 			// Load and apply global website effects
-			loadGlobalEffects();
+			await loadGlobalEffects();
 		}
 
 		function updateYouTubeEmbed(videoId) {
@@ -9708,6 +9709,7 @@
 			} else {
 				document.body.classList.remove('effect-grayscale');
 			}
+			handleSelectiveGrayscaleState(true);
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
 		}
@@ -9853,19 +9855,26 @@
 
 		async function loadGlobalEffects() {
 			const savedEffects = await loadGlobalSetting('websiteEffects');
+			const setToggleChecked = (id, value) => {
+				const el = document.getElementById(id);
+				if (!el) return false;
+				el.checked = !!value;
+				return true;
+			};
+			let effectsApplied = false;
 			if (savedEffects && savedEffects !== 'N/A') {
 				try {
 					const effects = JSON.parse(savedEffects);
-					
+				
 					// Apply saved effects
-					document.getElementById('colorEffectToggle').checked = effects.color || false;
-					document.getElementById('grayscaleToggle').checked = effects.grayscale || false;
-					document.getElementById('blurToggle').checked = effects.blur || false;
-					document.getElementById('sepiaToggle').checked = effects.sepia || false;
-					document.getElementById('invertToggle').checked = effects.invert || false;
-					document.getElementById('brightnessToggle').checked = effects.brightness || false;
+					setToggleChecked('colorEffectToggle', effects.color);
+					setToggleChecked('grayscaleToggle', effects.grayscale);
+					setToggleChecked('blurToggle', effects.blur);
+					setToggleChecked('sepiaToggle', effects.sepia);
+					setToggleChecked('invertToggle', effects.invert);
+					setToggleChecked('brightnessToggle', effects.brightness);
 					setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
-					
+				
 					// Apply the effects to the page
 					if (effects.color) document.body.classList.add('effect-color');
 					if (effects.grayscale) document.body.classList.add('effect-grayscale');
@@ -9877,9 +9886,9 @@
 					if (effects.sepia) document.body.classList.add('effect-sepia');
 					if (effects.invert) document.body.classList.add('effect-invert');
 					if (effects.brightness) document.body.classList.add('effect-brightness');
-					
+				
 					updateCombinedFilters();
-					
+					effectsApplied = true;
 					console.log('🎨 Applied global website effects:', effects);
 				} catch (e) {
 					console.error('Error parsing saved effects:', e);
@@ -9891,12 +9900,12 @@
 					if (database && cached) {
 						await saveGlobalSetting('websiteEffects', cached);
 						const effects = JSON.parse(cached);
-						document.getElementById('colorEffectToggle').checked = !!effects.color;
-						document.getElementById('grayscaleToggle').checked = !!effects.grayscale;
-						document.getElementById('blurToggle').checked = !!effects.blur;
-						document.getElementById('sepiaToggle').checked = !!effects.sepia;
-						document.getElementById('invertToggle').checked = !!effects.invert;
-						document.getElementById('brightnessToggle').checked = !!effects.brightness;
+						setToggleChecked('colorEffectToggle', effects.color);
+						setToggleChecked('grayscaleToggle', effects.grayscale);
+						setToggleChecked('blurToggle', effects.blur);
+						setToggleChecked('sepiaToggle', effects.sepia);
+						setToggleChecked('invertToggle', effects.invert);
+						setToggleChecked('brightnessToggle', effects.brightness);
 						setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
 						if (effects.color) document.body.classList.add('effect-color');
 						if (effects.grayscale) document.body.classList.add('effect-grayscale');
@@ -9906,8 +9915,8 @@
 						if (effects.invert) document.body.classList.add('effect-invert');
 						if (effects.brightness) document.body.classList.add('effect-brightness');
 						updateCombinedFilters();
+						effectsApplied = true;
 						console.log('⬆️ Migrated website effects from local cache to Firebase');
-						return;
 					}
 				} catch (e) {
 					console.warn('Effects migration skipped:', e);
@@ -9919,6 +9928,20 @@
 					if (blurChecked) glass.classList.remove('hidden'); else glass.classList.add('hidden');
 				}
 				setColorFilterFromHue(45);
+			}
+			handleSelectiveGrayscaleState(true);
+			if (!effectsApplied) {
+				// Ensure body classes reflect toggle state when no saved effects were applied
+				if (!document.getElementById('colorEffectToggle')?.checked) document.body.classList.remove('effect-color');
+				if (!document.getElementById('grayscaleToggle')?.checked) document.body.classList.remove('effect-grayscale');
+				if (!document.getElementById('sepiaToggle')?.checked) document.body.classList.remove('effect-sepia');
+				if (!document.getElementById('invertToggle')?.checked) document.body.classList.remove('effect-invert');
+				if (!document.getElementById('brightnessToggle')?.checked) document.body.classList.remove('effect-brightness');
+				const glassSync = document.querySelector('.bg-glass');
+				if (glassSync) {
+					if (document.getElementById('blurToggle')?.checked) glassSync.classList.remove('hidden'); else glassSync.classList.add('hidden');
+				}
+				updateCombinedFilters();
 			}
 		}
 
