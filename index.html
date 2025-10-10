@@ -461,21 +461,23 @@
 			overflow-y:auto;
 		}
 		.popup-content.game-settings-panel .settings-layout{
-			display:flex;
-			gap:24px;
-			min-height:420px;
-			align-items:stretch;
+			position:relative;
 			width:100%;
+			min-height:420px;
 		}
 		.popup-content.game-settings-panel .settings-tabs{
+			position:absolute;
+			top:28px;
+			left:28px;
+			width:210px;
 			display:flex;
 			flex-direction:column;
 			gap:10px;
-			padding:0;
 			margin:0;
-			width:220px;
+			padding:0;
 			background:transparent;
 			border:none;
+			z-index:2;
 		}
 		.popup-content.game-settings-panel .settings-tab{
 			appearance:none;
@@ -497,13 +499,13 @@
 			box-shadow:0 8px 24px rgba(0,0,0,0.2);
 		}
 		.popup-content.game-settings-panel .settings-content{
-			flex:1;
+			position:relative;
 			width:100%;
-			min-width:0;
 			background:rgba(255,255,255,0.04);
 			border:1px solid rgba(255,255,255,0.08);
 			border-radius:16px;
 			padding:28px;
+			padding-left:260px;
 			min-height:420px;
 			display:flex;
 			align-items:center;
@@ -527,10 +529,8 @@
 			.popup-content.game-settings-panel .popup-body{
 				padding:24px;
 			}
-			.popup-content.game-settings-panel .settings-layout{
-				flex-direction:column;
-			}
 			.popup-content.game-settings-panel .settings-tabs{
+				position:static;
 				width:100%;
 				flex-direction:row;
 				flex-wrap:wrap;
@@ -541,6 +541,7 @@
 				text-align:center;
 			}
 			.popup-content.game-settings-panel .settings-content{
+				padding:24px;
 				min-height:320px;
 			}
 		}
