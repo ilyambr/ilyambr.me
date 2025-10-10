@@ -910,6 +910,10 @@
 			flex-direction: column;
 			gap: 4px;
 		}
+		.notification-card.single-line .notification-text {
+			align-items: center;
+			text-align: center;
+		}
 
 		.notification-title {
 			font-weight: 600;
@@ -921,6 +925,9 @@
 			color: rgba(255, 255, 255, 0.78);
 			font-size: 14px;
 			line-height: 1.4;
+		}
+		.notification-card.single-line .notification-message {
+			text-align: center;
 		}
 
 		.notification-input {
@@ -3433,6 +3440,9 @@
 			card.className = `notification-card notification-${type}`;
 			card.setAttribute('role', role);
 			card.setAttribute('tabindex', '-1');
+			if (!title && (!actions || actions.length === 0)) {
+				card.classList.add('single-line');
+			}
 
 			const iconWrap = document.createElement('div');
 			iconWrap.className = 'notification-icon';
