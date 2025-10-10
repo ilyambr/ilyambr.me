@@ -9603,15 +9603,34 @@
 			notify.success('Theme tint saved globally.');
 		}
 
-		const GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
-		const APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
-		const APP_TEXT_SELECTORS = [
+		var GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
+		var APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
+		var APP_TEXT_SELECTORS = [
 			'.settings-app-card .app-card-name',
 			'.settings-app-card .app-card-badge',
 			'.settings-app-card .app-card-actions',
 			'.settings-app-card .app-card-action',
 			'.settings-app-card .app-card-overlay > *:not(img)'
 		];
+
+		function ensureGrayscaleGlobals() {
+			if (!(GRAYSCALE_SKIP_TAGS instanceof Set)) {
+				GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
+			}
+			if (typeof APP_IMAGE_SELECTOR !== 'string') {
+				APP_IMAGE_SELECTOR = '.settings-app-card img[data-keep-color="true"]';
+			}
+			if (!Array.isArray(APP_TEXT_SELECTORS) || !APP_TEXT_SELECTORS.length) {
+				APP_TEXT_SELECTORS = [
+					'.settings-app-card .app-card-name',
+					'.settings-app-card .app-card-badge',
+					'.settings-app-card .app-card-actions',
+					'.settings-app-card .app-card-action',
+					'.settings-app-card .app-card-overlay > *:not(img)'
+				];
+			}
+		}
+		ensureGrayscaleGlobals();
 		var grayscaleObserver = null;
 		var grayscaleActive = false;
 
@@ -9627,6 +9646,7 @@
 		}
 
 		function shouldSkipGlobalGrayscale(node) {
+			ensureGrayscaleGlobals();
 			if (!(node instanceof Element)) return true;
 			if (node === document.body) return false;
 			if (!document.body.contains(node)) return true;
@@ -9637,6 +9657,7 @@
 		}
 
 		function applyHardcodedGrayscale(root = document.body) {
+			ensureGrayscaleGlobals();
 			if (!(root instanceof Element) && root !== document.body) return;
 			const scope = root === document.body ? document.body : root;
 			if (scope instanceof Element && scope !== document.body && !shouldSkipGlobalGrayscale(scope)) {
@@ -9699,6 +9720,7 @@
 		}
 
 		function updateHardcodedGrayscaleState(force = false) {
+			ensureGrayscaleGlobals();
 			const isActive = document.body.classList.contains('effect-grayscale');
 			if (!isActive) {
 				if (grayscaleActive || force) {
