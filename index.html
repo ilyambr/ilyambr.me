@@ -780,6 +780,7 @@
 			width:100%;
 			aspect-ratio:1080 / 1640;
 			min-height:0;
+			max-height:420px;
 		}
 		.app-form-logo-preview{
 			width:104px;
@@ -864,7 +865,7 @@
 		.settings-app-list{
 			width:100%;
 			display:grid;
-			grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+			grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
 			gap:18px;
 			margin:0;
 			padding:4px;
@@ -882,8 +883,9 @@
 			display:flex;
 			align-items:flex-end;
 			justify-content:center;
-			width:100%;
+			width:min(100%, 240px);
 			aspect-ratio:1080 / 1640;
+			justify-self:center;
 		}
 		.settings-app-display::after{
 			content:"";
@@ -3329,12 +3331,22 @@
 		async function deleteAllSettingsApp(appId) {
 			const app = allSettingsApps.find(item => item.id === appId);
 			if (!app) return;
-			const confirmed = await showConfirm(`Remove ${app.name}?`, {
-				title: 'Remove settings app',
-				confirmText: 'Remove',
-				cancelText: 'Keep',
-				type: 'warning'
-			});
+			let confirmed = false;
+			if (typeof showConfirm === 'function') {
+				try {
+					confirmed = await showConfirm(`Remove ${app.name}?`, {
+						title: 'Remove settings app',
+						confirmText: 'Remove',
+						cancelText: 'Keep',
+						type: 'warning'
+					});
+				} catch (error) {
+					console.warn('Custom confirm failed, falling back to browser confirm.', error);
+				}
+			}
+			if (!confirmed) {
+				confirmed = window.confirm(`Remove ${app.name}?`);
+			}
 			if (!confirmed) return;
 			allSettingsApps = allSettingsApps.filter(item => item.id !== appId);
 			try {
@@ -3469,7 +3481,7 @@
 
 		<!-- Add All Settings App Popup -->
 		<div id="allSettingsAppFormPopup" class="popup-overlay">
-			<div class="popup-content admin-popup" style="max-width:480px; max-height:74vh;">
+			<div class="popup-content admin-popup" style="max-width:520px; max-height:90vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
 					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
