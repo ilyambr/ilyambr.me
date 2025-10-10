@@ -8,10 +8,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" referrerpolicy="no-referrer">
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<!-- Firebase SDK -->
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" referrerpolicy="no-referrer"></script>
 	<style>
 		:root{
 			--bg-1:#0b0b12;
@@ -878,15 +880,77 @@
 			border-color:rgba(0,199,255,0.6);
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
+		.app-form-previews{
+			display:grid;
+			grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+			gap:18px;
+		}
 		.app-special-media{
 			display:none;
-			margin-top:18px;
 		}
 		.app-special-media.active{
-			display:block;
+			display:contents;
 		}
 		.app-special-preview{
 			min-height:280px;
+		}
+		#imageCropperModal{
+			z-index:1400;
+		}
+		.cropper-popup{
+			max-width:860px;
+		}
+		.image-cropper-body{
+			display:flex;
+			flex-direction:column;
+			gap:18px;
+		}
+		.image-cropper-stage{
+			position:relative;
+			width:100%;
+			min-height:360px;
+			border-radius:18px;
+			overflow:hidden;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(8,8,18,0.82);
+		}
+		.image-cropper-stage .cropper-container,
+		.image-cropper-stage .cropper-wrap-box,
+		.image-cropper-stage .cropper-canvas,
+		.image-cropper-stage .cropper-view-box{
+			border-radius:18px;
+		}
+		#imageCropperPreview{
+			max-width:100%;
+			display:block;
+			width:100%;
+		}
+		.image-cropper-hint{
+			font-size:13px;
+			color:rgba(255,255,255,0.65);
+			line-height:1.6;
+		}
+		.image-cropper-controls{
+			display:flex;
+			gap:12px;
+			align-items:center;
+			flex-wrap:wrap;
+			justify-content:flex-end;
+		}
+		.image-cropper-controls .spacer{
+			flex:1 1 auto;
+		}
+		.image-cropper-popup .popup-body{
+			max-height:80vh;
+			overflow:hidden;
+		}
+		@media (max-width:720px){
+			.cropper-popup{
+				max-width:calc(100vw - 28px);
+			}
+			.image-cropper-stage{
+				min-height:260px;
+			}
 		}
 		.app-form-footer{
 			display:flex;
@@ -903,7 +967,21 @@
 			min-width:220px;
 			flex:1 1 260px;
 		}
+		.character-name-field{
+			display:none;
+			flex-direction:column;
+			gap:8px;
+			flex:1 1 260px;
+		}
+		.character-name-field.active{
+			display:flex;
+		}
 		.special-option-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.character-name-label{
 			font-size:14px;
 			font-weight:600;
 			color:rgba(255,255,255,0.75);
@@ -924,6 +1002,22 @@
 			border-color:rgba(0,199,255,0.6);
 			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
 		}
+		.character-name-input{
+			min-width:220px;
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+		}
+		.character-name-input:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
 		.app-form-actions{
 			display:flex;
 			gap:10px;
@@ -932,6 +1026,8 @@
 		@media (max-width: 640px){
 			.app-form-previews{grid-template-columns:1fr;}
 			.app-form-logo-preview{justify-self:start;}
+			.character-name-field,
+			.special-option-field{flex:1 1 100%;}
 			.settings-template-row{grid-template-columns:1fr; gap:6px;}
 			.settings-template-hero-overlay{flex-direction:column; align-items:flex-start; gap:12px;}
 			.settings-template-badge{margin-left:0;}
@@ -1012,26 +1108,34 @@
 			box-shadow:0 28px 44px rgba(0,0,0,0.45);
 			max-height:100%;
 			overflow:auto;
+			padding:32px;
 		}
-		.settings-special-layout{
+		.settings-app-detail.with-character{
 			display:flex;
 			gap:24px;
-			align-items:stretch;
 		}
-		.settings-special-left{
-			flex:1.2;
+		.settings-app-detail.with-character > .settings-app-template{
+			flex:1 1 60%;
 			min-width:0;
+			padding-right:16px;
+		}
+		.settings-app-template.character-trn-settings{
+			padding-right:16px;
 		}
 		.character-trn-panel{
-			flex:1;
+			flex:0 0 36%;
 			display:flex;
 			flex-direction:column;
 			gap:0;
 			background:rgba(12,14,28,0.92);
 			border:1px solid rgba(255,255,255,0.1);
-			border-radius:20px;
+			border-radius:18px;
 			overflow:hidden;
 			box-shadow:0 28px 44px rgba(0,0,0,0.45);
+			align-self:stretch;
+		}
+		.settings-app-detail.with-character > .character-trn-panel{
+			border-radius:20px;
 		}
 		.character-trn-image{
 			position:relative;
@@ -1096,11 +1200,16 @@
 			color:#ffffff;
 		}
 		@media (max-width: 1100px){
-			.settings-special-layout{
+			.settings-app-detail.with-character{
 				flex-direction:column;
+			}
+			.settings-app-detail.with-character > .settings-app-template{
+				border-right:none;
+				padding-right:0;
 			}
 			.character-trn-panel{
 				border-radius:18px;
+				margin-top:16px;
 			}
 		}
 		.settings-detail-panel{
@@ -1108,8 +1217,8 @@
 			border:1px solid rgba(255,255,255,0.08);
 			border-radius:24px;
 			padding:0;
-			max-width:960px;
-			width:min(960px, 92vw);
+			max-width:760px;
+			width:min(760px, 88vw);
 			overflow:hidden;
 			box-shadow:0 32px 60px rgba(0,0,0,0.55);
 		}
@@ -3166,11 +3275,241 @@
 		let pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 		let allSettingsMediaHandlersBound = false;
 		let allSettingsSpecialHandlersBound = false;
+		let imageCropperInstance = null;
+		let imageCropperResolve = null;
+		let imageCropperReject = null;
+		let imageCropperOptions = null;
+		let imageCropperHandlersBound = false;
 
 		const ALL_SETTINGS_SPECIAL_OPTIONS = [
 			{ id: 'none', label: 'None' },
 			{ id: 'character-trn', label: 'Character (TRN)' }
 		];
+
+		const IMAGE_CROP_CONFIG = {
+			banner: {
+				title: 'Crop banner',
+				hint: 'Keep the subject centered. Banner crops vertically at 1080 × 1640.',
+				aspectRatio: 1080 / 1640,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.92
+			},
+			logo: {
+				title: 'Crop logo',
+				hint: 'Square format works best for logos.',
+				aspectRatio: 1
+			},
+			character: {
+				title: 'Crop character portrait',
+				hint: 'Use a tall crop (1080 × 1440). Keep the character centered.',
+				aspectRatio: 1080 / 1440,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.92
+			},
+			profile: {
+				title: 'Crop profile picture',
+				hint: 'Square avatars look best across the site.',
+				aspectRatio: 1
+			},
+			background: {
+				title: 'Crop background image',
+				hint: 'Choose the portion of the image you want behind everything.',
+				viewMode: 0,
+				autoCropArea: 1,
+				outputFormat: 'image/jpeg',
+				outputQuality: 0.9
+			},
+			actionLogo: {
+				title: 'Crop button logo',
+				hint: 'Square icons align best with the follow/subscribe buttons.',
+				aspectRatio: 1
+			}
+		};
+
+		function ensureImageCropperHandlers() {
+			if (imageCropperHandlersBound) return;
+			const modal = document.getElementById('imageCropperModal');
+			if (!modal) return;
+			const buttons = modal.querySelectorAll('[data-cropper-action]');
+			buttons.forEach(button => {
+				button.addEventListener('click', event => {
+					event.preventDefault();
+					const action = button.dataset.cropperAction;
+					handleImageCropperAction(action);
+				});
+			});
+			modal.addEventListener('click', event => {
+				if (event.target === modal) {
+					handleImageCropperAction('cancel');
+				}
+			});
+			document.addEventListener('keydown', event => {
+				if (event.key === 'Escape') {
+					const isVisible = modal.style.display !== 'none';
+					if (isVisible) {
+						handleImageCropperAction('cancel');
+					}
+				}
+			});
+			imageCropperHandlersBound = true;
+		}
+
+		function handleImageCropperAction(action) {
+			if (!action) return;
+			switch (action) {
+				case 'cancel': {
+					if (typeof imageCropperReject === 'function') {
+						imageCropperReject(new Error('crop-canceled'));
+					}
+					closeImageCropper();
+					break;
+				}
+				case 'reset': {
+					if (imageCropperInstance) {
+						imageCropperInstance.reset();
+					}
+					break;
+				}
+				case 'apply': {
+					if (!imageCropperInstance) return;
+					try {
+						const canvasOptions = imageCropperOptions?.canvas || {};
+						const canvas = imageCropperInstance.getCroppedCanvas(canvasOptions);
+						if (!canvas) throw new Error('canvas-unavailable');
+						if (canvas.getContext) {
+							const ctx = canvas.getContext('2d');
+							if (ctx && 'imageSmoothingQuality' in ctx) {
+								ctx.imageSmoothingQuality = 'high';
+							}
+						}
+						const format = imageCropperOptions?.outputFormat || 'image/png';
+						const quality = typeof imageCropperOptions?.outputQuality === 'number' ? imageCropperOptions.outputQuality : undefined;
+						const dataUrl = typeof quality === 'number'
+							? canvas.toDataURL(format, quality)
+							: canvas.toDataURL(format);
+						if (typeof imageCropperResolve === 'function') {
+							imageCropperResolve(dataUrl);
+						}
+						closeImageCropper();
+					} catch (error) {
+						console.error('Failed to crop image:', error);
+						if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+							notify.error('Could not crop that image. Try again.');
+						}
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		}
+
+		function closeImageCropper() {
+			const modal = document.getElementById('imageCropperModal');
+			const preview = document.getElementById('imageCropperPreview');
+			if (imageCropperInstance) {
+				imageCropperInstance.destroy();
+				imageCropperInstance = null;
+			}
+			if (preview) {
+				preview.onload = null;
+				preview.onerror = null;
+				preview.src = '';
+			}
+			if (modal) {
+				modal.style.display = 'none';
+				modal.classList.remove('active-cropper');
+			}
+			imageCropperOptions = null;
+			imageCropperResolve = null;
+			imageCropperReject = null;
+		}
+
+		function openImageCropper(dataUrl, options = {}) {
+			ensureImageCropperHandlers();
+			const modal = document.getElementById('imageCropperModal');
+			const preview = document.getElementById('imageCropperPreview');
+			const titleEl = document.getElementById('imageCropperTitle');
+			const hintEl = document.getElementById('imageCropperHint');
+			if (!modal || !preview) {
+				return Promise.reject(new Error('cropper-modal-missing'));
+			}
+			const applyBtn = modal.querySelector('[data-cropper-action="apply"]');
+			return new Promise((resolve, reject) => {
+				imageCropperResolve = resolve;
+				imageCropperReject = reject;
+				imageCropperOptions = options || {};
+				modal.style.display = 'flex';
+				modal.classList.add('active-cropper');
+				modal.scrollTop = 0;
+				if (applyBtn) applyBtn.disabled = true;
+				if (titleEl) titleEl.textContent = options?.title || 'Adjust image crop';
+				if (hintEl) hintEl.textContent = options?.hint || 'Drag to reposition the image. Use your mouse wheel or pinch to zoom.';
+				const cleanup = () => {
+					preview.onload = null;
+					preview.onerror = null;
+				};
+				preview.onload = () => {
+					cleanup();
+					if (imageCropperInstance) {
+						imageCropperInstance.destroy();
+					}
+					const aspectRatio = Number.isFinite(options?.aspectRatio) ? options.aspectRatio : undefined;
+					const cropOptions = {
+						aspectRatio,
+						viewMode: typeof options?.viewMode === 'number' ? options.viewMode : 1,
+						autoCropArea: typeof options?.autoCropArea === 'number' ? options.autoCropArea : 0.92,
+						background: false,
+						movable: true,
+						zoomable: true,
+						wheelZoomRatio: 0.12,
+						dragMode: 'move',
+						responsive: true,
+						checkOrientation: false
+					};
+					imageCropperInstance = new Cropper(preview, cropOptions);
+					if (applyBtn) applyBtn.disabled = false;
+				};
+				preview.onerror = () => {
+					cleanup();
+					if (applyBtn) applyBtn.disabled = false;
+					reject(new Error('crop-load-failed'));
+					closeImageCropper();
+				};
+				preview.src = '';
+				preview.src = dataUrl;
+			});
+		}
+
+		function readFileAsDataURL(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result);
+				reader.onerror = () => reject(new Error('file-read-failed'));
+				reader.readAsDataURL(file);
+			});
+		}
+
+		async function requestImageCrop(dataUrl, key) {
+			if (!dataUrl) return null;
+			if (typeof Cropper === 'undefined') {
+				return dataUrl;
+			}
+			const config = IMAGE_CROP_CONFIG[key] || {};
+			try {
+				const result = await openImageCropper(dataUrl, config);
+				return result;
+			} catch (error) {
+				if (error && error.message === 'crop-canceled') {
+					return null;
+				}
+				console.warn('Image crop failed; falling back to original image.', error);
+				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
+					notify.warning('Using the original upload because cropping failed.');
+				}
+				return dataUrl;
+			}
+		}
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
 			{ id: 'games', label: 'Games', type: 'default' },
@@ -3390,14 +3729,11 @@
 
 			container.appendChild(sectionsWrap);
 			const specialOption = normalizeAllSettingsSpecialOption(app?.specialOption);
+			let characterPanel = null;
 			if (specialOption === 'character-trn') {
-				const layout = document.createElement('div');
-				layout.className = 'settings-special-layout character-trn-layout';
-				const mainRegion = document.createElement('div');
-				mainRegion.className = 'settings-special-left';
-				mainRegion.appendChild(container);
-				const sidePanel = document.createElement('aside');
-				sidePanel.className = 'character-trn-panel';
+				container.classList.add('character-trn-settings');
+				characterPanel = document.createElement('aside');
+				characterPanel.className = 'character-trn-panel';
 				const portrait = document.createElement('div');
 				portrait.className = 'character-trn-image';
 				if (app.characterImage) {
@@ -3406,12 +3742,12 @@
 					portrait.classList.add('empty');
 					portrait.textContent = 'Character Portrait';
 				}
-				sidePanel.appendChild(portrait);
+				characterPanel.appendChild(portrait);
 				const stats = document.createElement('div');
 				stats.className = 'character-trn-stats';
 				const characterName = document.createElement('h4');
 				characterName.className = 'character-trn-name';
-				characterName.textContent = 'Character Name';
+				characterName.textContent = app.characterName || 'Character Name';
 				stats.appendChild(characterName);
 				const meta = document.createElement('div');
 				meta.className = 'character-trn-meta';
@@ -3438,12 +3774,9 @@
 				meta.appendChild(playtime);
 				meta.appendChild(kd);
 				stats.appendChild(meta);
-				sidePanel.appendChild(stats);
-				layout.appendChild(mainRegion);
-				layout.appendChild(sidePanel);
-				return layout;
+				characterPanel.appendChild(stats);
 			}
-			return container;
+			return { main: container, side: characterPanel };
 		}
 
 		function openSettingsAppDetailPopup(app) {
@@ -3457,7 +3790,12 @@
 			body.innerHTML = '';
 			const detailWrapper = document.createElement('div');
 			detailWrapper.className = 'settings-app-detail';
-			detailWrapper.appendChild(buildSettingsDetail(app));
+			const detailContent = buildSettingsDetail(app);
+			detailWrapper.classList.toggle('with-character', !!detailContent.side);
+			detailWrapper.appendChild(detailContent.main);
+			if (detailContent.side) {
+				detailWrapper.appendChild(detailContent.side);
+			}
 			body.appendChild(detailWrapper);
 
 			if (title) {
@@ -3620,6 +3958,7 @@
 				settingsTemplate: Array.isArray(raw.settingsTemplate) ? raw.settingsTemplate : [],
 				specialOption: normalizeAllSettingsSpecialOption(raw.specialOption),
 				characterImage: sanitizeMedia(raw.characterImage),
+				characterName: (raw.characterName || '').trim(),
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -3633,6 +3972,7 @@
 			}
 			if (normalized.specialOption !== 'character-trn') {
 				normalized.characterImage = '';
+				normalized.characterName = '';
 			}
 			return normalized;
 		}
@@ -3660,6 +4000,15 @@
 			const specialMedia = document.getElementById('allSettingsSpecialMedia');
 			if (specialMedia) {
 				specialMedia.classList.toggle('active', resolved === 'character-trn');
+			}
+			const nameField = document.getElementById('allSettingsCharacterNameField');
+			if (nameField) {
+				const isCharacter = resolved === 'character-trn';
+				nameField.classList.toggle('active', isCharacter);
+				if (!isCharacter) {
+					const input = nameField.querySelector('input');
+					if (input) input.value = '';
+				}
 			}
 		}
 
@@ -3705,22 +4054,28 @@
 			if (input) input.click();
 		}
 
-		function onAllSettingsMediaInputChange(event) {
+		async function onAllSettingsMediaInputChange(event) {
 			const input = event.target;
 			const type = input?.dataset?.mediaType;
 			if (!type || !ALL_SETTINGS_MEDIA_CONFIG[type]) return;
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = e => {
-				pendingAllSettingsAppMedia[type] = e.target?.result || null;
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, type);
+				if (!cropped) {
+					return;
+				}
+				pendingAllSettingsAppMedia[type] = cropped;
 				setAllSettingsMediaPreview(type, pendingAllSettingsAppMedia[type]);
-			};
-			reader.onerror = () => {
-				notify.error('Could not read that image. Try a different file.');
-			};
-			reader.readAsDataURL(file);
-			input.value = '';
+			} catch (error) {
+				console.error('Failed to process media upload:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not process that image. Try again with a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
 		}
 
 		function ensureAllSettingsMediaHandlers() {
@@ -3759,6 +4114,8 @@
 			if (categorySelect) categorySelect.value = DEFAULT_GAME_SETTINGS_TABS[0].id;
 			const specialSelect = document.getElementById('allSettingsSpecialOption');
 			if (specialSelect) specialSelect.value = ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
+			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
+			if (characterNameInput) characterNameInput.value = '';
 			pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 			updateAllSettingsAppPreview();
 			updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
@@ -3789,6 +4146,8 @@
 					if (categorySelect) categorySelect.value = resolveGameSettingsTabId(app.tabId);
 					const specialSelect = document.getElementById('allSettingsSpecialOption');
 					if (specialSelect) specialSelect.value = normalizeAllSettingsSpecialOption(app.specialOption);
+					const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
+					if (characterNameInput) characterNameInput.value = app.characterName || '';
 					pendingAllSettingsAppMedia = {
 						banner: (app.banner && app.banner !== 'N/A') ? app.banner : null,
 						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null,
@@ -3929,14 +4288,17 @@
 			const nameInput = document.getElementById('allSettingsAppName');
 			const categorySelect = document.getElementById('allSettingsAppCategory');
 			const specialSelect = document.getElementById('allSettingsSpecialOption');
+			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
 			const name = (nameInput?.value || '').trim();
 			const logo = pendingAllSettingsAppMedia.logo || '';
 			const banner = pendingAllSettingsAppMedia.banner || '';
 			const tabId = resolveGameSettingsTabId(categorySelect?.value);
 			const specialOption = normalizeAllSettingsSpecialOption(specialSelect?.value);
+			let characterName = (characterNameInput?.value || '').trim();
 			let characterImage = pendingAllSettingsAppMedia.character || '';
 			if (specialOption !== 'character-trn') {
 				characterImage = '';
+				characterName = '';
 			}
 			if (!name) {
 				notify.error('Give the app a name before saving.');
@@ -3956,6 +4318,7 @@
 						tabId,
 						specialOption,
 						characterImage,
+						characterName,
 						updatedAt: timestamp
 					};
 				} else {
@@ -3970,6 +4333,7 @@
 						settingsTemplate: [],
 						specialOption,
 						characterImage,
+						characterName,
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -3985,6 +4349,7 @@
 					settingsTemplate: [],
 					specialOption,
 					characterImage,
+					characterName,
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
@@ -4180,6 +4545,29 @@
 		</div>
 	</div>
 
+	<div id="imageCropperModal" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="imageCropperTitle" style="display:none;">
+		<div class="popup-content cropper-popup image-cropper-popup">
+			<div class="popup-header">
+				<h3 id="imageCropperTitle">Adjust image crop</h3>
+				<button class="close-btn" type="button" data-cropper-action="cancel" aria-label="Cancel image cropping">&times;</button>
+			</div>
+			<div class="popup-body">
+				<div class="image-cropper-body">
+					<div class="image-cropper-stage">
+						<img id="imageCropperPreview" alt="Image crop preview">
+					</div>
+					<div class="image-cropper-hint" id="imageCropperHint">Drag to reposition the image. Use your mouse wheel or pinch to zoom in/out.</div>
+					<div class="image-cropper-controls">
+						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="cancel">Cancel</button>
+						<span class="spacer"></span>
+						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="reset">Reset</button>
+						<button type="button" class="admin-logout-btn" data-cropper-action="apply">Use Image</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 		<!-- All Settings Manager Popup -->
 		<div id="allSettingsManagerPopup" class="popup-overlay">
 			<div class="popup-content admin-popup" style="max-width:920px;">
@@ -4196,7 +4584,7 @@
 
 		<!-- Add All Settings App Popup -->
 		<div id="allSettingsAppFormPopup" class="popup-overlay">
-			<div class="popup-content admin-popup" style="max-width:520px; max-height:90vh;">
+			<div class="popup-content admin-popup" style="max-width:760px; max-height:90vh;">
 				<div class="popup-header">
 					<h3>Add App to All Settings</h3>
 					<button class="close-btn" onclick="closeAddAllSettingsAppPopup()" aria-label="Close add app popup">&times;</button>
@@ -4258,6 +4646,10 @@
 								<option value="none">None</option>
 								<option value="character-trn">Character (TRN)</option>
 							</select>
+						</div>
+						<div class="character-name-field" id="allSettingsCharacterNameField">
+							<label for="allSettingsCharacterNameInput" class="character-name-label">Character Name</label>
+							<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60">
 						</div>
 						<div class="app-form-actions">
 							<button class="admin-logout-btn alt-light" type="button" onclick="closeAddAllSettingsAppPopup()">Cancel</button>
@@ -5949,15 +6341,31 @@
 			openPopup('actionLinkPopup');
 		}
 
-		function handleActionLogoFile(input) {
+		async function handleActionLogoFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = () => {
-				document.getElementById('actionLogoPreview').src = reader.result;
-				document.getElementById('actionLogoPreviewWrap').style.display = 'flex';
-			};
-			reader.readAsDataURL(file); // store as data URL
+			const preview = document.getElementById('actionLogoPreview');
+			const wrap = document.getElementById('actionLogoPreviewWrap');
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'actionLogo');
+				if (!cropped) {
+					if (preview) preview.removeAttribute('src');
+					if (wrap) wrap.style.display = 'none';
+					return;
+				}
+				if (preview) preview.src = cropped;
+				if (wrap) wrap.style.display = 'flex';
+			} catch (error) {
+				console.error('Failed to process action logo:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not process that logo. Try a different image.');
+				}
+				if (preview) preview.removeAttribute('src');
+				if (wrap) wrap.style.display = 'none';
+			} finally {
+				if (input) input.value = '';
+			}
 		}
 
 		async function saveActionLinkFromPopup() {
@@ -6073,23 +6481,63 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
-		function handleProfileUploadFile(input) {
+		async function handleProfileUploadFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
-			const reader = new FileReader();
-			reader.onload = async () => {
-				const dataUrl = reader.result;
-				document.getElementById('profilePicture').value = dataUrl;
-				await saveGlobalSetting('profile-pic', dataUrl);
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'profile');
+				if (!cropped) {
+					return;
+				}
+				const profileInput = document.getElementById('profilePicture');
+				if (profileInput) profileInput.value = cropped;
+				await saveGlobalSetting('profile-pic', cropped);
 				const avatarImgs = document.querySelectorAll('.avatar img');
-				avatarImgs.forEach(img => (img.src = dataUrl));
-				setProfilePreviewImage(dataUrl);
-				document.getElementById('currentProfilePic').textContent = 'uploaded image';
-				notify.success('Profile image uploaded and applied globally.');
-			};
-			reader.readAsDataURL(file);
+				avatarImgs.forEach(img => (img.src = cropped));
+				setProfilePreviewImage(cropped);
+				const statusEl = document.getElementById('currentProfilePic');
+				if (statusEl) statusEl.textContent = 'uploaded image';
+				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+					notify.success('Profile image uploaded, cropped, and applied globally.');
+				}
+			} catch (error) {
+				console.error('Failed to update profile image:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not update the profile image. Try a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
 		}
-		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; notify.success('Background image uploaded and applied globally.'); }; r.readAsDataURL(file); }
+
+		async function handleBackgroundUploadFile(input) {
+			const file = input.files && input.files[0];
+			if (!file) return;
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'background');
+				if (!cropped) {
+					return;
+				}
+				const backgroundInput = document.getElementById('backgroundImage');
+				if (backgroundInput) backgroundInput.value = cropped;
+				await saveGlobalSetting('background', cropped);
+				document.body.style.background = `url('${cropped}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				const statusEl = document.getElementById('currentBackground');
+				if (statusEl) statusEl.textContent = 'uploaded image';
+				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+					notify.success('Background image uploaded, cropped, and applied globally.');
+				}
+			} catch (error) {
+				console.error('Failed to update background image:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not update the background image. Try again.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
+		}
 
 		async function openFollowPopup() {
 			renderActionPopupButtons('follow');
