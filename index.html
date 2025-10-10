@@ -213,6 +213,7 @@
 			.desktop-shell{
 				display:flex;
 				align-items:stretch;
+				flex-wrap:wrap;
 				gap:28px;
 				max-width:1600px;
 				margin:0 auto;
@@ -471,13 +472,26 @@
 
 		.footer{
 			margin-top:40px;
-			text-align:center;
 			color:var(--muted);
 			font-size:13px;
 			position:relative;
 			z-index:2;
+			width:100%;
+			flex:0 0 100%;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			text-align:center;
+			gap:8px;
 		}
-		#counter{position:relative; z-index:2}
+		#counter{
+			position:relative;
+			z-index:2;
+			display:flex;
+			justify-content:center;
+			align-items:flex-end;
+			gap:4px;
+		}
 
 		/* Popup Styles */
 		.popup-overlay {
@@ -704,9 +718,6 @@
 		}
 
 		@media (max-width: 1200px) {
-			.admin-button {
-				position: absolute;
-			}
 		}
 
 		.admin-button:hover {
@@ -1665,13 +1676,9 @@
 					</div>
 				</div>
 			</aside>
+			</div>
 		</div>
-		<div class="footer">
-			<div id="counter"></div>
-			© 2025 ilyambr, made with love <3
-		</div>
-	</div>
-	<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
+		<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
 				<div class="card short-video-card">
 					<h3>Featured Short</h3>
 					<div class="short-video-embed">
@@ -1683,6 +1690,11 @@
 					</div>
 				</div>
 		</aside>
+		<div class="footer">
+			<div id="counter"></div>
+			© 2025 ilyambr, made with love <3
+		</div>
+	</div>
 
 	<!-- Admin Console Button -->
 	<div class="admin-button" onclick="openAdminLogin()">
