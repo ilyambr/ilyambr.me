@@ -1319,6 +1319,48 @@
 			flex-direction:column;
 			gap:8px;
 		}
+		.character-name-field.active{
+			display:flex;
+		}
+		.character-trn-config{
+			display:none;
+			flex-direction:column;
+			gap:12px;
+		}
+		.character-trn-config.active{
+			display:flex;
+		}
+		.character-trn-field{
+			display:flex;
+			flex-direction:column;
+			gap:6px;
+		}
+		.character-trn-label{
+			font-size:14px;
+			font-weight:600;
+			color:rgba(255,255,255,0.75);
+		}
+		.character-trn-input,
+		.character-trn-select{
+			width:100%;
+			padding:12px 14px;
+			border-radius:12px;
+			border:1px solid rgba(255,255,255,0.14);
+			background:rgba(0,0,0,0.4);
+			color:#ffffff;
+			font-size:14px;
+			font-weight:600;
+		}
+		.character-trn-input:focus,
+		.character-trn-select:focus{
+			outline:none;
+			border-color:rgba(0,199,255,0.6);
+			box-shadow:0 0 0 3px rgba(0,199,255,0.12);
+		}
+		.character-trn-hint{
+			font-size:12px;
+			color:rgba(186,204,232,0.7);
+		}
 		.special-option-label{
 			font-size:14px;
 			font-weight:600;
@@ -1533,6 +1575,14 @@
 			text-align:left;
 			text-shadow:0 18px 38px rgba(0,0,0,0.55);
 		}
+		.character-trn-name a{
+			color:inherit;
+			text-decoration:none;
+		}
+		.character-trn-name a:hover{
+			color:#9ae7ff;
+			text-decoration:underline;
+		}
 		.character-trn-meta{
 			display:flex;
 			justify-content:flex-start;
@@ -1557,6 +1607,15 @@
 			font-weight:700;
 			color:#ffffff;
 			line-height:1.2;
+		}
+		.character-trn-meta-value a{
+			color:#9ae7ff;
+			text-decoration:none;
+			font-weight:700;
+		}
+		.character-trn-meta-value a:hover{
+			color:#ffffff;
+			text-decoration:underline;
 		}
 		.settings-detail-overlay{
 			justify-content:center;
@@ -4115,6 +4174,47 @@
 			{ id: 'none', label: 'None' },
 			{ id: 'character-trn', label: 'Character (TRN)' }
 		];
+		const ALL_SETTINGS_TRN_GAMES = [
+			{ id: 'valorant', label: 'Valorant' }
+		];
+		const DEFAULT_TRN_GAME_ID = ALL_SETTINGS_TRN_GAMES[0].id;
+		function normalizeTrnGameId(value) {
+			const normalized = String(value || '').trim().toLowerCase();
+			return ALL_SETTINGS_TRN_GAMES.some(game => game.id === normalized) ? normalized : DEFAULT_TRN_GAME_ID;
+		}
+		function getTrnGameLabel(gameId) {
+			const match = ALL_SETTINGS_TRN_GAMES.find(game => game.id === gameId);
+			return match ? match.label : (gameId || '').toUpperCase();
+		}
+		function populateTrnGameOptions() {
+			const select = document.getElementById('allSettingsCharacterTrnGame');
+			if (!select) return;
+			const existingValues = new Set(Array.from(select.options).map(option => option.value));
+			ALL_SETTINGS_TRN_GAMES.forEach(game => {
+				if (!existingValues.has(game.id)) {
+					const option = document.createElement('option');
+					option.value = game.id;
+					option.textContent = game.label;
+					select.appendChild(option);
+				} else {
+					Array.from(select.options).forEach(option => {
+						if (option.value === game.id) {
+							option.textContent = game.label;
+						}
+					});
+				}
+			});
+			if (!select.value) {
+				select.value = DEFAULT_TRN_GAME_ID;
+			}
+		}
+		function generateTrnProfileUrl(gameId, username) {
+			const cleanUsername = (username || '').trim();
+			if (!cleanUsername) return '';
+			const normalizedGame = normalizeTrnGameId(gameId);
+			const encodedUsername = encodeURIComponent(cleanUsername);
+			return `https://tracker.gg/${normalizedGame}/profile/riot/${encodedUsername}?`;
+		}
 		function readFileAsDataURL(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -4134,6 +4234,89 @@
 		let cachedGameSettingsTabs = [];
 		let currentGameSettingsTabId = null;
 		let selectedAllSettingsAppId = null;
+		const TRACKER_STATS_ENDPOINT = '/data/ilyambr-ttb-tracker.json';
+		let cachedTrackerStatsSnapshot = null;
+		let trackerStatsFetchPromise = null;
+
+		function normalizeTrackerUsername(username) {
+			return (username || '').trim().toLowerCase();
+		}
+
+		async function fetchTrackerStatsSnapshot(force = false) {
+			if (!force && cachedTrackerStatsSnapshot) {
+				return cachedTrackerStatsSnapshot;
+			}
+			if (!force && trackerStatsFetchPromise) {
+				return trackerStatsFetchPromise;
+			}
+			trackerStatsFetchPromise = fetch(TRACKER_STATS_ENDPOINT, { cache: 'no-store' })
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`Tracker stats request failed: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					cachedTrackerStatsSnapshot = data && typeof data === 'object' ? data : null;
+					trackerStatsFetchPromise = null;
+					return cachedTrackerStatsSnapshot;
+				})
+				.catch(error => {
+					console.error('Failed to load tracker stats snapshot', error);
+					trackerStatsFetchPromise = null;
+					return null;
+				});
+			return trackerStatsFetchPromise;
+		}
+
+		function resolveTrackerStatsForApp(app) {
+			if (!app) return null;
+			const desired = normalizeTrackerUsername(app.characterTrnUsername);
+			if (!desired) return null;
+			const snapshot = cachedTrackerStatsSnapshot;
+			if (!snapshot || !snapshot.username) return null;
+			const available = normalizeTrackerUsername(snapshot.username);
+			return desired === available ? snapshot : null;
+		}
+
+		function formatTrackerTimestamp(isoString) {
+			if (!isoString) return '';
+			try {
+				const date = new Date(isoString);
+				if (Number.isNaN(date.getTime())) return isoString;
+				return date.toLocaleString();
+			} catch (error) {
+				return isoString;
+			}
+		}
+
+		function enhanceCharacterPanelWithTrackerStats(panelEl, app) {
+			if (!panelEl || !app) return;
+			const desired = normalizeTrackerUsername(app.characterTrnUsername);
+			if (!desired) return;
+			fetchTrackerStatsSnapshot().then(snapshot => {
+				if (!snapshot || normalizeTrackerUsername(snapshot.username) !== desired || !snapshot.stats) return;
+				const { stats, updatedAt, profileUrl } = snapshot;
+				const playtime = stats?.timePlayed?.displayValue || null;
+				const kd = stats?.kDRatio?.displayValue || null;
+				const playtimeEl = panelEl.querySelector('[data-role="tracker-playtime"]');
+				if (playtimeEl && playtime) playtimeEl.textContent = playtime;
+				const kdEl = panelEl.querySelector('[data-role="tracker-kdratio"]');
+				if (kdEl && kd) kdEl.textContent = kd;
+				const updatedEl = panelEl.querySelector('[data-role="tracker-updated"]');
+				if (updatedEl && updatedAt) {
+					try {
+						updatedEl.textContent = new Date(updatedAt).toLocaleString();
+					} catch (e) {
+						updatedEl.textContent = updatedAt;
+					}
+				}
+				const profileLinkEl = panelEl.querySelector('[data-role="tracker-profile-link"]');
+				if (profileLinkEl && profileUrl) {
+					profileLinkEl.href = profileUrl;
+				}
+			});
+		}
 
 		const DEFAULT_APP_SETTINGS_TABS = [
 			{ id: 'general', label: 'General', hidden: false, sections: [] },
@@ -4525,14 +4708,37 @@
 				content.className = 'character-trn-content';
 				const characterName = document.createElement('h4');
 				characterName.className = 'character-trn-name';
-				characterName.textContent = app.characterName || 'Character Name';
+				const displayName = app.characterName || app.characterTrnUsername || 'Tracker Profile';
+				if (app.characterTrnProfileUrl) {
+					const profileLink = document.createElement('a');
+					profileLink.href = app.characterTrnProfileUrl;
+					profileLink.target = '_blank';
+					profileLink.rel = 'noopener noreferrer';
+					profileLink.className = 'character-trn-link';
+					profileLink.textContent = displayName;
+					characterName.appendChild(profileLink);
+				} else {
+					characterName.textContent = displayName;
+				}
 				content.appendChild(characterName);
 				const meta = document.createElement('div');
 				meta.className = 'character-trn-meta';
+				const trackerSnapshot = resolveTrackerStatsForApp(app);
+				const trackerStats = trackerSnapshot?.stats || {};
+				const trackerProfileUrl = trackerSnapshot?.profileUrl || app.characterTrnProfileUrl || null;
+				const trackerUpdatedDisplay = trackerSnapshot?.updatedAt ? formatTrackerTimestamp(trackerSnapshot.updatedAt) : null;
 				const statItems = [
-					{ label: 'Playtime', value: '124h 32m' },
-					{ label: 'K/D Ratio', value: '2.45' }
+					{ label: 'Playtime', value: trackerStats?.timePlayed?.displayValue || app.characterTrnPlaytime || '124h 32m', domRole: 'tracker-playtime' },
+					{ label: 'K/D Ratio', value: trackerStats?.kDRatio?.displayValue || app.characterTrnKd || '2.45', domRole: 'tracker-kdratio' },
+					{ label: 'Game', value: getTrnGameLabel(app.characterTrnGame) },
+					{ label: 'Username', value: app.characterTrnUsername || '—' }
 				];
+				if (trackerProfileUrl) {
+					statItems.push({ label: 'Tracker Profile', value: 'Open profile', href: trackerProfileUrl, domRole: 'tracker-profile-link' });
+				}
+				if (trackerUpdatedDisplay) {
+					statItems.push({ label: 'Tracker Updated', value: trackerUpdatedDisplay, domRole: 'tracker-updated' });
+				}
 				statItems.forEach(stat => {
 					const item = document.createElement('div');
 					item.className = 'character-trn-meta-item';
@@ -4541,13 +4747,29 @@
 					statLabel.textContent = stat.label;
 					const statValue = document.createElement('span');
 					statValue.className = 'character-trn-meta-value';
-					statValue.textContent = stat.value;
+					if (stat.href) {
+						const link = document.createElement('a');
+						link.href = stat.href;
+						link.target = '_blank';
+						link.rel = 'noopener noreferrer';
+						link.textContent = stat.value;
+						if (stat.domRole) {
+							link.dataset.role = stat.domRole;
+						}
+						statValue.appendChild(link);
+					} else {
+						statValue.textContent = stat.value;
+						if (stat.domRole) {
+							statValue.dataset.role = stat.domRole;
+						}
+					}
 					item.appendChild(statLabel);
 					item.appendChild(statValue);
 					meta.appendChild(item);
 				});
 				content.appendChild(meta);
 				characterPanel.appendChild(content);
+				enhanceCharacterPanelWithTrackerStats(characterPanel, app);
 			}
 			return { main: detailCard, side: characterPanel };
 		}
@@ -4760,6 +4982,9 @@
 				specialOption: normalizeAllSettingsSpecialOption(raw.specialOption),
 				characterImage: sanitizeMedia(raw.characterImage),
 				characterName: (raw.characterName || '').trim(),
+				characterTrnUsername: (raw.characterTrnUsername || '').trim(),
+				characterTrnGame: normalizeTrnGameId(raw.characterTrnGame),
+				characterTrnProfileUrl: '',
 				createdAt: raw.createdAt || Date.now(),
 				updatedAt: raw.updatedAt || raw.createdAt || Date.now()
 			};
@@ -4774,6 +4999,17 @@
 			if (normalized.specialOption !== 'character-trn') {
 				normalized.characterImage = '';
 				normalized.characterName = '';
+				normalized.characterTrnUsername = '';
+				normalized.characterTrnGame = DEFAULT_TRN_GAME_ID;
+				normalized.characterTrnProfileUrl = '';
+			} else {
+				normalized.characterTrnProfileUrl = generateTrnProfileUrl(
+					normalized.characterTrnGame,
+					normalized.characterTrnUsername
+				);
+				if (!normalized.characterName && normalized.characterTrnUsername) {
+					normalized.characterName = normalized.characterTrnUsername.split('#')[0] || normalized.characterTrnUsername;
+				}
 			}
 			return normalized;
 		}
@@ -4798,18 +5034,33 @@
 
 		function updateAllSettingsSpecialOptionUI(option) {
 			const resolved = normalizeAllSettingsSpecialOption(option);
+			const isCharacter = resolved === 'character-trn';
 			const specialMedia = document.getElementById('allSettingsSpecialMedia');
 			if (specialMedia) {
-				specialMedia.classList.toggle('active', resolved === 'character-trn');
+				specialMedia.classList.toggle('active', isCharacter);
 			}
 			const nameField = document.getElementById('allSettingsCharacterNameField');
 			if (nameField) {
-				const isCharacter = resolved === 'character-trn';
 				nameField.classList.toggle('active', isCharacter);
-				if (!isCharacter) {
-					const input = nameField.querySelector('input');
-					if (input) input.value = '';
+				const input = nameField.querySelector('input');
+				if (input) {
+					input.disabled = !isCharacter;
+					if (!isCharacter) input.value = '';
 				}
+			}
+			const trnConfig = document.getElementById('allSettingsCharacterTrnConfig');
+			if (trnConfig) {
+				trnConfig.classList.toggle('active', isCharacter);
+			}
+			const trnUsernameInput = document.getElementById('allSettingsCharacterTrnUsername');
+			if (trnUsernameInput) {
+				trnUsernameInput.disabled = !isCharacter;
+				if (!isCharacter) trnUsernameInput.value = '';
+			}
+			const trnGameSelect = document.getElementById('allSettingsCharacterTrnGame');
+			if (trnGameSelect) {
+				trnGameSelect.disabled = !isCharacter;
+				if (!isCharacter) trnGameSelect.value = DEFAULT_TRN_GAME_ID;
 			}
 		}
 
@@ -4821,6 +5072,7 @@
 					updateAllSettingsSpecialOptionUI(event.target.value);
 				});
 			}
+			populateTrnGameOptions();
 			allSettingsSpecialHandlersBound = true;
 		}
 
@@ -5367,6 +5619,10 @@
 			if (specialSelect) specialSelect.value = ALL_SETTINGS_SPECIAL_OPTIONS[0].id;
 			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
 			if (characterNameInput) characterNameInput.value = '';
+			const trnUsernameInput = document.getElementById('allSettingsCharacterTrnUsername');
+			if (trnUsernameInput) trnUsernameInput.value = '';
+			const trnGameSelect = document.getElementById('allSettingsCharacterTrnGame');
+			if (trnGameSelect) trnGameSelect.value = DEFAULT_TRN_GAME_ID;
 			pendingAllSettingsAppMedia = { banner: null, logo: null, character: null };
 			updateAllSettingsAppPreview();
 			updateAllSettingsSpecialOptionUI(ALL_SETTINGS_SPECIAL_OPTIONS[0].id);
@@ -5400,6 +5656,10 @@
 					if (specialSelect) specialSelect.value = normalizeAllSettingsSpecialOption(app.specialOption);
 					const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
 					if (characterNameInput) characterNameInput.value = app.characterName || '';
+					const trnUsernameInput = document.getElementById('allSettingsCharacterTrnUsername');
+					if (trnUsernameInput) trnUsernameInput.value = app.characterTrnUsername || '';
+					const trnGameSelect = document.getElementById('allSettingsCharacterTrnGame');
+					if (trnGameSelect) trnGameSelect.value = normalizeTrnGameId(app.characterTrnGame);
 					pendingAllSettingsAppMedia = {
 						banner: (app.banner && app.banner !== 'N/A') ? app.banner : null,
 						logo: (app.logo && app.logo !== 'N/A') ? app.logo : null,
@@ -5543,6 +5803,8 @@
 			const categorySelect = document.getElementById('allSettingsAppCategory');
 			const specialSelect = document.getElementById('allSettingsSpecialOption');
 			const characterNameInput = document.getElementById('allSettingsCharacterNameInput');
+			const characterTrnUsernameInput = document.getElementById('allSettingsCharacterTrnUsername');
+			const characterTrnGameSelect = document.getElementById('allSettingsCharacterTrnGame');
 			const name = (nameInput?.value || '').trim();
 			const logo = pendingAllSettingsAppMedia.logo || '';
 			const banner = pendingAllSettingsAppMedia.banner || '';
@@ -5550,9 +5812,24 @@
 			const specialOption = normalizeAllSettingsSpecialOption(specialSelect?.value);
 			let characterName = (characterNameInput?.value || '').trim();
 			let characterImage = pendingAllSettingsAppMedia.character || '';
+			let characterTrnUsername = (characterTrnUsernameInput?.value || '').trim();
+			let characterTrnGame = normalizeTrnGameId(characterTrnGameSelect?.value);
+			let characterTrnProfileUrl = '';
 			if (specialOption !== 'character-trn') {
 				characterImage = '';
 				characterName = '';
+				characterTrnUsername = '';
+				characterTrnGame = DEFAULT_TRN_GAME_ID;
+				characterTrnProfileUrl = '';
+			} else {
+				if (!characterTrnUsername) {
+					if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+						notify.error('Enter your Tracker username (including the tagline).');
+					}
+					characterTrnUsernameInput?.focus();
+					return;
+				}
+				characterTrnProfileUrl = generateTrnProfileUrl(characterTrnGame, characterTrnUsername);
 			}
 			if (!name) {
 				notify.error('Give the app a name before saving.');
@@ -5577,6 +5854,9 @@
 						specialOption,
 						characterImage,
 						characterName,
+						characterTrnUsername,
+						characterTrnGame,
+						characterTrnProfileUrl,
 						updatedAt: timestamp
 					};
 				} else {
@@ -5593,6 +5873,9 @@
 						specialOption,
 						characterImage,
 						characterName,
+						characterTrnUsername,
+						characterTrnGame,
+						characterTrnProfileUrl,
 						createdAt: timestamp,
 						updatedAt: timestamp
 					});
@@ -5610,6 +5893,9 @@
 					specialOption,
 					characterImage,
 					characterName,
+					characterTrnUsername,
+					characterTrnGame,
+					characterTrnProfileUrl,
 					createdAt: timestamp,
 					updatedAt: timestamp
 				});
@@ -5883,8 +6169,21 @@
 								</select>
 							</div>
 							<div class="character-name-field" id="allSettingsCharacterNameField">
-								<label for="allSettingsCharacterNameInput" class="character-name-label">Character Name</label>
-								<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60">
+								<label for="allSettingsCharacterNameInput" class="character-name-label">Display Name (optional)</label>
+								<input type="text" id="allSettingsCharacterNameInput" class="character-name-input" placeholder="Jett" maxlength="60" autocomplete="off">
+							</div>
+							<div class="character-trn-config" id="allSettingsCharacterTrnConfig">
+								<div class="character-trn-field">
+									<label for="allSettingsCharacterTrnUsername" class="character-trn-label">Tracker Username</label>
+									<input type="text" id="allSettingsCharacterTrnUsername" class="character-trn-input" placeholder="ilyambr#ttb" autocomplete="off" maxlength="80">
+									<span class="character-trn-hint">Use your in-game ID exactly as shown, including the tagline.</span>
+								</div>
+								<div class="character-trn-field">
+									<label for="allSettingsCharacterTrnGame" class="character-trn-label">Game</label>
+									<select id="allSettingsCharacterTrnGame" class="character-trn-select">
+										<option value="valorant">Valorant</option>
+									</select>
+								</div>
 							</div>
 							<div class="app-special-media" id="allSettingsSpecialMedia">
 								<div class="app-media-block">
