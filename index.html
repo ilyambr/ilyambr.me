@@ -32,6 +32,41 @@
 			--shadow:0 10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
 			--radius:18px;
 			--radius-sm:12px;
+			--accent:#63a4ff;
+			--accent-hover:#7ab4ff;
+			--accent-contrast:#0c1424;
+			--surface-overlay:rgba(255,255,255,0.05);
+			--surface-overlay-hover:rgba(255,255,255,0.12);
+			--surface-button:rgba(255,255,255,0.08);
+			--surface-button-border:rgba(255,255,255,0.16);
+			--surface-button-hover:rgba(255,255,255,0.16);
+			--surface-button-border-hover:rgba(255,255,255,0.22);
+			--text-subtle:rgba(255,255,255,0.6);
+			--text-stronger:rgba(255,255,255,0.75);
+			--danger-overlay:rgba(255,59,107,0.2);
+			--danger-overlay-hover:rgba(255,59,107,0.3);
+			--danger-border:rgba(255,59,107,0.3);
+			--success-main:#49c977;
+			--success-bg:rgba(73,201,119,0.15);
+			--success-border-strong:rgba(73,201,119,0.4);
+			--success-border:rgba(73,201,119,0.35);
+			--success-shadow:rgba(73,201,119,0.25);
+			--info-main:#73b7ff;
+			--info-bg:rgba(111,182,255,0.15);
+			--info-border-strong:rgba(111,182,255,0.4);
+			--info-border:rgba(111,182,255,0.3);
+			--info-shadow:rgba(111,182,255,0.2);
+			--warning-main:#fdc45a;
+			--warning-bg:rgba(253,196,90,0.18);
+			--warning-border-strong:rgba(253,196,90,0.45);
+			--warning-border:rgba(253,196,90,0.35);
+			--warning-shadow:rgba(253,196,90,0.22);
+			--error-main:#ff6b81;
+			--error-bg:rgba(255,107,129,0.18);
+			--error-border-strong:rgba(255,107,129,0.45);
+			--error-border:rgba(255,107,129,0.35);
+			--error-shadow:rgba(255,107,129,0.25);
+			--error-strong:rgba(255,107,129,0.6);
 		}
 
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
@@ -2399,20 +2434,20 @@
 		}
 
 		.notification-input.error {
-			border-color: rgba(255, 107, 129, 0.6);
-			box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+			border-color: var(--error-strong);
+			box-shadow: 0 0 0 3px var(--error-bg);
 		}
 
 		.notification-inline-error {
 			margin-top: 6px;
-			color: #ff6b81;
+			color: var(--error-main);
 			font-size: 12px;
 			line-height: 1.3;
 		}
 
 		.notification-helper {
 			margin-top: 10px;
-			color: rgba(255, 255, 255, 0.6);
+			color: var(--text-subtle);
 			font-size: 12px;
 			line-height: 1.4;
 		}
@@ -2428,15 +2463,15 @@
 			justify-content: center;
 			border-radius: 50%;
 			border: none;
-			background: rgba(255, 255, 255, 0.05);
-			color: rgba(255, 255, 255, 0.75);
+			background: var(--surface-overlay);
+			color: var(--text-stronger);
 			cursor: pointer;
 			transition: all 0.2s ease;
 		}
 
 		.notification-close:hover {
-			background: rgba(255, 255, 255, 0.12);
-			color: #ffffff;
+			background: var(--surface-overlay-hover);
+			color: var(--text);
 		}
 
 		.notification-actions {
@@ -2451,9 +2486,9 @@
 			min-width: 96px;
 			padding: 9px 16px;
 			border-radius: 8px;
-			border: 1px solid rgba(255, 255, 255, 0.16);
-			background: rgba(255, 255, 255, 0.08);
-			color: #ffffff;
+			border: 1px solid var(--surface-button-border);
+			background: var(--surface-button);
+			color: var(--text-stronger);
 			font-size: 13px;
 			font-weight: 500;
 			cursor: pointer;
@@ -2461,63 +2496,63 @@
 		}
 
 		.notification-action:hover {
-			background: rgba(255, 255, 255, 0.16);
-			border-color: rgba(255, 255, 255, 0.22);
+			background: var(--surface-button-hover);
+			border-color: var(--surface-button-border-hover);
 		}
 
 		.notification-action.primary {
-			background: #63a4ff;
-			border-color: #63a4ff;
-			color: #0c1424;
+			background: var(--accent);
+			border-color: var(--accent);
+			color: var(--accent-contrast);
 		}
 
 		.notification-action.primary:hover {
-			background: #7ab4ff;
-			border-color: #7ab4ff;
+			background: var(--accent-hover);
+			border-color: var(--accent-hover);
 		}
 
 		.notification-card.notification-success .notification-icon {
-			background: rgba(73, 201, 119, 0.15);
-			border-color: rgba(73, 201, 119, 0.4);
-			color: #49c977;
+			background: var(--success-bg);
+			border-color: var(--success-border-strong);
+			color: var(--success-main);
 		}
 
 		.notification-card.notification-info .notification-icon {
-			background: rgba(111, 182, 255, 0.15);
-			border-color: rgba(111, 182, 255, 0.4);
-			color: #73b7ff;
+			background: var(--info-bg);
+			border-color: var(--info-border-strong);
+			color: var(--info-main);
 		}
 
 		.notification-card.notification-warning .notification-icon {
-			background: rgba(253, 196, 90, 0.18);
-			border-color: rgba(253, 196, 90, 0.45);
-			color: #fdc45a;
+			background: var(--warning-bg);
+			border-color: var(--warning-border-strong);
+			color: var(--warning-main);
 		}
 
 		.notification-card.notification-error .notification-icon {
-			background: rgba(255, 107, 129, 0.18);
-			border-color: rgba(255, 107, 129, 0.45);
-			color: #ff6b81;
+			background: var(--error-bg);
+			border-color: var(--error-border-strong);
+			color: var(--error-main);
 		}
 
 		.notification-card.notification-success {
-			border-color: rgba(73, 201, 119, 0.35);
-			box-shadow: 0 18px 38px rgba(73, 201, 119, 0.25);
+			border-color: var(--success-border);
+			box-shadow: 0 18px 38px var(--success-shadow);
 		}
 
 		.notification-card.notification-info {
-			border-color: rgba(111, 182, 255, 0.3);
-			box-shadow: 0 18px 38px rgba(111, 182, 255, 0.2);
+			border-color: var(--info-border);
+			box-shadow: 0 18px 38px var(--info-shadow);
 		}
 
 		.notification-card.notification-warning {
-			border-color: rgba(253, 196, 90, 0.35);
-			box-shadow: 0 18px 38px rgba(253, 196, 90, 0.22);
+			border-color: var(--warning-border);
+			box-shadow: 0 18px 38px var(--warning-shadow);
 		}
 
 		.notification-card.notification-error {
-			border-color: rgba(255, 107, 129, 0.35);
-			box-shadow: 0 18px 38px rgba(255, 107, 129, 0.25);
+			border-color: var(--error-border);
+			box-shadow: 0 18px 38px var(--error-shadow);
 		}
 
 		.notification-card.has-actions {
@@ -2569,9 +2604,9 @@
 		}
 
 		.admin-logout-btn {
-			background: rgba(255, 59, 107, 0.2);
-			border: 1px solid rgba(255, 59, 107, 0.3);
-			color: #ffffff;
+			background: var(--danger-overlay);
+			border: 1px solid var(--danger-border);
+			color: var(--text);
 			padding: 4px 12px;
 			border-radius: 6px;
 			font-size: 12px;
@@ -2580,8 +2615,8 @@
 		}
 
 		.admin-logout-btn:hover {
-			background: rgba(255, 59, 107, 0.3);
-			color: #ffffff;
+			background: var(--danger-overlay-hover);
+			color: var(--text);
 		}
 
 		.admin-logout-btn.alt-light {
@@ -2882,6 +2917,23 @@
 			filter: saturate(1.1);
 		}
 
+		.admin-setting button.admin-upload-btn {
+			background: var(--surface-button);
+			border: 1px solid var(--surface-button-border);
+			color: var(--text);
+			filter: none;
+		}
+
+		.admin-setting button.admin-upload-btn:hover {
+			background: var(--surface-button-hover);
+			border-color: var(--surface-button-border-hover);
+		}
+
+		.admin-upload-label {
+			font-size: 13px;
+			color: var(--text-subtle);
+		}
+
 		.admin-setting small {
 			color: var(--muted);
 			font-size: 12px;
@@ -3103,6 +3155,13 @@
 		.effect-grayscale.effect-sepia.effect-brightness {
 			filter: sepia(70%) brightness(1.3);
 		}
+
+		[data-keep-color="true"],
+		[data-keep-color="true"] *,
+		[data-preserve-color="true"],
+		[data-preserve-color="true"] * {
+			filter: none !important;
+		}
 	</style>
 </head>
 <body class="db-loading">
@@ -3113,30 +3172,30 @@
 	</div>
 
 	<div class="page-logo">
-		<img id="pageLogoImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" />
+		<img id="pageLogoImg" src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Logo" />
 	</div>
 	
 	<ul class="social-bar" aria-label="Social Bar">
 		<li><a id="twitchSocialLink" href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
-			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
+			<img alt="Twitch" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
 		</a></li>
 		<li><a id="youtubeSocialLink" href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
-			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
+			<img alt="Youtube" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
 		</a></li>
 		<li><a id="tiktokSocialLink" href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
-			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
+			<img alt="TikTok" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
 		</a></li>
 		<li><a id="discordSocialLink" href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
-			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
+			<img alt="Discord" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
 		</a></li>
 		<li><a id="instagramSocialLink" href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
-			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
+			<img alt="Instagram" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
 		</a></li>
 		<li><a id="xSocialLink" href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
-			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
+			<img alt="X" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
 		</a></li>
 		<li><a id="redditSocialLink" href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
-			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
+			<img alt="Reddit" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
 		</a></li>
 	</ul>
 	
@@ -3161,11 +3220,11 @@
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="streamingYearStat">&nbsp;</div>
@@ -3553,7 +3612,7 @@
 				const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 				if (followersElement) {
 					followersElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
 						${formattedFollowers} followers
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
@@ -3572,7 +3631,7 @@
 			console.log('🔄 Using fallback for Twitch followers');
 			const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 			followersElement.innerHTML = `
-				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
 				N/A followers
 			`;
 		}
@@ -3602,7 +3661,7 @@
 						// Update the subscribers display
 						const subsElement = document.querySelector('.stat img[alt="YouTube"]').parentElement;
 						subsElement.innerHTML = `
-							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
 							${formattedSubs} subs
 						`;
 					}
@@ -3892,6 +3951,12 @@
 			logo: {
 				title: 'Crop logo',
 				hint: 'Square format works best for logos.',
+				aspectRatio: 1,
+				canvas: { width: 600, height: 600 }
+			},
+			pageLogo: {
+				title: 'Crop page logo',
+				hint: 'Square crops look best for the floating page logo.',
 				aspectRatio: 1,
 				canvas: { width: 600, height: 600 }
 			},
@@ -6074,14 +6139,17 @@
 				<div class="admin-section">
 					<h4>Page Logo Settings</h4>
 					<div class="admin-setting">
-						<label for="pageLogo">Page Logo:</label>
-						<div style="display:flex; gap:10px; align-items:center;">
-							<input type="url" id="pageLogo" placeholder="https://example.com/logo.svg" style="flex:2;">
-							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1;" title="Enter source resolution (e.g., 1920x1080)">
-							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1;" title="Displayed size (widthxheight in px)">
+						<label for="pageLogoUploadButton">Page Logo:</label>
+						<div class="page-logo-upload" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+							<button type="button" class="admin-upload-btn" id="pageLogoUploadButton" onclick="triggerPageLogoUpload()">Upload image</button>
+							<span id="pageLogoUploadName" class="admin-upload-label" aria-live="polite">No file selected</span>
+							<input type="hidden" id="pageLogo">
+							<input type="file" id="pageLogoUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this)">
+							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1 1 140px;" title="Enter source resolution (e.g., 1920x1080)">
+							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1 1 140px;" title="Displayed size (widthxheight in px)">
 						</div>
 						<button onclick="updatePageLogo()">Update</button>
-						<small>URL and optional source resolution; the logo is scaled consistently to fit the box.</small>
+						<small>Upload a logo image and optionally record its source resolution and display size.</small>
 					</div>
 					<div class="admin-setting">
 						<label style="display:flex; align-items:center; gap:8px;">
@@ -6520,7 +6588,42 @@
 			{ key: '--card', type: 'hex' },
 			{ key: '--glass', type: 'rgba' },
 			{ key: '--border', type: 'rgba' },
-			{ key: '--button-glow', type: 'rgba' }
+			{ key: '--button-glow', type: 'rgba' },
+			{ key: '--accent', type: 'hex' },
+			{ key: '--accent-hover', type: 'hex' },
+			{ key: '--accent-contrast', type: 'hex' },
+			{ key: '--surface-overlay', type: 'rgba' },
+			{ key: '--surface-overlay-hover', type: 'rgba' },
+			{ key: '--surface-button', type: 'rgba' },
+			{ key: '--surface-button-border', type: 'rgba' },
+			{ key: '--surface-button-hover', type: 'rgba' },
+			{ key: '--surface-button-border-hover', type: 'rgba' },
+			{ key: '--text-subtle', type: 'rgba' },
+			{ key: '--text-stronger', type: 'rgba' },
+			{ key: '--danger-overlay', type: 'rgba' },
+			{ key: '--danger-overlay-hover', type: 'rgba' },
+			{ key: '--danger-border', type: 'rgba' },
+			{ key: '--success-main', type: 'hex' },
+			{ key: '--success-bg', type: 'rgba' },
+			{ key: '--success-border-strong', type: 'rgba' },
+			{ key: '--success-border', type: 'rgba' },
+			{ key: '--success-shadow', type: 'rgba' },
+			{ key: '--info-main', type: 'hex' },
+			{ key: '--info-bg', type: 'rgba' },
+			{ key: '--info-border-strong', type: 'rgba' },
+			{ key: '--info-border', type: 'rgba' },
+			{ key: '--info-shadow', type: 'rgba' },
+			{ key: '--warning-main', type: 'hex' },
+			{ key: '--warning-bg', type: 'rgba' },
+			{ key: '--warning-border-strong', type: 'rgba' },
+			{ key: '--warning-border', type: 'rgba' },
+			{ key: '--warning-shadow', type: 'rgba' },
+			{ key: '--error-main', type: 'hex' },
+			{ key: '--error-bg', type: 'rgba' },
+			{ key: '--error-border-strong', type: 'rgba' },
+			{ key: '--error-border', type: 'rgba' },
+			{ key: '--error-shadow', type: 'rgba' },
+			{ key: '--error-strong', type: 'rgba' }
 		];
 
 		function getCssVar(key) {
@@ -6685,7 +6788,18 @@
 			const defaults = {
 				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
 				'--text':'#e8e8f0','--muted':'#b8b8c7','--card':'#121226cc','--glass':'rgba(18,18,38,0.55)','--border':'rgba(255,255,255,0.08)',
-				'--button-glow':'rgba(145,70,255,0.35)'
+				'--button-glow':'rgba(145,70,255,0.35)','--accent':'#63a4ff','--accent-hover':'#7ab4ff','--accent-contrast':'#0c1424',
+				'--surface-overlay':'rgba(255,255,255,0.05)','--surface-overlay-hover':'rgba(255,255,255,0.12)','--surface-button':'rgba(255,255,255,0.08)',
+				'--surface-button-border':'rgba(255,255,255,0.16)','--surface-button-hover':'rgba(255,255,255,0.16)','--surface-button-border-hover':'rgba(255,255,255,0.22)',
+				'--text-subtle':'rgba(255,255,255,0.6)','--text-stronger':'rgba(255,255,255,0.75)','--danger-overlay':'rgba(255,59,107,0.2)',
+				'--danger-overlay-hover':'rgba(255,59,107,0.3)','--danger-border':'rgba(255,59,107,0.3)','--success-main':'#49c977',
+				'--success-bg':'rgba(73,201,119,0.15)','--success-border-strong':'rgba(73,201,119,0.4)','--success-border':'rgba(73,201,119,0.35)',
+				'--success-shadow':'rgba(73,201,119,0.25)','--info-main':'#73b7ff','--info-bg':'rgba(111,182,255,0.15)',
+				'--info-border-strong':'rgba(111,182,255,0.4)','--info-border':'rgba(111,182,255,0.3)','--info-shadow':'rgba(111,182,255,0.2)',
+				'--warning-main':'#fdc45a','--warning-bg':'rgba(253,196,90,0.18)','--warning-border-strong':'rgba(253,196,90,0.45)',
+				'--warning-border':'rgba(253,196,90,0.35)','--warning-shadow':'rgba(253,196,90,0.22)','--error-main':'#ff6b81',
+				'--error-bg':'rgba(255,107,129,0.18)','--error-border-strong':'rgba(255,107,129,0.45)','--error-border':'rgba(255,107,129,0.35)',
+				'--error-shadow':'rgba(255,107,129,0.25)','--error-strong':'rgba(255,107,129,0.6)'
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
@@ -7283,7 +7397,20 @@
 		let isAdminLoggedIn = false;
 		let adminUser = null;
 		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
-		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
+		const AUTHORIZED_EMAIL_ENCODED = 'YW1iZXJycGFubkBnbWFpbC5jb20=';
+		const AUTHORIZED_EMAIL = (() => {
+			if (typeof atob === 'function') {
+				return atob(AUTHORIZED_EMAIL_ENCODED);
+			}
+			if (typeof Buffer !== 'undefined') {
+				try {
+					return Buffer.from(AUTHORIZED_EMAIL_ENCODED, 'base64').toString('utf-8');
+				} catch (err) {
+					console.warn('Buffer base64 decode failed, falling back to encoded email.', err);
+				}
+			}
+			return 'amberrpann@gmail.com';
+		})();
 		// Collaborators list (hoisted early to avoid TDZ)
 		let collaborators = [];
 
@@ -7806,6 +7933,45 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
+		function triggerPageLogoUpload(){ const f = document.getElementById('pageLogoUploadFile'); if (f) f.click(); }
+		async function handlePageLogoUploadFile(input) {
+			const file = input?.files?.[0];
+			if (!file) return;
+			try {
+				const rawData = await readFileAsDataURL(file);
+				const cropped = await requestImageCrop(rawData, 'pageLogo');
+				if (!cropped) {
+					return;
+				}
+				const logoInput = document.getElementById('pageLogo');
+				if (logoInput) {
+					logoInput.value = cropped;
+					logoInput.dataset.filename = file.name || '';
+				}
+				const previewEl = document.getElementById('pageLogoImg');
+				if (previewEl) {
+					previewEl.src = cropped;
+				}
+				const label = document.getElementById('pageLogoUploadName');
+				if (label) {
+					label.textContent = `${file.name} (ready to save)`;
+				}
+				const status = document.getElementById('currentPageLogo');
+				if (status && (!status.textContent || status.textContent === 'N/A' || status.textContent === 'Default')) {
+					status.textContent = 'Uploaded image (unsaved)';
+				}
+				if (typeof notify !== 'undefined' && typeof notify.info === 'function') {
+					notify.info('Logo ready to save. Click Update to apply globally.');
+				}
+			} catch (error) {
+				console.error('Failed to prepare page logo:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not load that image. Try a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
+		}
 		async function handleProfileUploadFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
@@ -8071,7 +8237,22 @@
 			} else {
 				const logoElement = document.getElementById('pageLogoImg');
 				if (logoElement) {
-					logoElement.src = 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
+					logoElement.src = 'https://www.svgrepo.com/show/353655/discord-icon.svg';
+				}
+			}
+			const uploadLabel = document.getElementById('pageLogoUploadName');
+			if (uploadLabel) {
+				if (savedPageLogo && savedPageLogo !== 'N/A') {
+					uploadLabel.textContent = savedPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use';
+				} else {
+					uploadLabel.textContent = 'Default logo in use';
+				}
+			}
+			const pageLogoField = document.getElementById('pageLogo');
+			if (pageLogoField) {
+				pageLogoField.value = '';
+				if (pageLogoField.dataset) {
+					delete pageLogoField.dataset.filename;
 				}
 			}
 			// Apply saved page logo size (widthxheight)
@@ -8088,11 +8269,7 @@
 				const useInvert = (savedLogoInvert === null || savedLogoInvert === undefined) ? true : !!savedLogoInvert;
 				const toggle = document.getElementById('logoInvertToggle');
 				if (toggle) toggle.checked = useInvert;
-				if (useInvert) {
-					document.body.classList.remove('logo-no-invert');
-				} else {
-					document.body.classList.add('logo-no-invert');
-				}
+				applyLogoInvertState(useInvert);
 			}
 			
 			// Apply saved bio
@@ -8143,7 +8320,7 @@
 				const followerElement = document.getElementById('twitchFollowersStat');
 				if (followerElement) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
 						${formatNumber(parseInt(savedFollowerCount))} followers
 					`;
 				}
@@ -8155,7 +8332,7 @@
 				const subscriberElement = document.getElementById('youtubeSubscribersStat');
 				if (subscriberElement) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
 						${formatNumber(parseInt(savedSubscriberCount))} subs
 					`;
 				}
@@ -8500,6 +8677,10 @@
 				if (!value || value === 'N/A') return fallback;
 				return value.length > limit ? `${value.substring(0, limit)}...` : value;
 			};
+			const formatLogoDisplay = (value) => {
+				if (!value || value === 'N/A') return 'Default';
+				return value.startsWith('data:') ? 'Uploaded image' : shorten(value);
+			};
 
 			setCurrentText('currentDisplayName', currentDisplayName && currentDisplayName !== 'N/A' ? currentDisplayName : 'N/A');
 			setCurrentText('currentUsername', currentUsername && currentUsername !== 'N/A' ? currentUsername : 'N/A');
@@ -8520,13 +8701,28 @@
 			setCurrentText('currentBackground', shorten(currentBg, 50));
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
 			setCurrentText('currentShortVideo', formatShortVideoLabel(currentShortVideo));
-			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
+			setCurrentText('currentPageLogo', formatLogoDisplay(currentPageLogo));
+			const pageLogoUploadName = document.getElementById('pageLogoUploadName');
+			if (pageLogoUploadName) {
+				pageLogoUploadName.textContent = currentPageLogo && currentPageLogo !== 'N/A'
+					? (currentPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use')
+					: 'Default logo in use';
+			}
+			const pageLogoHidden = document.getElementById('pageLogo');
+			if (pageLogoHidden) {
+				pageLogoHidden.value = '';
+				if (pageLogoHidden.dataset) {
+					delete pageLogoHidden.dataset.filename;
+				}
+			}
 			const resInput = document.getElementById('pageLogoResolution');
 			if (resInput) resInput.value = currentPageLogoResolution;
 			const sizeInput = document.getElementById('pageLogoSize');
 			if (sizeInput) sizeInput.value = currentPageLogoSize || '135x135';
+			const effectiveLogoInvert = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
 			const invToggle = document.getElementById('logoInvertToggle');
-			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
+			if (invToggle) invToggle.checked = effectiveLogoInvert;
+			applyLogoInvertState(effectiveLogoInvert);
 			setCurrentText('currentBio', shorten(currentBio));
 			setCurrentText('currentAboutText', shorten(currentAboutText, ABOUT_MAX_LENGTH));
 			setCurrentText('currentStreamingYear', currentStreamingYear || 'N/A');
@@ -8772,66 +8968,104 @@
 		}
 
 		async function updatePageLogo() {
-			const logoUrl = document.getElementById('pageLogo').value.trim();
+			const logoInput = document.getElementById('pageLogo');
+			const uploadedFileName = logoInput?.dataset?.filename || '';
+			const logoData = (logoInput?.value || '').trim();
 			const resolution = (document.getElementById('pageLogoResolution').value || '').trim();
 			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
 
-			if (!logoUrl && !resolution && !sizeStr) {
-				notify.error('Provide at least one value: URL, resolution, or size.');
+			if (!logoData && !resolution && !sizeStr) {
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Upload a logo or adjust the resolution/size before saving.');
+				}
 				return;
 			}
 
-			// Optional: basic validation of resolution (WxH)
 			if (resolution && !/^\d{2,5}x\d{2,5}$/i.test(resolution)) {
-				notify.error('Resolution must use the format 1920x1080.');
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Resolution must use the format 1920x1080.');
+				}
 				return;
 			}
-			// Optional: basic validation of size (WxH)
 			if (sizeStr && !/^\d{2,5}x\d{2,5}$/i.test(sizeStr)) {
-				notify.error('Size must use the format 135x135.');
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Size must use the format 135x135.');
+				}
 				return;
 			}
 
-			// Save GLOBALLY for ALL users
-			if (logoUrl) {
-				await saveGlobalSetting('pageLogo', logoUrl);
+			const savePromises = [];
+			if (logoData) {
+				savePromises.push(saveGlobalSetting('pageLogo', logoData));
 			}
 			if (resolution) {
-				await saveGlobalSetting('pageLogoResolution', resolution);
+				savePromises.push(saveGlobalSetting('pageLogoResolution', resolution));
 			}
 			if (sizeStr) {
-				await saveGlobalSetting('pageLogoSize', sizeStr);
+				savePromises.push(saveGlobalSetting('pageLogoSize', sizeStr));
 			}
-			
-			// Update logo immediately
+			await Promise.all(savePromises);
+
 			const logoElement = document.getElementById('pageLogoImg');
-			if (logoElement && logoUrl) {
-				logoElement.src = logoUrl;
+			if (logoElement && logoData) {
+				logoElement.src = logoData;
 			}
 			if (sizeStr) {
 				const [w, h] = sizeStr.toLowerCase().split('x');
 				const logoBox = document.querySelector('.page-logo');
-				if (logoBox) { logoBox.style.width = w + 'px'; logoBox.style.height = h + 'px'; }
+				if (logoBox) {
+					logoBox.style.width = w + 'px';
+					logoBox.style.height = h + 'px';
+				}
 			}
-			
-			// Update current settings display
-			const shortUrl = logoUrl.length > 30 ? logoUrl.substring(0, 30) + '...' : logoUrl;
-			document.getElementById('currentPageLogo').textContent = shortUrl;
-			document.getElementById('pageLogo').value = '';
+
+			const statusEl = document.getElementById('currentPageLogo');
+			if (statusEl && logoData) {
+				if (logoData.startsWith('data:')) {
+					statusEl.textContent = 'Uploaded image';
+				} else {
+					statusEl.textContent = logoData.length > 30 ? `${logoData.substring(0, 30)}...` : logoData;
+				}
+			}
+
+			const uploadLabel = document.getElementById('pageLogoUploadName');
+			if (uploadLabel && logoData) {
+				uploadLabel.textContent = uploadedFileName ? `${uploadedFileName} (saved)` : 'Uploaded image saved';
+			}
+
+			if (logoInput) {
+				logoInput.value = '';
+				if (logoInput.dataset) {
+					delete logoInput.dataset.filename;
+				}
+			}
 			document.getElementById('pageLogoResolution').value = '';
 			document.getElementById('pageLogoSize').value = '';
-			
-			notify.success('Page logo updated globally.');
+
+			if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+				notify.success('Page logo updated globally.');
+			}
+		}
+
+		function applyLogoInvertState(shouldInvert) {
+			const logoElement = document.getElementById('pageLogoImg');
+			if (shouldInvert) {
+				document.body.classList.remove('logo-no-invert');
+				if (logoElement) {
+					logoElement.style.filter = 'invert(100%)';
+				}
+			} else {
+				document.body.classList.add('logo-no-invert');
+				if (logoElement) {
+					logoElement.style.filter = 'none';
+				}
+			}
 		}
 
 		async function updateLogoInvert() {
 			const checked = document.getElementById('logoInvertToggle').checked;
 			await saveGlobalSetting('logoInvert', checked);
-			if (checked) {
-				document.body.classList.remove('logo-no-invert');
-			} else {
-				document.body.classList.add('logo-no-invert');
-			}
+			applyLogoInvertState(checked);
 			console.log('Logo invert set to:', checked);
 		}
 
@@ -8921,7 +9155,7 @@
 			if (followerElement) {
 				if (count) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
 						${formatNumber(parseInt(count))} followers
 					`;
 				} else {
@@ -8952,7 +9186,7 @@
 			if (subscriberElement) {
 				if (count) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
 						${formatNumber(parseInt(count))} subs
 					`;
 				} else {
