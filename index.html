@@ -8,12 +8,10 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" referrerpolicy="no-referrer">
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<!-- Firebase SDK -->
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" referrerpolicy="no-referrer"></script>
 	<style>
 		:root{
 			--bg-1:#0b0b12;
@@ -1288,76 +1286,6 @@
 		.app-special-preview{
 			min-height:280px;
 		}
-		#imageCropperModal{
-			z-index:1400;
-		}
-		.cropper-popup{
-			width:min(96vw, 1320px);
-			max-width:none;
-		}
-		.image-cropper-body{
-			display:flex;
-			flex-direction:column;
-			gap:18px;
-		}
-		.image-cropper-stage{
-			position:relative;
-			width:100%;
-			height:clamp(360px, 68vh, 780px);
-			border-radius:18px;
-			overflow:hidden;
-			border:1px solid rgba(255,255,255,0.14);
-			background:rgba(8,8,18,0.82);
-			max-width:100%;
-		}
-		.image-cropper-stage .cropper-container,
-		.image-cropper-stage .cropper-wrap-box,
-		.image-cropper-stage .cropper-canvas,
-		.image-cropper-stage .cropper-view-box,
-		.image-cropper-stage .cropper-drag-box,
-		.image-cropper-stage .cropper-crop-box,
-		.image-cropper-stage .cropper-modal{
-			border-radius:18px;
-			width:100% !important;
-			height:100% !important;
-			top:0 !important;
-			left:0 !important;
-		}
-		#imageCropperPreview{
-			max-width:100%;
-			max-height:100%;
-			display:block;
-			width:100%;
-		}
-		.image-cropper-hint{
-			font-size:13px;
-			color:rgba(255,255,255,0.65);
-			line-height:1.6;
-		}
-		.image-cropper-controls{
-			display:flex;
-			gap:12px;
-			align-items:center;
-			flex-wrap:wrap;
-			justify-content:flex-end;
-		}
-		.image-cropper-controls .spacer{
-			flex:1 1 auto;
-		}
-		.image-cropper-popup .popup-body{
-			max-height:80vh;
-			overflow:auto;
-			padding-right:4px;
-		}
-		@media (max-width:720px){
-			.cropper-popup{
-				width:calc(100vw - 28px);
-				max-width:calc(100vw - 28px);
-			}
-			.image-cropper-stage{
-				height:clamp(240px, 55vh, 520px);
-			}
-		}
 		.app-form-footer{
 			display:flex;
 			justify-content:flex-end;
@@ -2366,19 +2294,25 @@
 		}
 		#allSettingsManagerPopup .popup-body {
 			overflow-y:auto;
-			scrollbar-width:none;
+			overflow-x:auto;
 		}
 		#allSettingsManagerPopup .popup-body::-webkit-scrollbar {
-			display:none;
+			width:0;
+		}
+		#allSettingsManagerPopup .popup-body::-webkit-scrollbar:horizontal {
+			height:10px;
 		}
 		#allSettingsAppFormPopup .popup-body {
 			flex:1 1 auto;
 			min-height:0;
 			overflow-y:auto;
-			scrollbar-width:none;
+			overflow-x:auto;
 		}
 		#allSettingsAppFormPopup .popup-body::-webkit-scrollbar {
-			display:none;
+			width:0;
+		}
+		#allSettingsAppFormPopup .popup-body::-webkit-scrollbar:horizontal {
+			height:10px;
 		}
 
 		.notification-center {
@@ -3328,7 +3262,7 @@
 				<div class="about" id="aboutSection">
 					<span id="aboutTextContent">&nbsp;</span>
 					<a class="discord-link discord-about-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
-						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
+						<img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord"/>
 						Discord
 					</a>
 					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettingsPopup()" aria-label="Open all settings">
@@ -3983,265 +3917,10 @@
 		let appSettingsEditorHandlersBound = false;
 		let allSettingsMediaHandlersBound = false;
 		let allSettingsSpecialHandlersBound = false;
-		let imageCropperInstance = null;
-		let imageCropperResolve = null;
-		let imageCropperReject = null;
-		let imageCropperOptions = null;
-		let imageCropperHandlersBound = false;
-
 		const ALL_SETTINGS_SPECIAL_OPTIONS = [
 			{ id: 'none', label: 'None' },
 			{ id: 'character-trn', label: 'Character (TRN)' }
 		];
-
-		const IMAGE_CROP_CONFIG = {
-			banner: {
-				title: 'Crop banner',
-				hint: 'Keep the subject centered. Banner crops vertically at 1080 × 1640.',
-				aspectRatio: 1080 / 1640,
-				canvas: { width: 1080, height: 1640 },
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.92
-			},
-			logo: {
-				title: 'Crop logo',
-				hint: 'Square format works best for logos.',
-				aspectRatio: 1,
-				canvas: { width: 600, height: 600 }
-			},
-			pageLogo: {
-				title: 'Crop page logo',
-				hint: 'Square crops look best for the floating page logo.',
-				aspectRatio: 1,
-				canvas: { width: 600, height: 600 }
-			},
-			character: {
-				title: 'Crop character portrait',
-				hint: 'Use a tall crop (1080 × 1440). Keep the character centered.',
-				aspectRatio: 1080 / 1440,
-				canvas: { width: 1080, height: 1440 },
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.92
-			},
-			profile: {
-				title: 'Crop profile picture',
-				hint: 'Square avatars look best across the site.',
-				aspectRatio: 1,
-				canvas: { width: 512, height: 512 }
-			},
-			background: {
-				title: 'Crop background image',
-				hint: 'Choose the portion of the image you want behind everything.',
-				viewMode: 0,
-				autoCropArea: 1,
-				canvas: { width: 1920, height: 1080 },
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.9
-			},
-			actionLogo: {
-				title: 'Crop button logo',
-				hint: 'Square icons align best with the follow/subscribe buttons.',
-				aspectRatio: 1,
-				canvas: { width: 400, height: 400 }
-			}
-		};
-
-		function ensureImageCropperHandlers() {
-			if (imageCropperHandlersBound) return;
-			const modal = document.getElementById('imageCropperModal');
-			if (!modal) return;
-			const buttons = modal.querySelectorAll('[data-cropper-action]');
-			buttons.forEach(button => {
-				button.addEventListener('click', event => {
-					event.preventDefault();
-					const action = button.dataset.cropperAction;
-					handleImageCropperAction(action);
-				});
-			});
-			modal.addEventListener('click', event => {
-				if (event.target === modal) {
-					handleImageCropperAction('cancel');
-				}
-			});
-			document.addEventListener('keydown', event => {
-				if (event.key === 'Escape') {
-					const isVisible = modal.style.display !== 'none';
-					if (isVisible) {
-						handleImageCropperAction('cancel');
-					}
-				}
-			});
-			imageCropperHandlersBound = true;
-		}
-
-		function handleImageCropperAction(action) {
-			if (!action) return;
-			switch (action) {
-				case 'cancel': {
-					if (typeof imageCropperReject === 'function') {
-						imageCropperReject(new Error('crop-canceled'));
-					}
-					closeImageCropper();
-					break;
-				}
-				case 'reset': {
-					if (imageCropperInstance) {
-						imageCropperInstance.reset();
-					}
-					break;
-				}
-				case 'apply': {
-					if (!imageCropperInstance) return;
-					try {
-						const canvasOptions = imageCropperOptions?.canvas || {};
-						const canvas = imageCropperInstance.getCroppedCanvas(canvasOptions);
-						if (!canvas) throw new Error('canvas-unavailable');
-						if (canvas.getContext) {
-							const ctx = canvas.getContext('2d');
-							if (ctx && 'imageSmoothingQuality' in ctx) {
-								ctx.imageSmoothingQuality = 'high';
-							}
-						}
-						const format = imageCropperOptions?.outputFormat || 'image/png';
-						const quality = typeof imageCropperOptions?.outputQuality === 'number' ? imageCropperOptions.outputQuality : undefined;
-						const dataUrl = typeof quality === 'number'
-							? canvas.toDataURL(format, quality)
-							: canvas.toDataURL(format);
-						if (typeof imageCropperResolve === 'function') {
-							imageCropperResolve(dataUrl);
-						}
-						closeImageCropper();
-					} catch (error) {
-						console.error('Failed to crop image:', error);
-						if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
-							notify.error('Could not crop that image. Try again.');
-						}
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-
-		function closeImageCropper() {
-			const modal = document.getElementById('imageCropperModal');
-			const preview = document.getElementById('imageCropperPreview');
-			if (imageCropperInstance) {
-				imageCropperInstance.destroy();
-				imageCropperInstance = null;
-			}
-			if (preview) {
-				preview.onload = null;
-				preview.onerror = null;
-				preview.src = '';
-			}
-			if (modal) {
-				modal.style.display = 'none';
-				modal.classList.remove('active-cropper');
-			}
-			imageCropperOptions = null;
-			imageCropperResolve = null;
-			imageCropperReject = null;
-		}
-
-		function openImageCropper(dataUrl, options = {}) {
-			ensureImageCropperHandlers();
-			const modal = document.getElementById('imageCropperModal');
-			const preview = document.getElementById('imageCropperPreview');
-			const titleEl = document.getElementById('imageCropperTitle');
-			const hintEl = document.getElementById('imageCropperHint');
-			if (!modal || !preview) {
-				return Promise.reject(new Error('cropper-modal-missing'));
-			}
-			const applyBtn = modal.querySelector('[data-cropper-action="apply"]');
-			return new Promise((resolve, reject) => {
-				imageCropperResolve = resolve;
-				imageCropperReject = reject;
-				imageCropperOptions = options || {};
-				modal.style.display = 'flex';
-				modal.classList.add('active-cropper');
-				modal.scrollTop = 0;
-				if (applyBtn) applyBtn.disabled = true;
-				if (titleEl) titleEl.textContent = options?.title || 'Adjust image crop';
-				if (hintEl) hintEl.textContent = options?.hint || 'Drag to reposition the image. Use your mouse wheel or pinch to zoom.';
-				const cleanup = () => {
-					preview.onload = null;
-					preview.onerror = null;
-				};
-				preview.onload = () => {
-					cleanup();
-					if (imageCropperInstance) {
-						imageCropperInstance.destroy();
-					}
-					const aspectRatio = typeof options?.aspectRatio === 'number' && Number.isFinite(options.aspectRatio)
-						? options.aspectRatio
-						: undefined;
-					const cropOptions = {
-						aspectRatio,
-						initialAspectRatio: aspectRatio,
-						viewMode: typeof options?.viewMode === 'number' ? options.viewMode : 1,
-						autoCropArea: typeof options?.autoCropArea === 'number' ? options.autoCropArea : 0.92,
-						background: false,
-						movable: true,
-						zoomable: true,
-						wheelZoomRatio: 0.12,
-						dragMode: 'move',
-						responsive: true,
-						checkOrientation: false,
-						minCropBoxWidth: options?.minCropBoxWidth,
-						minCropBoxHeight: options?.minCropBoxHeight,
-						ready() {
-							const stage = modal.querySelector('.image-cropper-stage');
-							if (!stage) return;
-							const bounds = stage.getBoundingClientRect();
-							const imageData = this.getImageData();
-							if (!imageData || !imageData.naturalWidth || !imageData.naturalHeight) {
-								if (applyBtn) applyBtn.disabled = false;
-								return;
-							}
-							this.reset();
-							let scale = Math.min(
-								bounds.width / imageData.naturalWidth,
-								bounds.height / imageData.naturalHeight
-							);
-							if (!Number.isFinite(scale) || scale <= 0) {
-								scale = 1;
-							}
-							this.zoomTo(scale);
-							const canvasData = this.getCanvasData();
-							const appliedAspect = aspectRatio || (imageData.naturalWidth / imageData.naturalHeight) || 1;
-							let cropWidth = canvasData.width;
-							let cropHeight = cropWidth / appliedAspect;
-							if (cropHeight > canvasData.height) {
-								cropHeight = canvasData.height;
-								cropWidth = cropHeight * appliedAspect;
-							}
-							const cropLeft = canvasData.left + (canvasData.width - cropWidth) / 2;
-							const cropTop = canvasData.top + (canvasData.height - cropHeight) / 2;
-							this.setCropBoxData({
-								width: cropWidth,
-								height: cropHeight,
-								left: cropLeft,
-								top: cropTop
-							});
-							this.setDragMode('move');
-							if (applyBtn) applyBtn.disabled = false;
-						}
-					};
-					imageCropperInstance = new Cropper(preview, cropOptions);
-				};
-				preview.onerror = () => {
-					cleanup();
-					if (applyBtn) applyBtn.disabled = false;
-					reject(new Error('crop-load-failed'));
-					closeImageCropper();
-				};
-				preview.src = '';
-				preview.src = dataUrl;
-			});
-		}
-
 		function readFileAsDataURL(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -4249,27 +3928,6 @@
 				reader.onerror = () => reject(new Error('file-read-failed'));
 				reader.readAsDataURL(file);
 			});
-		}
-
-		async function requestImageCrop(dataUrl, key) {
-			if (!dataUrl) return null;
-			if (typeof Cropper === 'undefined') {
-				return dataUrl;
-			}
-			const config = IMAGE_CROP_CONFIG[key] || {};
-			try {
-				const result = await openImageCropper(dataUrl, config);
-				return result;
-			} catch (error) {
-				if (error && error.message === 'crop-canceled') {
-					return null;
-				}
-				console.warn('Image crop failed; falling back to original image.', error);
-				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
-					notify.warning('Using the original upload because cropping failed.');
-				}
-				return dataUrl;
-			}
 		}
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
@@ -5464,12 +5122,8 @@
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, type);
-				if (!cropped) {
-					return;
-				}
-				pendingAllSettingsAppMedia[type] = cropped;
+				const dataUrl = await readFileAsDataURL(file);
+				pendingAllSettingsAppMedia[type] = dataUrl;
 				setAllSettingsMediaPreview(type, pendingAllSettingsAppMedia[type]);
 			} catch (error) {
 				console.error('Failed to process media upload:', error);
@@ -5958,29 +5612,6 @@
 			</div>
 			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true" data-keep-color="true">
 				<div class="character-detail-body" id="settingsCharacterDetailBody" data-keep-color="true"></div>
-			</div>
-		</div>
-	</div>
-
-	<div id="imageCropperModal" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="imageCropperTitle" style="display:none;">
-		<div class="popup-content cropper-popup image-cropper-popup">
-			<div class="popup-header">
-				<h3 id="imageCropperTitle">Adjust image crop</h3>
-				<button class="close-btn" type="button" data-cropper-action="cancel" aria-label="Cancel image cropping">&times;</button>
-			</div>
-			<div class="popup-body">
-				<div class="image-cropper-body">
-					<div class="image-cropper-stage">
-						<img id="imageCropperPreview" alt="Image crop preview">
-					</div>
-					<div class="image-cropper-hint" id="imageCropperHint">Drag to reposition the image. Use your mouse wheel or pinch to zoom in/out.</div>
-					<div class="image-cropper-controls">
-						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="cancel">Cancel</button>
-						<span class="spacer"></span>
-						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="reset">Reset</button>
-						<button type="button" class="admin-logout-btn" data-cropper-action="apply">Use Image</button>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -7854,14 +7485,8 @@
 			const preview = document.getElementById('actionLogoPreview');
 			const wrap = document.getElementById('actionLogoPreviewWrap');
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'actionLogo');
-				if (!cropped) {
-					if (preview) preview.removeAttribute('src');
-					if (wrap) wrap.style.display = 'none';
-					return;
-				}
-				if (preview) preview.src = cropped;
+				const dataUrl = await readFileAsDataURL(file);
+				if (preview) preview.src = dataUrl;
 				if (wrap) wrap.style.display = 'flex';
 			} catch (error) {
 				console.error('Failed to process action logo:', error);
@@ -7993,19 +7618,15 @@
 			const file = input?.files?.[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'pageLogo');
-				if (!cropped) {
-					return;
-				}
+				const dataUrl = await readFileAsDataURL(file);
 				const logoInput = document.getElementById('pageLogo');
 				if (logoInput) {
-					logoInput.value = cropped;
+					logoInput.value = dataUrl;
 					logoInput.dataset.filename = file.name || '';
 				}
 				const previewEl = document.getElementById('pageLogoImg');
 				if (previewEl) {
-					previewEl.src = cropped;
+					previewEl.src = dataUrl;
 				}
 				const label = document.getElementById('pageLogoUploadName');
 				if (label) {
@@ -8031,21 +7652,17 @@
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'profile');
-				if (!cropped) {
-					return;
-				}
+				const dataUrl = await readFileAsDataURL(file);
 				const profileInput = document.getElementById('profilePicture');
-				if (profileInput) profileInput.value = cropped;
-				await saveGlobalSetting('profile-pic', cropped);
+				if (profileInput) profileInput.value = dataUrl;
+				await saveGlobalSetting('profile-pic', dataUrl);
 				const avatarImgs = document.querySelectorAll('.avatar img');
-				avatarImgs.forEach(img => (img.src = cropped));
-				setProfilePreviewImage(cropped);
+				avatarImgs.forEach(img => (img.src = dataUrl));
+				setProfilePreviewImage(dataUrl);
 				const statusEl = document.getElementById('currentProfilePic');
 				if (statusEl) statusEl.textContent = 'uploaded image';
 				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
-					notify.success('Profile image uploaded, cropped, and applied globally.');
+					notify.success('Profile image uploaded and applied globally.');
 				}
 			} catch (error) {
 				console.error('Failed to update profile image:', error);
@@ -8061,19 +7678,15 @@
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'background');
-				if (!cropped) {
-					return;
-				}
+				const dataUrl = await readFileAsDataURL(file);
 				const backgroundInput = document.getElementById('backgroundImage');
-				if (backgroundInput) backgroundInput.value = cropped;
-				await saveGlobalSetting('background', cropped);
-				document.body.style.background = `url('${cropped}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				if (backgroundInput) backgroundInput.value = dataUrl;
+				await saveGlobalSetting('background', dataUrl);
+				document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
 				const statusEl = document.getElementById('currentBackground');
 				if (statusEl) statusEl.textContent = 'uploaded image';
 				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
-					notify.success('Background image uploaded, cropped, and applied globally.');
+					notify.success('Background image uploaded and applied globally.');
 				}
 			} catch (error) {
 				console.error('Failed to update background image:', error);
