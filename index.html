@@ -288,7 +288,7 @@
 				justify-content:flex-end;
 				flex:0 0 360px;
 				align-self:flex-start;
-				transform:translateY(-5px);
+				transform:translateY(-3px);
 			}
 			.short-video-card{
 				position:relative;
@@ -1583,8 +1583,12 @@
 			padding:0;
 			max-height:calc(82vh - 110px);
 			overflow:auto;
+			scrollbar-width:none;
 			display:flex;
 			flex-direction:column;
+		}
+		.settings-detail-panel .popup-body::-webkit-scrollbar{
+			width:0;
 		}
 		.settings-detail-panel .close-btn{
 			top:26px;
@@ -3255,9 +3259,9 @@
 						radial-gradient(140% 140% at 10% 0%, rgba(180,180,180,0.28), transparent 60%),
 						radial-gradient(140% 140% at 90% 100%, rgba(100,100,100,0.24), transparent 60%),
 						linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));">
-						<div class="embed-container">
-							<iframe id="twitch-embed" class="embed-frame" src="" data-channel="" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
-							<iframe id="youtube-embed" class="embed-frame hidden" src="" frameborder="0" allowfullscreen></iframe>
+						<div class="embed-container" data-keep-color="true">
+							<iframe id="twitch-embed" class="embed-frame" src="" data-channel="" frameborder="0" allowfullscreen="true" scrolling="no" data-keep-color="true"></iframe>
+							<iframe id="youtube-embed" class="embed-frame hidden" src="" frameborder="0" allowfullscreen data-keep-color="true"></iframe>
 						</div>
 					</div>
 				</div>
@@ -3907,7 +3911,7 @@
 			var popup = document.getElementById(popupId);
 			if (popup) {
 				popup.style.display = 'flex';
-				setBodyScrollState(true);
+				setBodyScrollState(popupId !== 'colorsPopup');
 			}
 		}
 
@@ -7612,7 +7616,7 @@
 				const img = document.createElement('img');
 				img.src = item.img;
 				img.alt = 'Logo';
-				if (item.invert) img.style.filter = 'invert(1)';
+				img.style.filter = item.invert ? 'invert(1) grayscale(100%)' : 'grayscale(100%)';
 				a.appendChild(img);
 				// text node
 				a.appendChild(document.createTextNode(item.name));
