@@ -35,13 +35,37 @@
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
 		*::-webkit-scrollbar{width:0; height:0;}
 		html,body{height:100%}
-		html{padding:0; margin:0; background:#1a1a2e; overflow:hidden}
+		html{
+			padding:0;
+			margin:0;
+			background:#1a1a2e;
+			width:100%;
+			height:100%;
+			overflow-x:hidden;
+			overflow-y:hidden;
+			touch-action:pan-y;
+			overscroll-behavior-x:none;
+			overscroll-behavior-y:none;
+			overflow-anchor:auto;
+		}
 		body{
-			margin:0; padding:0;
+			margin:0;
+			padding:0;
 			font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
 			color:var(--text);
-			background: #1a1a2e;
-			overflow:hidden;
+			background:#1a1a2e;
+			min-height:100%;
+			overflow-x:hidden;
+			overflow-y:auto;
+			touch-action:pan-y;
+			overscroll-behavior-x:none;
+			overscroll-behavior-y:none;
+			max-width:100vw;
+		}
+		@media (min-width: 1201px){
+			body{
+				overflow-y:hidden;
+			}
 		}
 
 		/* Simple loading screen - no backdrop-filter to prevent blur conflicts */
@@ -98,6 +122,13 @@
 			backdrop-filter: blur(10px) saturate(115%);
 			-webkit-backdrop-filter: blur(10px) saturate(115%);
 		}
+		@media (max-width: 1024px){
+			.bg-glass{
+				backdrop-filter:none;
+				-webkit-backdrop-filter:none;
+				background:rgba(10,10,15,0.45);
+			}
+		}
 		/* Background tint overlay (for solid/gradient theme colors) */
 		.bg-tint{
 			position:fixed;
@@ -116,8 +147,96 @@
 			position:relative;
 			z-index:1;
 			max-width:1100px;
-			margin:40px auto 80px;
+			margin:90px auto 60px;
 			padding:0 20px;
+		}
+
+		.desktop-shell{
+			position:relative;
+			z-index:1;
+		}
+		.short-video-panel{
+			display:none;
+			z-index:1;
+		}
+		.short-video-card{
+			display:flex;
+			flex-direction:column;
+			gap:14px;
+		}
+		.short-video-card h3{
+			margin:0;
+		}
+		.short-video-embed{
+			position:relative;
+			border-radius:var(--radius);
+			overflow:hidden;
+			background:linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)), var(--card);
+			border:1px solid var(--border);
+			box-shadow:var(--shadow), 0 0 40px rgba(86,224,255,0.08);
+			padding:0;
+			min-height:320px;
+			display:flex;
+			flex-direction:column;
+			align-items:stretch;
+			justify-content:flex-start;
+		}
+		.short-video-embed iframe{
+			width:100%;
+			height:auto;
+			border:0;
+			aspect-ratio:9/16;
+		}
+		.short-video-embed blockquote{
+			margin:0;
+			width:100%;
+		}
+		.short-video-placeholder{
+			text-align:center;
+			color:var(--muted);
+			font-size:14px;
+			line-height:1.6;
+			padding:24px 18px;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			justify-content:center;
+			gap:6px;
+			margin:auto;
+		}
+		.short-video-placeholder strong{
+			color:var(--text);
+			font-size:15px;
+		}
+
+		@media (min-width: 1200px){
+			.desktop-shell{
+				display:flex;
+				align-items:stretch;
+				flex-wrap:wrap;
+				gap:28px;
+				max-width:1600px;
+				margin:0 auto;
+				padding:90px 40px 60px;
+			}
+			.desktop-shell .container{
+				margin:0;
+				flex:1 1 0;
+				max-width:1100px;
+				min-width:0;
+			}
+			.short-video-panel{
+				display:flex;
+				flex-direction:column;
+				justify-content:flex-end;
+				flex:0 0 360px;
+				align-self:flex-start;
+				transform:translateY(-5px);
+			}
+			.short-video-card{
+				position:relative;
+				width:100%;
+			}
 		}
 
 		.header{
@@ -141,6 +260,7 @@
 			width:135px;
 			height:135px;
 			z-index:1000;
+			filter:drop-shadow(0 24px 45px rgba(0,0,0,0.45));
 		}
 		.page-logo img{
 			width:100%;
@@ -321,6 +441,105 @@
 		.discord-link:active{transform:translateY(0)}
 		.discord-link svg{width:20px; height:20px; display:block; color:#ffffff}
 		.discord-link img{width:20px; height:20px; display:block; object-fit:contain; background:transparent; filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); mix-blend-mode:screen}
+		.settings-link{background:linear-gradient(90deg, rgba(88,88,88,0.85), rgba(150,150,150,0.7)); border:1px solid rgba(255,255,255,0.14); color:#ffffff;}
+		.settings-link svg{width:20px; height:20px; display:block; color:#ffffff}
+		.popup-overlay.game-settings-overlay{
+			align-items:center;
+			padding:60px 0;
+		}
+		.popup-content.game-settings-panel{
+			width:min(98vw, 1280px);
+			max-width:1280px;
+			min-height:80vh;
+			max-height:calc(100vh - 80px);
+			margin:0 auto;
+			display:flex;
+			flex-direction:column;
+		}
+		.popup-content.game-settings-panel .popup-body{
+			padding:32px;
+			overflow-y:auto;
+		}
+		.popup-content.game-settings-panel .settings-layout{
+			display:grid;
+			grid-template-columns:220px 1fr;
+			gap:24px;
+			min-height:420px;
+			align-items:start;
+		}
+		.popup-content.game-settings-panel .settings-tabs{
+			display:flex;
+			flex-direction:column;
+			gap:8px;
+			padding:18px;
+			background:rgba(255,255,255,0.05);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:16px;
+			min-height:100%;
+		}
+		.popup-content.game-settings-panel .settings-tab{
+			appearance:none;
+			border:none;
+			background:rgba(255,255,255,0.04);
+			color:var(--text);
+			padding:12px 14px;
+			border-radius:12px;
+			font-weight:600;
+			text-align:left;
+			cursor:pointer;
+			transition:all .15s ease;
+		}
+		.popup-content.game-settings-panel .settings-tab:hover{
+			background:rgba(255,255,255,0.1);
+		}
+		.popup-content.game-settings-panel .settings-tab.active{
+			background:linear-gradient(90deg, rgba(140,140,140,0.65), rgba(200,200,200,0.35));
+			box-shadow:0 8px 24px rgba(0,0,0,0.2);
+		}
+		.popup-content.game-settings-panel .settings-content{
+			background:rgba(255,255,255,0.04);
+			border:1px solid rgba(255,255,255,0.08);
+			border-radius:16px;
+			padding:28px;
+			min-height:420px;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+		}
+		.popup-content.game-settings-panel .settings-placeholder{
+			margin:0;
+			color:var(--muted);
+			text-align:center;
+			line-height:1.6;
+		}
+		@media (max-width: 900px){
+			.popup-overlay.game-settings-overlay{
+				padding:32px 0;
+			}
+			.popup-content.game-settings-panel{
+				min-height:70vh;
+				width:96vw;
+				max-height:calc(100vh - 60px);
+			}
+			.popup-content.game-settings-panel .popup-body{
+				padding:24px;
+			}
+			.popup-content.game-settings-panel .settings-layout{
+				grid-template-columns:1fr;
+			}
+			.popup-content.game-settings-panel .settings-tabs{
+				flex-direction:row;
+				flex-wrap:wrap;
+				justify-content:flex-start;
+			}
+			.popup-content.game-settings-panel .settings-tab{
+				flex:1 1 calc(50% - 8px);
+				text-align:center;
+			}
+			.popup-content.game-settings-panel .settings-content{
+				min-height:320px;
+			}
+		}
 		
 		.stream-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px}
 		.stream-switcher{display:flex; background:rgba(255,255,255,0.08); border-radius:8px; padding:2px; gap:2px}
@@ -351,9 +570,27 @@
 		.slot .time{color:var(--muted)}
 
 		.footer{
-			margin-top:20px; text-align:center; color:var(--muted); font-size:13px; position:relative; z-index:2;
+			margin-top:25px;
+			color:var(--muted);
+			font-size:13px;
+			position:relative;
+			z-index:2;
+			width:100%;
+			flex:0 0 100%;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			text-align:center;
+			gap:4px;
 		}
-		#counter{position:relative; z-index:2}
+		#counter{
+			position:relative;
+			z-index:2;
+			display:flex;
+			justify-content:center;
+			align-items:flex-end;
+			gap:4px;
+		}
 
 		/* Popup Styles */
 		.popup-overlay {
@@ -579,6 +816,9 @@
 			z-index: 999;
 		}
 
+		@media (max-width: 1200px) {
+		}
+
 		.admin-button:hover {
 			transform: scale(1.1);
 			background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
@@ -602,6 +842,268 @@
 		.admin-panel-body {
 			max-height: 70vh;
 			overflow-y: auto;
+		}
+
+		.notification-center {
+			position: fixed;
+			bottom: 32px;
+			right: 32px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			z-index: 1200;
+			pointer-events: none;
+			width: min(360px, calc(100vw - 24px));
+		}
+
+		.notification-card {
+			position: relative;
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 16px;
+			padding: 16px 18px;
+			background: rgba(16, 16, 28, 0.88);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			border-radius: 14px;
+			box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+			backdrop-filter: blur(14px);
+			color: var(--text);
+			pointer-events: auto;
+			opacity: 0;
+			transform: translateY(12px) scale(0.98);
+			animation: toast-enter 0.35s ease forwards;
+		}
+
+		.notification-card.closing {
+			animation: toast-exit 0.28s ease forwards;
+		}
+
+		.notification-card::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			pointer-events: none;
+		}
+
+		.notification-icon {
+			width: 34px;
+			height: 34px;
+			border-radius: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		.notification-icon svg {
+			width: 18px;
+			height: 18px;
+		}
+
+		.notification-text {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		.notification-title {
+			font-weight: 600;
+			color: #ffffff;
+			font-size: 15px;
+		}
+
+		.notification-message {
+			color: rgba(255, 255, 255, 0.78);
+			font-size: 14px;
+			line-height: 1.4;
+		}
+
+		.notification-input {
+			width: 100%;
+			margin-top: 12px;
+			padding: 10px 12px;
+			border-radius: 9px;
+			border: 1px solid rgba(255, 255, 255, 0.14);
+			background: rgba(255, 255, 255, 0.05);
+			color: #ffffff;
+			font-size: 14px;
+			transition: all 0.2s ease;
+		}
+
+		.notification-input::placeholder {
+			color: rgba(255, 255, 255, 0.55);
+		}
+
+		.notification-input:focus {
+			outline: none;
+			border-color: rgba(255, 255, 255, 0.32);
+			background: rgba(255, 255, 255, 0.08);
+			box-shadow: 0 0 0 3px rgba(111, 182, 255, 0.2);
+		}
+
+		.notification-input.error {
+			border-color: rgba(255, 107, 129, 0.6);
+			box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+		}
+
+		.notification-inline-error {
+			margin-top: 6px;
+			color: #ff6b81;
+			font-size: 12px;
+			line-height: 1.3;
+		}
+
+		.notification-helper {
+			margin-top: 10px;
+			color: rgba(255, 255, 255, 0.6);
+			font-size: 12px;
+			line-height: 1.4;
+		}
+
+		.notification-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			border: none;
+			background: rgba(255, 255, 255, 0.05);
+			color: rgba(255, 255, 255, 0.75);
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.notification-close:hover {
+			background: rgba(255, 255, 255, 0.12);
+			color: #ffffff;
+		}
+
+		.notification-actions {
+			grid-column: 1 / -1;
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+			margin-top: 12px;
+		}
+
+		.notification-action {
+			min-width: 96px;
+			padding: 9px 16px;
+			border-radius: 8px;
+			border: 1px solid rgba(255, 255, 255, 0.16);
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffffff;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.notification-action:hover {
+			background: rgba(255, 255, 255, 0.16);
+			border-color: rgba(255, 255, 255, 0.22);
+		}
+
+		.notification-action.primary {
+			background: #63a4ff;
+			border-color: #63a4ff;
+			color: #0c1424;
+		}
+
+		.notification-action.primary:hover {
+			background: #7ab4ff;
+			border-color: #7ab4ff;
+		}
+
+		.notification-card.notification-success .notification-icon {
+			background: rgba(73, 201, 119, 0.15);
+			border-color: rgba(73, 201, 119, 0.4);
+			color: #49c977;
+		}
+
+		.notification-card.notification-info .notification-icon {
+			background: rgba(111, 182, 255, 0.15);
+			border-color: rgba(111, 182, 255, 0.4);
+			color: #73b7ff;
+		}
+
+		.notification-card.notification-warning .notification-icon {
+			background: rgba(253, 196, 90, 0.18);
+			border-color: rgba(253, 196, 90, 0.45);
+			color: #fdc45a;
+		}
+
+		.notification-card.notification-error .notification-icon {
+			background: rgba(255, 107, 129, 0.18);
+			border-color: rgba(255, 107, 129, 0.45);
+			color: #ff6b81;
+		}
+
+		.notification-card.notification-success {
+			border-color: rgba(73, 201, 119, 0.35);
+			box-shadow: 0 18px 38px rgba(73, 201, 119, 0.25);
+		}
+
+		.notification-card.notification-info {
+			border-color: rgba(111, 182, 255, 0.3);
+			box-shadow: 0 18px 38px rgba(111, 182, 255, 0.2);
+		}
+
+		.notification-card.notification-warning {
+			border-color: rgba(253, 196, 90, 0.35);
+			box-shadow: 0 18px 38px rgba(253, 196, 90, 0.22);
+		}
+
+		.notification-card.notification-error {
+			border-color: rgba(255, 107, 129, 0.35);
+			box-shadow: 0 18px 38px rgba(255, 107, 129, 0.25);
+		}
+
+		.notification-card.has-actions {
+			padding-bottom: 14px;
+		}
+
+		@media (max-width: 720px) {
+			.notification-center {
+				right: 50%;
+				transform: translateX(50%);
+				bottom: 20px;
+				width: min(92vw, 380px);
+				align-items: center;
+			}
+
+			.notification-card {
+				width: 100%;
+			}
+		}
+
+		@keyframes toast-enter {
+			0% {
+				opacity: 0;
+				transform: translateY(18px) scale(0.96);
+			}
+			100% {
+				opacity: 1;
+				transform: translateY(0) scale(1);
+			}
+		}
+
+		@keyframes toast-exit {
+			0% {
+				opacity: 1;
+				transform: translateY(0) scale(1);
+			}
+			100% {
+				opacity: 0;
+				transform: translateY(12px) scale(0.96);
+			}
 		}
 
 		.admin-user-info {
@@ -966,11 +1468,12 @@
 		@media (max-width: 1200px) { /* Changed from 980px to include landscape tablets */
 			/* Enable scrolling on tablet and mobile */
 			html, body {
-				overflow: auto;
+				overflow-x: hidden;
+				overflow-y: auto;
 			}
 			
 			.container {
-				margin-top: 100px; /* Create space for logo and social bar */
+				margin-top: 150px; /* Create space for logo and social bar */
 				padding-top: 20px;
 			}
 			
@@ -998,7 +1501,7 @@
 
 		@media (max-width: 640px) {
 			.container {
-				margin-top: 80px; /* Smaller space on phone */
+				margin-top: 130px; /* Smaller space on phone */
 				padding-top: 15px;
 			}
 			
@@ -1148,6 +1651,7 @@
 	</style>
 </head>
 <body class="db-loading">
+	<div class="notification-center" id="notificationCenter" aria-live="polite" aria-atomic="true"></div>
 	<!-- Simple loading screen -->
 	<div class="loading-overlay" id="loadingOverlay">
 		<div class="loading-spinner"></div>
@@ -1185,8 +1689,9 @@
 	<div class="bg-glass" aria-hidden="true"></div>
 	<div class="bg-tint hidden" id="bgTint" aria-hidden="true"></div>
 
-	<div class="container">
-		<header class="header">
+	<div class="desktop-shell">
+		<div class="container">
+			<header class="header">
 			<div class="avatar" aria-label="Avatar">
 				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile avatar" />
 			</div>
@@ -1201,7 +1706,7 @@
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
@@ -1225,9 +1730,9 @@
 					Subscribe
 				</a>
 			</div>
-		</header>
+				</header>
 
-		<div class="grid">
+				<div class="grid">
 			<section class="card">
 				<div class="stream-header">
 					<h3>Recent Streams</h3>
@@ -1257,6 +1762,13 @@
 						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
 						Discord
 					</a>
+					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettingsPopup()" aria-label="Open all settings">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+							<circle cx="12" cy="12" r="3"/>
+						</svg>
+						All Settings
+					</a>
 				</div>
 				<h3 style="margin-top:18px">Schedule</h3>
 				<div class="schedule">
@@ -1270,8 +1782,20 @@
 					</div>
 				</div>
 			</aside>
+			</div>
 		</div>
-
+		<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
+				<div class="card short-video-card">
+					<h3>Featured Short</h3>
+					<div class="short-video-embed">
+						<div class="short-video-placeholder" id="shortVideoPlaceholder">
+							<strong>No short video yet</strong>
+							<span>Paste a TikTok or YouTube Shorts link in the admin panel to showcase it here.</span>
+						</div>
+						<div id="shortVideoEmbed"></div>
+					</div>
+				</div>
+		</aside>
 		<div class="footer">
 			<div id="counter"></div>
 			© 2025 ilyambr, made with love <3
@@ -1279,7 +1803,7 @@
 	</div>
 
 	<!-- Admin Console Button -->
-	<div class="admin-button" onclick="openAdminLogin()">
+	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminLogin()">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
 			<circle cx="12" cy="12" r="3"/>
@@ -1287,6 +1811,13 @@
 	</div>
 
 	<script>
+		const ABOUT_MAX_LENGTH = 100;
+
+		const clampAboutText = (text = "") => {
+			const trimmed = text.trim();
+			return trimmed.length > ABOUT_MAX_LENGTH ? trimmed.slice(0, ABOUT_MAX_LENGTH) : trimmed;
+		};
+
 		// Twitch API Configuration
 		const twitchConfig = {
 			// Base64 encoded credentials for security
@@ -1567,7 +2098,7 @@
 				const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 				if (followersElement) {
 					followersElement.innerHTML = `
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formattedFollowers} followers
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
@@ -1586,7 +2117,7 @@
 			console.log('🔄 Using fallback for Twitch followers');
 			const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 			followersElement.innerHTML = `
-				<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 				N/A followers
 			`;
 		}
@@ -1671,6 +2202,176 @@
 			twitchIframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(finalChannel)}&parent=${twitchHost}`;
 		}
 
+		function formatHandle(value, fallback = '@ilyambrr') {
+			const base = (value && value !== 'N/A') ? String(value).trim() : fallback;
+			if (!base) return fallback;
+			return base.startsWith('@') ? base : `@${base}`;
+		}
+
+		function parseShortVideoLink(rawLink) {
+			if (!rawLink) return null;
+			const trimmed = String(rawLink).trim();
+			if (!trimmed) return null;
+			let url;
+			try {
+				url = new URL(trimmed);
+			} catch (e) {
+				// Allow passing a bare YouTube ID
+				if (/^[A-Za-z0-9_-]{8,15}$/.test(trimmed)) {
+					return {
+						provider: 'youtube',
+						id: trimmed,
+						embedUrl: `https://www.youtube-nocookie.com/embed/${trimmed}`,
+						originalUrl: `https://www.youtube.com/watch?v=${trimmed}`
+					};
+				}
+				return null;
+			}
+
+			const host = url.hostname.replace(/^www\./, '').toLowerCase();
+			let config = null;
+
+			if (host === 'youtu.be' || host.endsWith('youtube.com')) {
+				let videoId = url.searchParams.get('v') || '';
+				if (!videoId) {
+					const path = url.pathname.replace(/^\//, '');
+					const segments = path.split('/');
+					if (host === 'youtu.be' && segments[0]) {
+						videoId = segments[0];
+					} else if (segments[0] === 'shorts' && segments[1]) {
+						videoId = segments[1];
+					} else if (segments[0] === 'embed' && segments[1]) {
+						videoId = segments[1];
+					}
+				}
+				if (videoId && /^[A-Za-z0-9_-]{8,15}$/.test(videoId)) {
+					config = {
+						provider: 'youtube',
+						id: videoId,
+						embedUrl: `https://www.youtube.com/embed/${videoId}`,
+						originalUrl: trimmed
+					};
+				}
+			} else if (host.endsWith('tiktok.com')) {
+				const pathParts = url.pathname.split('/').filter(Boolean);
+				let videoId = '';
+				let handlePart = pathParts.find(p => p.startsWith('@')) || '';
+				const videoIndex = pathParts.indexOf('video');
+				if (videoIndex !== -1 && pathParts[videoIndex + 1]) {
+					videoId = pathParts[videoIndex + 1].split(/[?&#]/)[0];
+				}
+				if (!videoId && pathParts.length >= 2) {
+					const potentialId = pathParts[pathParts.length - 1].split(/[?&#]/)[0];
+					if (/^\d+$/.test(potentialId)) {
+						videoId = potentialId;
+					}
+				}
+				if (videoId) {
+					const handle = handlePart ? handlePart.replace('@', '') : '';
+					const canonicalHandle = handle ? `@${handle}` : handlePart || '';
+					const canonicalUrl = canonicalHandle ? `https://www.tiktok.com/${canonicalHandle}/video/${videoId}` : trimmed;
+					config = {
+						provider: 'tiktok',
+						id: videoId,
+						embedUrl: canonicalUrl,
+						originalUrl: trimmed,
+						handle
+					};
+				}
+			}
+
+			return config;
+		}
+
+		function normalizeShortVideoConfig(raw) {
+			if (!raw || raw === 'N/A') return null;
+			if (typeof raw === 'object') {
+				const obj = { ...raw };
+				if (obj.provider === 'youtube' && obj.id && !obj.embedUrl) {
+					obj.embedUrl = `https://www.youtube.com/embed/${obj.id}`;
+				}
+				if (obj.provider === 'tiktok' && obj.id && !obj.embedUrl) {
+					obj.embedUrl = obj.originalUrl || `https://www.tiktok.com/${obj.handle ? '@' + obj.handle : ''}/video/${obj.id}`;
+				}
+				if (!obj.originalUrl && obj.embedUrl) {
+					obj.originalUrl = obj.embedUrl;
+				}
+				return obj;
+			}
+			if (typeof raw === 'string') {
+				try {
+					const parsed = JSON.parse(raw);
+					if (parsed && typeof parsed === 'object') return normalizeShortVideoConfig(parsed);
+				} catch (e) {
+					const parsedLink = parseShortVideoLink(raw);
+					if (parsedLink) return parsedLink;
+				}
+			}
+			return null;
+		}
+
+		function formatShortVideoLabel(config) {
+			if (!config || !config.provider) return 'None';
+			const providerLabel = config.provider.charAt(0).toUpperCase() + config.provider.slice(1);
+			if (config.provider === 'youtube' && config.id) {
+				return `${providerLabel} • ${config.id}`;
+			}
+			if (config.provider === 'tiktok') {
+				return config.handle ? `${providerLabel} • @${config.handle}` : `${providerLabel}`;
+			}
+			return providerLabel;
+		}
+
+		function ensureTikTokEmbedScript() {
+			if (!document.getElementById('tiktok-embed-script')) {
+				const script = document.createElement('script');
+				script.id = 'tiktok-embed-script';
+				script.src = 'https://www.tiktok.com/embed.js';
+				script.async = true;
+				document.body.appendChild(script);
+			}
+		}
+
+		function applyShortVideoEmbed(config) {
+			const embedContainer = document.getElementById('shortVideoEmbed');
+			const placeholder = document.getElementById('shortVideoPlaceholder');
+			if (!embedContainer || !placeholder) return;
+
+			embedContainer.innerHTML = '';
+			if (!config || !config.provider || !config.id) {
+				placeholder.style.display = 'flex';
+				placeholder.setAttribute('aria-hidden', 'false');
+				embedContainer.removeAttribute('data-provider');
+				return;
+			}
+
+			placeholder.style.display = 'none';
+			placeholder.setAttribute('aria-hidden', 'true');
+			embedContainer.setAttribute('data-provider', config.provider);
+
+			if (config.provider === 'youtube') {
+				const embedUrl = config.embedUrl || `https://www.youtube.com/embed/${config.id}`;
+				embedContainer.innerHTML = `
+					<iframe class="short-video-frame" src="${embedUrl}" title="Featured short video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+				`;
+			} else if (config.provider === 'tiktok') {
+				const cite = config.embedUrl || config.originalUrl;
+				embedContainer.innerHTML = `
+					<blockquote class="tiktok-embed short-video-frame" cite="${cite}" data-video-id="${config.id}" data-embed-from="oembed" style="max-width: 360px; min-width: 260px;">
+						<section></section>
+					</blockquote>
+				`;
+				ensureTikTokEmbedScript();
+				if (window.tiktokEmbedLoad) {
+					window.tiktokEmbedLoad();
+				} else {
+					setTimeout(() => {
+						if (window.tiktokEmbedLoad) window.tiktokEmbedLoad();
+					}, 250);
+				}
+			}
+		}
+
 		// Run all functions on page load
 		updateCounter();
 		updateScheduleDates();
@@ -1705,11 +2406,28 @@
 			}
 		}
 
+		function openGameSettingsPopup() {
+			const popup = document.getElementById('gameSettingsPopup');
+			if (popup) {
+				popup.style.display = 'flex';
+				setBodyScrollState(true);
+			}
+		}
+
+		function closeGameSettingsPopup() {
+			const popup = document.getElementById('gameSettingsPopup');
+			if (popup) {
+				popup.style.display = 'none';
+				setBodyScrollState(false);
+			}
+		}
+
 		// Close popup when clicking outside
 		document.addEventListener('click', function(event) {
 			var followPopup = document.getElementById('followPopup');
 			var subscribePopup = document.getElementById('subscribePopup');
 			var colorsPopup = document.getElementById('colorsPopup');
+			var gameSettingsPopup = document.getElementById('gameSettingsPopup');
 			
 			if (event.target === followPopup) {
 				closePopup('followPopup');
@@ -1719,6 +2437,9 @@
 			}
 			if (event.target === colorsPopup) {
 				closePopup('colorsPopup');
+			}
+			if (event.target === gameSettingsPopup) {
+				closeGameSettingsPopup();
 			}
 		});
 
@@ -1773,6 +2494,32 @@
 					<div style="display:flex; gap:10px; margin-top:12px;">
 						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
 						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- All Settings Popup -->
+	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay">
+		<div class="popup-content game-settings-panel">
+			<div class="popup-header">
+				<div>
+					<h3>All Settings</h3>
+					<small style="color:var(--muted);">View <span id="gameSettingsUsername">@ilyambrr</span>'s settings and configurations for everything.</small>
+				</div>
+				<button class="close-btn" onclick="closeGameSettingsPopup()" aria-label="Close all settings">&times;</button>
+			</div>
+			<div class="popup-body" id="gameSettingsBody">
+				<div class="settings-layout">
+					<nav class="settings-tabs" aria-label="Settings categories">
+						<button type="button" class="settings-tab active" data-section="games">Games</button>
+						<button type="button" class="settings-tab" data-section="utility">Utility</button>
+						<button type="button" class="settings-tab" data-section="hardware">Hardware</button>
+						<button type="button" class="settings-tab" data-section="internet">Internet</button>
+					</nav>
+					<div class="settings-content" id="gameSettingsContent">
+						<p class="settings-placeholder">Tabs are ready—content coming soon.</p>
 					</div>
 				</div>
 			</div>
@@ -1900,7 +2647,7 @@
 					</div>
 					<div class="admin-setting">
 						<label for="aboutText">About Me:</label>
-						<textarea id="aboutText" placeholder="i make stuff, i stream, that's it really..." maxlength="500" rows="3"></textarea>
+						<textarea id="aboutText" placeholder="i make stuff, i stream, that's it really..." maxlength="100" rows="3"></textarea>
 						<button onclick="updateAboutText()">Update</button>
 						<small>About section description</small>
 					</div>
@@ -2141,6 +2888,19 @@
 						<small>Enter just the video ID from the YouTube URL</small>
 					</div>
 				</div>
+
+				<div class="admin-section">
+					<h4>Featured Short Video</h4>
+					<div class="admin-setting">
+						<label for="shortVideoLink">Short Video Link:</label>
+						<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+							<input type="url" id="shortVideoLink" placeholder="https://www.youtube.com/shorts/... or https://www.tiktok.com/@user/video/..." style="flex:1 1 260px;">
+							<button onclick="updateShortVideoEmbed()">Save</button>
+							<button style="background: rgba(255,59,107,0.2); border-color: rgba(255,59,107,0.3);" onclick="clearShortVideoEmbed()">Clear</button>
+						</div>
+						<small>Supports YouTube Shorts and TikTok links. We'll convert the link to an embed automatically.</small>
+					</div>
+				</div>
 				
 				<div class="admin-section">
 					<h4>Current Settings</h4>
@@ -2159,6 +2919,7 @@
 						<p><strong>Profile Picture:</strong> <span id="currentProfilePic">N/A</span></p>
 						<p><strong>Background:</strong> <span id="currentBackground">N/A</span></p>
 						<p><strong>YouTube Video:</strong> <span id="currentYouTubeVideo">N/A</span></p>
+						<p><strong>Short Video:</strong> <span id="currentShortVideo">None</span></p>
 						<p><strong>Firebase Database:</strong> <span id="currentFirebaseUrl">Loading...</span></p>
 					</div>
 					
@@ -2449,11 +3210,17 @@
 			const payload = {};
 			COLOR_VARS.forEach(v => { payload[v.key] = getCssVar(v.key); });
 			await saveGlobalSetting('siteColors', JSON.stringify(payload));
-			alert('Colors saved GLOBALLY!');
+			notify.success('Colors saved globally for all visitors.');
 		}
 
 		async function resetColorsToDefaults() {
-			if (!confirm('Reset colors to defaults?')) return;
+			const confirmed = await showConfirm('Reset colors to defaults?', {
+				title: 'Reset site colors',
+				confirmText: 'Reset colors',
+				cancelText: 'Keep current',
+				type: 'warning'
+			});
+			if (!confirmed) return;
 			// defaults align with current CSS at top
 			const defaults = {
 				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
@@ -2462,6 +3229,7 @@
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
+			notify.success('Colors reset to the default palette for everyone.');
 		}
 
 		// Close popup when clicking outside
@@ -2589,6 +3357,383 @@
 		const encryptedUrl = localStorage.getItem('encryptedFirebaseUrl');
 		const customDatabaseUrl = encryptedUrl ? decryptUrl(encryptedUrl) : null;
 		const defaultDatabaseUrl = "https://ilyambr-45403-default-rtdb.firebaseio.com";
+
+		const notificationCenterEl = (() => {
+			const existing = document.getElementById('notificationCenter');
+			if (existing) {
+				return existing;
+			}
+			const node = document.createElement('div');
+			node.id = 'notificationCenter';
+			node.className = 'notification-center';
+			node.setAttribute('aria-live', 'polite');
+			node.setAttribute('aria-atomic', 'true');
+			document.body.appendChild(node);
+			return node;
+		})();
+
+		const notificationIcons = {
+			info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><circle cx="12" cy="16" r="0.9"></circle></svg>',
+			success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>',
+			warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"></path><circle cx="12" cy="17" r="0.9"></circle><path d="M12 3l9 16H3z"></path></svg>',
+			error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>'
+		};
+
+		function showNotification(message, options = {}) {
+			if (!notificationCenterEl) return null;
+
+			const {
+				title = null,
+				type = 'info',
+				duration = 4500,
+				sticky = false,
+				actions = [],
+				role = 'status',
+				onClose = null
+			} = options;
+
+			const card = document.createElement('div');
+			card.className = `notification-card notification-${type}`;
+			card.setAttribute('role', role);
+			card.setAttribute('tabindex', '-1');
+
+			const iconWrap = document.createElement('div');
+			iconWrap.className = 'notification-icon';
+			iconWrap.innerHTML = notificationIcons[type] || notificationIcons.info;
+
+			const textWrap = document.createElement('div');
+			textWrap.className = 'notification-text';
+
+			if (title) {
+				const titleEl = document.createElement('div');
+				titleEl.className = 'notification-title';
+				titleEl.textContent = title;
+				textWrap.appendChild(titleEl);
+			}
+
+			const messageEl = document.createElement('div');
+			messageEl.className = 'notification-message';
+			messageEl.textContent = message;
+			textWrap.appendChild(messageEl);
+
+			let dismissTimer = null;
+			let closed = false;
+
+			const dismiss = () => {
+				if (closed) return;
+				closed = true;
+				if (dismissTimer) {
+					clearTimeout(dismissTimer);
+				}
+				card.classList.add('closing');
+				setTimeout(() => {
+					card.remove();
+					if (typeof onClose === 'function') {
+						onClose();
+					}
+				}, 260);
+			};
+
+			const closeBtn = document.createElement('button');
+			closeBtn.type = 'button';
+			closeBtn.className = 'notification-close';
+			closeBtn.setAttribute('aria-label', 'Close notification');
+			closeBtn.innerHTML = '&times;';
+			closeBtn.addEventListener('click', dismiss);
+
+			card.appendChild(iconWrap);
+			card.appendChild(textWrap);
+			card.appendChild(closeBtn);
+
+			const actionButtons = [];
+
+			if (actions.length > 0) {
+				card.classList.add('has-actions');
+				const actionsWrap = document.createElement('div');
+				actionsWrap.className = 'notification-actions';
+
+				actions.forEach((action, index) => {
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className = 'notification-action';
+					if (action?.primary) {
+						btn.classList.add('primary');
+					}
+					btn.textContent = action?.label ?? `Option ${index + 1}`;
+
+					btn.addEventListener('click', () => {
+						let result;
+						if (typeof action?.onClick === 'function') {
+							result = action.onClick({ close: dismiss, element: card });
+						}
+						if (result !== false) {
+							dismiss();
+						}
+					});
+
+					actionsWrap.appendChild(btn);
+					actionButtons.push(btn);
+				});
+
+				card.appendChild(actionsWrap);
+			}
+
+			if (!sticky && duration > 0) {
+				dismissTimer = setTimeout(dismiss, duration);
+				card.addEventListener('mouseenter', () => {
+					if (dismissTimer) {
+						clearTimeout(dismissTimer);
+					}
+				});
+				card.addEventListener('mouseleave', () => {
+					dismissTimer = setTimeout(dismiss, 1500);
+				});
+			}
+
+			card.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') {
+					dismiss();
+				}
+			});
+
+			notificationCenterEl.appendChild(card);
+			if (role === 'alertdialog' || actions.length > 0) {
+				requestAnimationFrame(() => {
+					card.focus({ preventScroll: true });
+				});
+			}
+
+			return {
+				element: card,
+				close: dismiss,
+				focusFirstAction: () => {
+					if (actionButtons.length > 0) {
+						actionButtons[0].focus();
+					}
+				},
+				focusLastAction: () => {
+					if (actionButtons.length > 0) {
+						actionButtons[actionButtons.length - 1].focus();
+					}
+				}
+			};
+		}
+
+		const notify = {
+			info: (message, options = {}) => showNotification(message, { ...options, type: 'info' }),
+			success: (message, options = {}) => showNotification(message, { ...options, type: 'success' }),
+			warning: (message, options = {}) => showNotification(message, { ...options, type: 'warning' }),
+			error: (message, options = {}) => showNotification(message, { ...options, type: 'error' })
+		};
+
+		function showConfirm(message, options = {}) {
+			const {
+				title = 'Are you sure?',
+				type = 'warning',
+				confirmText = 'Confirm',
+				cancelText = 'Cancel'
+			} = options;
+
+			let handled = false;
+
+			return new Promise((resolve) => {
+				const note = showNotification(message, {
+					title,
+					type,
+					sticky: true,
+					duration: 0,
+					role: 'alertdialog',
+					onClose: () => {
+						if (!handled) {
+							handled = true;
+							resolve(false);
+						}
+					},
+					actions: [
+						{
+							label: cancelText,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(false);
+								}
+							}
+						},
+						{
+							label: confirmText,
+							primary: true,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(true);
+								}
+							}
+						}
+					]
+				});
+
+				if (!note) {
+					resolve(false);
+					return;
+				}
+
+				if (note.element) {
+					note.element.setAttribute('aria-modal', 'true');
+					note.element.setAttribute('aria-live', 'assertive');
+					const messageNode = note.element.querySelector('.notification-message');
+					if (messageNode) {
+						const describedbyId = `notification-${Date.now()}`;
+						messageNode.id = describedbyId;
+						note.element.setAttribute('aria-describedby', describedbyId);
+					}
+					requestAnimationFrame(() => {
+						note.focusLastAction?.();
+					});
+				}
+			});
+		}
+
+		function showPrompt(message, options = {}) {
+			const {
+				title = 'Input required',
+				type = 'info',
+				confirmText = 'Submit',
+				cancelText = 'Cancel',
+				placeholder = '',
+				defaultValue = '',
+				inputType = 'text',
+				allowEmpty = false,
+				validate,
+				helperText
+			} = options;
+
+			let handled = false;
+			let inputRef = null;
+			let errorRef = null;
+
+			const setError = (msg) => {
+				if (errorRef) {
+					errorRef.textContent = msg || '';
+				}
+				if (inputRef) {
+					if (msg) {
+						inputRef.classList.add('error');
+					} else {
+						inputRef.classList.remove('error');
+					}
+				}
+			};
+
+			return new Promise((resolve) => {
+				const note = showNotification(message, {
+					title,
+					type,
+					sticky: true,
+					duration: 0,
+					role: 'dialog',
+					onClose: () => {
+						if (!handled) {
+							handled = true;
+							resolve(null);
+						}
+					},
+					actions: [
+						{
+							label: cancelText,
+							onClick: () => {
+								if (!handled) {
+									handled = true;
+									resolve(null);
+								}
+							}
+						},
+						{
+							label: confirmText,
+							primary: true,
+							onClick: () => {
+								const value = inputRef ? inputRef.value.trim() : '';
+								if (!allowEmpty && !value) {
+									setError('Please enter a value.');
+									inputRef?.focus();
+									return false;
+								}
+								if (typeof validate === 'function') {
+									const validation = validate(value);
+									if (validation !== true) {
+										setError(typeof validation === 'string' ? validation : 'Please enter a valid value.');
+										inputRef?.focus();
+										return false;
+									}
+								}
+								setError('');
+								if (!handled) {
+									handled = true;
+									resolve(value);
+								}
+							}
+						}
+					]
+				});
+
+				if (!note) {
+					resolve(null);
+					return;
+				}
+
+				if (note.element) {
+					note.element.setAttribute('aria-modal', 'true');
+					note.element.setAttribute('aria-live', 'assertive');
+					const messageNode = note.element.querySelector('.notification-message');
+					const textWrap = note.element.querySelector('.notification-text');
+					if (messageNode && textWrap) {
+						const describedbyId = `notification-${Date.now()}`;
+						messageNode.id = describedbyId;
+						note.element.setAttribute('aria-describedby', describedbyId);
+						inputRef = document.createElement('input');
+						inputRef.type = inputType;
+						inputRef.className = 'notification-input';
+						inputRef.placeholder = placeholder;
+						inputRef.value = defaultValue;
+						messageNode.after(inputRef);
+
+						errorRef = document.createElement('div');
+						errorRef.className = 'notification-inline-error';
+						errorRef.setAttribute('aria-live', 'polite');
+						textWrap.appendChild(errorRef);
+
+						if (helperText) {
+							const helperEl = document.createElement('div');
+							helperEl.className = 'notification-helper';
+							helperEl.textContent = helperText;
+							textWrap.appendChild(helperEl);
+						}
+
+						const cancelBtn = note.element.querySelector('.notification-action:not(.primary)');
+						const confirmBtn = note.element.querySelector('.notification-action.primary');
+
+						inputRef.addEventListener('input', () => {
+							if (inputRef?.classList.contains('error')) {
+								setError('');
+							}
+						});
+						inputRef.addEventListener('keydown', (event) => {
+							if (event.key === 'Enter') {
+								event.preventDefault();
+								confirmBtn?.click();
+							} else if (event.key === 'Escape') {
+								event.preventDefault();
+								cancelBtn?.click();
+							}
+						});
+
+						requestAnimationFrame(() => {
+							inputRef?.focus();
+							inputRef?.select?.();
+						});
+					}
+				}
+			});
+		}
 		
 		const firebaseConfig = {
 			apiKey: "AIzaSyCTyk_sZYCXFsFOQK_faVQ5KQiQNtK1Q0",
@@ -2686,13 +3831,14 @@
 			if (isAdminLoggedIn) {
 				console.log('✅ User is logged in, opening admin panel');
 				loadCurrentSettings();
-				// Render collaborators list and ensure tint rows state
 				renderCollaborators();
 				updateTintRows();
-				// Ensure action links lists are rendered inside panel
 				renderActionLinksList('follow');
 				renderActionLinksList('subscribe');
-				document.getElementById('adminPanelPopup').style.display = 'flex';
+				const adminPanel = document.getElementById('adminPanelPopup');
+				if (adminPanel) {
+					adminPanel.style.display = 'flex';
+				}
 				setBodyScrollState(true);
 			} else {
 				console.log('🔐 User not logged in, opening login popup');
@@ -2708,7 +3854,9 @@
 		}
 
 		function closeAdminPopup(popupId) {
-			document.getElementById(popupId).style.display = 'none';
+			const popup = document.getElementById(popupId);
+			if (!popup) return;
+			popup.style.display = 'none';
 			setBodyScrollState(false);
 		}
 
@@ -2868,7 +4016,7 @@
 						const timeUntilExpiry = session.tokenExp - now;
 						setTimeout(() => {
 							signOut();
-							alert('Session expired. Please sign in again.');
+							notify.warning('Session expired. Please sign in again.', { title: 'Signed out' });
 						}, timeUntilExpiry);
 						
 						return true;
@@ -2889,7 +4037,12 @@
 			
 			// For file:// protocol, show a message about domain restrictions
 			if (window.location.protocol === 'file:') {
-				const useDemo = confirm(`⚠️ OAuth Limitation Detected\n\nGoogle OAuth doesn't work with file:// protocol for security reasons.\n\nTo test OAuth:\n1. Host this file on a web server (localhost:8000, behindthebonnet.me, etc.)\n2. Add your domain to Google Cloud Console authorized origins\n\nWould you like to use demo admin access for testing?\n\nClick OK for demo access, Cancel to try manual email entry.`);
+				const useDemo = await showConfirm('Google OAuth cannot verify credentials from a file:// URL. Use demo admin access instead?', {
+					title: 'OAuth limitation detected',
+					confirmText: 'Use demo access',
+					cancelText: 'Enter email manually',
+					type: 'warning'
+				});
 				
 				if (useDemo) {
 					// Simulate successful admin login for testing
@@ -2912,20 +4065,31 @@
 			}
 			
 			// Manual email verification for demonstration/testing
-			const currentDomain = window.location.origin || window.location.protocol + '//' + window.location.host;
-			const email = prompt(`Enter your email for admin access:\n\nNote: Only ${AUTHORIZED_EMAIL} is authorized.\n\nCurrent domain: ${currentDomain}\n\nIf OAuth isn't working, this might be due to:\n• Domain not authorized in Google Cloud Console\n• Missing HTTPS (required for OAuth)\n• CORS restrictions\n\nFor behindthebonnet.me: Make sure to add the domain to Google Cloud Console authorized origins.`);
+			const currentDomain = window.location.origin || `${window.location.protocol}//${window.location.host}`;
+			const email = await showPrompt(`Enter your email for admin access. Only approved collaborators will be allowed.`, {
+				title: 'Manual admin verification',
+				type: 'warning',
+				inputType: 'email',
+				confirmText: 'Verify email',
+				cancelText: 'Cancel',
+				placeholder: 'name@example.com',
+				defaultValue: AUTHORIZED_EMAIL,
+				validate: (value) => value ? true : 'Email is required.',
+				helperText: `Authorized email: ${AUTHORIZED_EMAIL}. Current domain: ${currentDomain}. Ensure this domain is in your Google Cloud authorized origins and served over HTTPS.`
+			});
 			
 			// Load collaborators before checking
 			await loadCollaborators();
-			if (email && isAuthorizedEmail(email)) {
-				adminUser = { email: email, name: "Admin User (Manual)" };
+			const normalizedEmail = (email || '').trim().toLowerCase();
+			if (normalizedEmail && isAuthorizedEmail(normalizedEmail)) {
+				adminUser = { email: normalizedEmail, name: "Admin User (Manual)" };
 				isAdminLoggedIn = true;
 				showLoginSuccess();
 				setTimeout(() => {
 					closeAdminPopup('adminLoginPopup');
 					openAdminLogin(); // This will now open the admin panel
 				}, 1000);
-			} else if (email) {
+			} else if (normalizedEmail) {
 				showLoginError(`Unauthorized email address.`);
 			}
 		}
@@ -3055,7 +4219,7 @@
 			const url = (document.getElementById('actionLinkUrl').value || '').trim();
 			const img = document.getElementById('actionLogoPreview').src || '';
 			const invert = !!document.getElementById('actionLogoInvert').checked;
-			if (!name || !url || !img) { alert('Please provide logo, name, and URL'); return; }
+			if (!name || !url || !img) { notify.error('Provide a logo, name, and URL before saving.'); return; }
 			const entry = { name, url, img, invert };
 			if (actionLinkContext === 'follow') {
 				followLinks.push(entry);
@@ -3106,18 +4270,26 @@
 			});
 		}
 
-		function clearActionLinks(context) {
-			if (!confirm('Clear all links in this list?')) return;
+		async function clearActionLinks(context) {
+			const confirmed = await showConfirm('Clear all links in this list?', {
+				title: context === 'follow' ? 'Clear follow links' : 'Clear subscribe links',
+				confirmText: 'Clear links',
+				cancelText: 'Keep list',
+				type: 'warning'
+			});
+			if (!confirmed) return;
 			if (context === 'follow') {
 				followLinks = [];
-				saveGlobalSetting('followLinks', JSON.stringify(followLinks));
+				await saveGlobalSetting('followLinks', JSON.stringify(followLinks));
 				renderActionLinksList('follow');
 				renderActionPopupButtons('follow');
+				notify.success('Follow links cleared.');
 			} else {
 				subscribeLinks = [];
-				saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
+				await saveGlobalSetting('subscribeLinks', JSON.stringify(subscribeLinks));
 				renderActionLinksList('subscribe');
 				renderActionPopupButtons('subscribe');
+				notify.success('Subscribe links cleared.');
 			}
 		}
 
@@ -3167,11 +4339,11 @@
 				avatarImgs.forEach(img => (img.src = dataUrl));
 				setProfilePreviewImage(dataUrl);
 				document.getElementById('currentProfilePic').textContent = 'uploaded image';
-				alert('Profile image uploaded and applied globally');
+				notify.success('Profile image uploaded and applied globally.');
 			};
 			reader.readAsDataURL(file);
 		}
-		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; alert('Background image uploaded and applied globally'); }; r.readAsDataURL(file); }
+		function handleBackgroundUploadFile(input){ const file = input.files && input.files[0]; if(!file) return; const r = new FileReader(); r.onload = async () => { const dataUrl = r.result; document.getElementById('backgroundImage').value = dataUrl; await saveGlobalSetting('background', dataUrl); document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`; document.getElementById('currentBackground').textContent = 'uploaded image'; notify.success('Background image uploaded and applied globally.'); }; r.readAsDataURL(file); }
 
 		async function openFollowPopup() {
 			renderActionPopupButtons('follow');
@@ -3189,10 +4361,13 @@
 			const currentPic = localStorage.getItem('admin-profile-pic') || 'Default';
 			const currentBg = localStorage.getItem('admin-background') || 'Default';
 			const currentVideo = localStorage.getItem('admin-youtube-video') || 'Auto-Latest';
+			const shortVideoLine = localStorage.getItem('admin-short-video') || 'None';
 			
 			document.getElementById('currentProfilePic').textContent = currentPic;
 			document.getElementById('currentBackground').textContent = currentBg;
 			document.getElementById('currentYouTubeVideo').textContent = currentVideo;
+			const shortVideoEl = document.getElementById('currentShortVideo');
+			if (shortVideoEl) shortVideoEl.textContent = shortVideoLine;
 		}
 
 		async function loadExistingSettings() {
@@ -3228,6 +4403,8 @@
 			const savedPic = await loadGlobalSetting('profile-pic');
 			const savedBg = await loadGlobalSetting('background');
 			const savedVideo = await loadGlobalSetting('youtube-video');
+			const savedShortVideoRaw = await loadGlobalSetting('shortVideoEmbed');
+			const savedShortVideo = normalizeShortVideoConfig(savedShortVideoRaw);
 			const savedPageLogo = await loadGlobalSetting('pageLogo');
 			const savedLogoInvert = await loadGlobalSetting('logoInvert');
 			const savedLogoSize = await loadGlobalSetting('pageLogoSize');
@@ -3253,6 +4430,12 @@
 			console.log('�🖼️ Global profile pic:', savedPic);
 			console.log('🎨 Global background:', savedBg);
 			console.log('📺 Global YouTube video:', savedVideo);
+			if (savedShortVideo) {
+				console.log('🎬 Featured short video config:', savedShortVideo);
+				applyShortVideoEmbed(savedShortVideo);
+			} else {
+				applyShortVideoEmbed(null);
+			}
 			
 			// Apply saved names
 			if (savedDisplayName && savedDisplayName !== 'N/A') {
@@ -3299,6 +4482,10 @@
 						element.textContent = fallbackUsername;
 					}
 				});
+			}
+			const gameSettingsUsername = document.getElementById('gameSettingsUsername');
+			if (gameSettingsUsername) {
+				gameSettingsUsername.textContent = formatHandle(savedUsername);
 			}
 			
 			// Apply saved Twitch status
@@ -3381,12 +4568,12 @@
 				console.log('📄 Applying global about text to ALL visitors:', savedAboutText);
 				const aboutElement = document.getElementById('aboutTextContent');
 				if (aboutElement) {
-					aboutElement.textContent = savedAboutText;
+					aboutElement.textContent = clampAboutText(savedAboutText);
 				}
 			} else {
 				const aboutElement = document.getElementById('aboutTextContent');
 				if (aboutElement && !aboutElement.textContent.trim()) {
-					aboutElement.textContent = "i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶";
+					aboutElement.textContent = clampAboutText("i make stuff, i stream, that's it really. just trying to make and do stuff i enjoy. appreciate you for visiting my website, make sure to join the discord and watch the streams 🫶");
 				}
 			}
 			
@@ -3410,7 +4597,7 @@
 				const followerElement = document.getElementById('twitchFollowersStat');
 				if (followerElement) {
 					followerElement.innerHTML = `
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formatNumber(parseInt(savedFollowerCount))} followers
 					`;
 				}
@@ -3723,12 +4910,15 @@
 			const currentPic = await loadGlobalSetting('profile-pic') || 'N/A';
 			const currentBg = await loadGlobalSetting('background') || 'N/A';
 			const currentVideo = await loadGlobalSetting('youtube-video') || 'N/A';
+			const currentShortVideoRaw = await loadGlobalSetting('shortVideoEmbed') || '';
+			const currentShortVideo = normalizeShortVideoConfig(currentShortVideoRaw);
 			const currentPageLogo = await loadGlobalSetting('pageLogo') || '';
 			const currentPageLogoResolution = await loadGlobalSetting('pageLogoResolution') || '';
 			const currentPageLogoSize = await loadGlobalSetting('pageLogoSize') || '';
 			const currentLogoInvert = await loadGlobalSetting('logoInvert');
 			const currentBio = await loadGlobalSetting('bioText') || '';
-			const currentAboutText = await loadGlobalSetting('aboutText') || '';
+			const currentAboutTextRaw = await loadGlobalSetting('aboutText') || '';
+			const currentAboutText = clampAboutText(currentAboutTextRaw);
 			const currentStreamingYear = await loadGlobalSetting('streamingYear') || '';
 			const currentFollowerCount = await loadGlobalSetting('followerCount') || '';
 			const currentSubscriberCount = await loadGlobalSetting('subscriberCount') || '';
@@ -3767,6 +4957,10 @@
 
 			setCurrentText('currentDisplayName', currentDisplayName && currentDisplayName !== 'N/A' ? currentDisplayName : 'N/A');
 			setCurrentText('currentUsername', currentUsername && currentUsername !== 'N/A' ? currentUsername : 'N/A');
+			const gameSettingsUsername = document.getElementById('gameSettingsUsername');
+			if (gameSettingsUsername) {
+				gameSettingsUsername.textContent = formatHandle(currentUsername);
+			}
 			setCurrentText('currentTwitchStatus', currentTwitchStatus ? currentTwitchStatus.charAt(0).toUpperCase() + currentTwitchStatus.slice(1) : 'None');
 			const twitchStatusSelect = document.getElementById('twitchStatus');
 			if (twitchStatusSelect) twitchStatusSelect.value = currentTwitchStatus;
@@ -3779,6 +4973,7 @@
 			setProfilePreviewImage(currentPic);
 			setCurrentText('currentBackground', shorten(currentBg, 50));
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
+			setCurrentText('currentShortVideo', formatShortVideoLabel(currentShortVideo));
 			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
 			const resInput = document.getElementById('pageLogoResolution');
 			if (resInput) resInput.value = currentPageLogoResolution;
@@ -3787,7 +4982,7 @@
 			const invToggle = document.getElementById('logoInvertToggle');
 			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
 			setCurrentText('currentBio', shorten(currentBio));
-			setCurrentText('currentAboutText', shorten(currentAboutText));
+			setCurrentText('currentAboutText', shorten(currentAboutText, ABOUT_MAX_LENGTH));
 			setCurrentText('currentStreamingYear', currentStreamingYear || 'N/A');
 			setCurrentText('currentFollowerCount', currentFollowerCount || 'API');
 			setCurrentText('currentSubscriberCount', currentSubscriberCount || 'API');
@@ -3799,6 +4994,8 @@
 			setCurrentText('currentRedditLink', shorten(currentRedditLink));
 			setCurrentText('currentFollowButtonText', currentFollowButtonText || 'Follow');
 			setCurrentText('currentSubscribeButtonText', currentSubscribeButtonText || 'Subscribe');
+			const shortVideoInput = document.getElementById('shortVideoLink');
+			if (shortVideoInput) shortVideoInput.value = currentShortVideo?.originalUrl || '';
 			
 			// Set schedule selector values
 			const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -3846,7 +5043,7 @@
 		async function updateProfilePicture() {
 			const url = document.getElementById('profilePicture').value.trim();
 			if (!url) {
-				alert('Please enter a valid image URL');
+				notify.error('Please enter a valid image URL.');
 				return;
 			}
 
@@ -3864,11 +5061,11 @@
 				// Update current settings display
 				document.getElementById('currentProfilePic').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
 				document.getElementById('profilePicture').value = '';
-				
-				alert('Profile picture updated GLOBALLY! All visitors will see this change.');
+			
+				notify.success('Profile picture updated for every visitor.');
 			};
 			img.onerror = function() {
-				alert('Failed to load image. Please check the URL and try again.');
+				notify.error('Failed to load image. Please check the URL and try again.');
 			};
 			img.src = url;
 		}
@@ -3876,7 +5073,7 @@
 		async function updateBackgroundImage() {
 			const url = document.getElementById('backgroundImage').value.trim();
 			if (!url) {
-				alert('Please enter a valid image URL');
+				notify.error('Please enter a valid image URL.');
 				return;
 			}
 
@@ -3892,11 +5089,11 @@
 				// Update current settings display
 				document.getElementById('currentBackground').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
 				document.getElementById('backgroundImage').value = '';
-				
-				alert('Background image updated GLOBALLY! All visitors will see this change.');
+			
+				notify.success('Background image updated for everyone.');
 			};
 			img.onerror = function() {
-				alert('Failed to load image. Please check the URL and try again.');
+				notify.error('Failed to load image. Please check the URL and try again.');
 			};
 			img.src = url;
 		}
@@ -3904,7 +5101,7 @@
 		async function updateDisplayName() {
 			const displayName = document.getElementById('displayName').value.trim();
 			if (!displayName) {
-				alert('Please enter a display name');
+				notify.error('Please enter a display name.');
 				return;
 			}
 
@@ -3928,13 +5125,13 @@
 			document.getElementById('currentDisplayName').textContent = displayName;
 			document.getElementById('displayName').value = '';
 			
-			alert('Display name updated GLOBALLY! All visitors will see this change.');
+			notify.success('Display name updated globally.');
 		}
 
 		async function updateUsername() {
 			const username = document.getElementById('username').value.trim();
 			if (!username) {
-				alert('Please enter a username');
+				notify.error('Please enter a username.');
 				return;
 			}
 
@@ -3958,6 +5155,10 @@
 					}
 				}
 			});
+			const gameSettingsUsername = document.getElementById('gameSettingsUsername');
+			if (gameSettingsUsername) {
+				gameSettingsUsername.textContent = formatHandle(username);
+			}
 			
 			// Update current settings display
 			document.getElementById('currentUsername').textContent = username;
@@ -3967,7 +5168,7 @@
 			console.log('🔄 Username changed, refreshing Twitch followers...');
 			updateTwitchFollowers();
 			
-			alert('Username updated GLOBALLY! All visitors will see this change.');
+			notify.success('Username updated globally.');
 		}
 
 		async function updateTwitchStatus() {
@@ -3996,13 +5197,13 @@
 			document.getElementById('currentTwitchStatus').textContent = statusText.charAt(0).toUpperCase() + statusText.slice(1);
 			
 			console.log(`Twitch status updated to: ${statusText}`);
-			alert(`Twitch status updated GLOBALLY to: ${statusText}! All visitors will see this change.`);
+			notify.success(`Twitch status updated globally to ${statusText}.`);
 		}
 
 		async function updateDiscordLink() {
 			const discordUrl = document.getElementById('discordLink').value.trim();
 			if (!discordUrl) {
-				alert('Please enter a Discord link');
+				notify.error('Please enter a Discord link.');
 				return;
 			}
 
@@ -4021,7 +5222,7 @@
 			document.getElementById('discordLink').value = '';
 			
 			console.log(`Discord link updated to: ${discordUrl}`);
-			alert(`Discord link updated GLOBALLY! All visitors will see this change.`);
+			notify.success('Discord link updated globally.');
 		}
 
 		async function updatePageLogo() {
@@ -4030,18 +5231,18 @@
 			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
 
 			if (!logoUrl && !resolution && !sizeStr) {
-				alert('Please enter at least one field: URL, Resolution, or Size');
+				notify.error('Provide at least one value: URL, resolution, or size.');
 				return;
 			}
 
 			// Optional: basic validation of resolution (WxH)
 			if (resolution && !/^\d{2,5}x\d{2,5}$/i.test(resolution)) {
-				alert('Resolution must be in the format 1920x1080');
+				notify.error('Resolution must use the format 1920x1080.');
 				return;
 			}
 			// Optional: basic validation of size (WxH)
 			if (sizeStr && !/^\d{2,5}x\d{2,5}$/i.test(sizeStr)) {
-				alert('Size must be in the format 135x135');
+				notify.error('Size must use the format 135x135.');
 				return;
 			}
 
@@ -4074,7 +5275,7 @@
 			document.getElementById('pageLogoResolution').value = '';
 			document.getElementById('pageLogoSize').value = '';
 			
-			alert('Page logo updated GLOBALLY! All visitors will see this change.');
+			notify.success('Page logo updated globally.');
 		}
 
 		async function updateLogoInvert() {
@@ -4091,7 +5292,7 @@
 		async function updateBio() {
 			const bio = document.getElementById('bioTextInput').value.trim();
 			if (!bio) {
-				alert('Please enter a bio');
+				notify.error('Please enter a bio.');
 				return;
 			}
 
@@ -4108,15 +5309,21 @@
 			document.getElementById('currentBio').textContent = bio.length > 30 ? bio.substring(0, 30) + '...' : bio;
 			document.getElementById('bioTextInput').value = '';
 			
-			alert('Bio updated GLOBALLY! All visitors will see this change.');
+			notify.success('Bio updated globally.');
 		}
 
 		async function updateAboutText() {
-			const aboutText = document.getElementById('aboutText').value.trim();
-			if (!aboutText) {
-				alert('Please enter about text');
+			const aboutTextInput = document.getElementById('aboutText');
+			const aboutTextRaw = aboutTextInput.value.trim();
+			if (!aboutTextRaw) {
+				notify.error('Please enter some About text.');
 				return;
 			}
+			if (aboutTextRaw.length > ABOUT_MAX_LENGTH) {
+				notify.error(`About text must be ${ABOUT_MAX_LENGTH} characters or fewer.`);
+				return;
+			}
+			const aboutText = clampAboutText(aboutTextRaw);
 
 			// Save GLOBALLY for ALL users
 			await saveGlobalSetting('aboutText', aboutText);
@@ -4128,16 +5335,16 @@
 			}
 			
 			// Update current settings display
-			document.getElementById('currentAboutText').textContent = aboutText.length > 30 ? aboutText.substring(0, 30) + '...' : aboutText;
-			document.getElementById('aboutText').value = '';
+			document.getElementById('currentAboutText').textContent = aboutText;
+			aboutTextInput.value = '';
 			
-			alert('About text updated GLOBALLY! All visitors will see this change.');
+			notify.success('About section updated globally.');
 		}
 
 		async function updateStreamingYear() {
 			const year = document.getElementById('streamingYear').value.trim();
 			if (!year) {
-				alert('Please enter a streaming year');
+				notify.error('Please enter the streaming start year.');
 				return;
 			}
 
@@ -4154,7 +5361,7 @@
 			document.getElementById('currentStreamingYear').textContent = year;
 			document.getElementById('streamingYear').value = '';
 			
-			alert('Streaming year updated GLOBALLY! All visitors will see this change.');
+			notify.success('Streaming year updated globally.');
 		}
 
 		async function updateFollowerCount() {
@@ -4168,7 +5375,7 @@
 			if (followerElement) {
 				if (count) {
 					followerElement.innerHTML = `
-						<img src="https://images.seeklogo.com/logo-png/27/2/twitch-logo-png_seeklogo-274042.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formatNumber(parseInt(count))} followers
 					`;
 				} else {
@@ -4181,7 +5388,11 @@
 			document.getElementById('currentFollowerCount').textContent = count || 'API';
 			document.getElementById('followerCount').value = '';
 			
-			alert(count ? 'Follower count updated GLOBALLY!' : 'Follower count set to use API GLOBALLY!');
+			if (count) {
+				notify.success('Follower count updated globally.');
+			} else {
+				notify.info('Follower count now uses the live API globally.');
+			}
 		}
 
 		async function updateSubscriberCount() {
@@ -4208,33 +5419,37 @@
 			document.getElementById('currentSubscriberCount').textContent = count || 'API';
 			document.getElementById('subscriberCount').value = '';
 			
-			alert(count ? 'Subscriber count updated GLOBALLY!' : 'Subscriber count set to use API GLOBALLY!');
+			if (count) {
+				notify.success('Subscriber count updated globally.');
+			} else {
+				notify.info('Subscriber count now uses the live API globally.');
+			}
 		}
 
 		async function updateTwitchLink() {
 			const url = document.getElementById('twitchLink').value.trim();
 			if (!url) {
-				alert('Please enter a Twitch URL');
+				notify.error('Please enter a Twitch URL.');
 				return;
 			}
 
 			await saveGlobalSetting('twitchLink', url);
 			updateSocialLink('twitch', url);
 			document.getElementById('twitchLink').value = '';
-			alert('Twitch link updated GLOBALLY!');
+			notify.success('Twitch link updated globally.');
 		}
 
 		async function updateYouTubeLink() {
 			const url = document.getElementById('youtubeLink').value.trim();
 			if (!url) {
-				alert('Please enter a YouTube URL');
+				notify.error('Please enter a YouTube URL.');
 				return;
 			}
 
 			await saveGlobalSetting('youtubeLink', url);
 			updateSocialLink('youtube', url);
 			document.getElementById('youtubeLink').value = '';
-			alert('YouTube link updated GLOBALLY!');
+			notify.success('YouTube link updated globally.');
 		}
 
 		async function updateTwitchChannel() {
@@ -4242,13 +5457,13 @@
 			if (!input) return;
 			const rawValue = input.value.trim();
 			if (!rawValue) {
-				alert('Please enter a Twitch channel name');
+				notify.error('Please enter a Twitch channel name.');
 				return;
 			}
 
 			const channel = sanitizeTwitchChannel(rawValue);
 			if (!channel) {
-				alert('Invalid Twitch channel name');
+				notify.error('Invalid Twitch channel name.');
 				return;
 			}
 
@@ -4257,60 +5472,60 @@
 			const currentChannelEl = document.getElementById('currentTwitchChannel');
 			if (currentChannelEl) currentChannelEl.textContent = channel;
 			input.value = '';
-			alert('Twitch channel updated GLOBALLY!');
+			notify.success('Twitch channel updated globally.');
 			updateTwitchFollowers();
 		}
 
 		async function updateTikTokLink() {
 			const url = document.getElementById('tiktokLink').value.trim();
 			if (!url) {
-				alert('Please enter a TikTok URL');
+				notify.error('Please enter a TikTok URL.');
 				return;
 			}
 
 			await saveGlobalSetting('tiktokLink', url);
 			updateSocialLink('tiktok', url);
 			document.getElementById('tiktokLink').value = '';
-			alert('TikTok link updated GLOBALLY!');
+			notify.success('TikTok link updated globally.');
 		}
 
 		async function updateInstagramLink() {
 			const url = document.getElementById('instagramLink').value.trim();
 			if (!url) {
-				alert('Please enter an Instagram URL');
+				notify.error('Please enter an Instagram URL.');
 				return;
 			}
 
 			await saveGlobalSetting('instagramLink', url);
 			updateSocialLink('instagram', url);
 			document.getElementById('instagramLink').value = '';
-			alert('Instagram link updated GLOBALLY!');
+			notify.success('Instagram link updated globally.');
 		}
 
 		async function updateXLink() {
 			const url = document.getElementById('xLink').value.trim();
 			if (!url) {
-				alert('Please enter an X URL');
+				notify.error('Please enter an X URL.');
 				return;
 			}
 
 			await saveGlobalSetting('xLink', url);
 			updateSocialLink('x', url);
 			document.getElementById('xLink').value = '';
-			alert('X link updated GLOBALLY!');
+			notify.success('X link updated globally.');
 		}
 
 		async function updateRedditLink() {
 			const url = document.getElementById('redditLink').value.trim();
 			if (!url) {
-				alert('Please enter a Reddit URL');
+				notify.error('Please enter a Reddit URL.');
 				return;
 			}
 
 			await saveGlobalSetting('redditLink', url);
 			updateSocialLink('reddit', url);
 			document.getElementById('redditLink').value = '';
-			alert('Reddit link updated GLOBALLY!');
+			notify.success('Reddit link updated globally.');
 		}
 
 		function updateSocialLink(platform, url) {
@@ -4337,7 +5552,7 @@
 		async function updateFollowButton() {
 			const text = document.getElementById('followButtonText').value.trim();
 			if (!text) {
-				alert('Please enter follow button text');
+				notify.error('Please enter follow button text.');
 				return;
 			}
 
@@ -4357,13 +5572,13 @@
 			}
 			
 			document.getElementById('followButtonText').value = '';
-			alert('Follow button updated GLOBALLY!');
+			notify.success('Follow button updated globally.');
 		}
 
 		async function updateSubscribeButton() {
 			const text = document.getElementById('subscribeButtonText').value.trim();
 			if (!text) {
-				alert('Please enter subscribe button text');
+				notify.error('Please enter subscribe button text.');
 				return;
 			}
 
@@ -4383,7 +5598,7 @@
 			}
 			
 			document.getElementById('subscribeButtonText').value = '';
-			alert('Subscribe button updated GLOBALLY!');
+			notify.success('Subscribe button updated globally.');
 		}
 
 		async function updateStreamSchedule(streamNumber) {
@@ -4398,7 +5613,7 @@
 			const customDate = customDateInput.value;
 			
 			if (!time) {
-				alert(`Please enter stream ${streamNumber} time`);
+				notify.error(`Please enter stream ${streamNumber} time.`);
 				return;
 			}
 
@@ -4426,7 +5641,7 @@
 			}
 			
 			timeInput.value = '';
-			alert(`Stream ${streamNumber} schedule updated GLOBALLY!`);
+			notify.success(`Stream ${streamNumber} schedule updated globally.`);
 		}
 
 		// Keep old functions for backward compatibility but make them call the new function
@@ -4450,9 +5665,9 @@
 					saturdayElement.textContent = `${dayNames[6]}, ${time}`;
 				}
 				oldTimeInput.value = '';
-				alert('Saturday schedule updated GLOBALLY!');
+				notify.success('Saturday schedule updated globally.');
 			} else {
-				alert('Please enter Saturday stream time');
+				notify.error('Please enter Saturday stream time.');
 			}
 		}
 
@@ -4476,22 +5691,22 @@
 					sundayElement.textContent = `${dayNames[0]}, ${time}`;
 				}
 				oldTimeInput.value = '';
-				alert('Sunday schedule updated GLOBALLY!');
+				notify.success('Sunday schedule updated globally.');
 			} else {
-				alert('Please enter Sunday stream time');
+				notify.error('Please enter Sunday stream time.');
 			}
 		}
 
 		async function updateYouTubeVideo() {
 			const videoId = document.getElementById('youtubeVideoId').value.trim();
 			if (!videoId) {
-				alert('Please enter a YouTube video ID');
+				notify.error('Please enter a YouTube video ID.');
 				return;
 			}
 
 			// Validate video ID format (basic check)
 			if (videoId.length < 8 || videoId.length > 15) {
-				alert('Invalid YouTube video ID format. It should be 8-15 characters.');
+				notify.error('Invalid YouTube video ID format. Use 8-15 characters.');
 				return;
 			}
 
@@ -4504,8 +5719,48 @@
 			// Update current settings display
 			document.getElementById('currentYouTubeVideo').textContent = videoId;
 			document.getElementById('youtubeVideoId').value = '';
-			
-			alert('YouTube video updated GLOBALLY! All visitors will see this video.');
+		
+			notify.success('Featured YouTube video updated globally.');
+		}
+
+		async function updateShortVideoEmbed() {
+			const input = document.getElementById('shortVideoLink');
+			if (!input) return;
+			const link = input.value.trim();
+			if (!link) {
+				notify.error('Please paste a TikTok or YouTube Shorts link.');
+				return;
+			}
+
+			const parsed = parseShortVideoLink(link);
+			if (!parsed) {
+				notify.error('Unsupported link. Use a valid YouTube Shorts or TikTok URL.');
+				return;
+			}
+
+			input.value = parsed.originalUrl;
+			await saveGlobalSetting('shortVideoEmbed', JSON.stringify(parsed));
+			applyShortVideoEmbed(parsed);
+			const currentShortVideoEl = document.getElementById('currentShortVideo');
+			if (currentShortVideoEl) currentShortVideoEl.textContent = formatShortVideoLabel(parsed);
+			notify.success('Featured short video updated globally.');
+		}
+
+		async function clearShortVideoEmbed() {
+			const confirmed = await showConfirm('Remove the featured short video for all visitors?', {
+				title: 'Remove featured short',
+				confirmText: 'Remove video',
+				cancelText: 'Keep featured video',
+				type: 'warning'
+			});
+			if (!confirmed) return;
+			await saveGlobalSetting('shortVideoEmbed', 'N/A');
+			applyShortVideoEmbed(null);
+			const currentShortVideoEl = document.getElementById('currentShortVideo');
+			if (currentShortVideoEl) currentShortVideoEl.textContent = 'None';
+			const input = document.getElementById('shortVideoLink');
+			if (input) input.value = '';
+			notify.info('Featured short video cleared.');
 		}
 
 		async function updateFirebaseDatabase() {
@@ -4513,13 +5768,18 @@
 			const siteName = getSelectedSiteLabel();
 			
 			if (!newDatabaseUrl) {
-				alert('Please enter a Firebase database URL');
+				notify.error('Please enter a Firebase database URL.');
 				return;
 			}
 			
 			// Confirm the change
-			const confirmed = confirm(`⚠️ Are you sure you want to switch to a new Firebase database?\n\nNew URL: ${newDatabaseUrl}\n\nThis will:\n- Save the new database URL\n- Reload the page\n- Use the new Firebase project for all settings\n\nContinue?`);
-			
+			const confirmed = await showConfirm(`Switch Firebase database to ${newDatabaseUrl}?`, {
+				title: 'Add database URL to history',
+				confirmText: 'Add to history',
+				cancelText: 'Cancel',
+				type: 'warning'
+			});
+		
 			if (!confirmed) return;
 			
 			try {
@@ -4536,10 +5796,10 @@
 				// Clear input and re-render history so user can click Activate
 				document.getElementById('firebaseDatabaseUrl').value = '';
 				renderFirebaseHistory();
-				alert('Added to history. Click Activate to switch for everyone.');
+				notify.success('Database URL added to history. Click Activate to switch for everyone.');
 			} catch (error) {
 				console.error('Error updating Firebase database:', error);
-				alert('Error adding to history. Please try again.');
+				notify.error('Error adding to history. Please try again.');
 			}
 		}
 
@@ -4652,11 +5912,20 @@
 		async function activateFirebaseDb(index) {
 			try {
 				let raw = await loadGlobalSetting('firebaseDbHistory');
-				if (!raw || raw === 'N/A') return alert('No history found');
+				if (!raw || raw === 'N/A') {
+					notify.error('No database history found.');
+					return;
+				}
 				let list = [];
-				try { list = JSON.parse(raw); } catch { return alert('Invalid history'); }
+				try { list = JSON.parse(raw); } catch {
+					notify.error('Unable to parse database history.');
+					return;
+				}
 				const entry = list[index];
-				if (!entry || !entry.url) return alert('Invalid entry');
+				if (!entry || !entry.url) {
+					notify.error('Invalid history entry.');
+					return;
+				}
 				// Set active per-site map
 				await upsertActiveMap(entry);
 				// Mirror to default DB
@@ -4671,10 +5940,10 @@
 				// Update UI and reload with the selected DB
 				await renderFirebaseHistory(list);
 				localStorage.setItem('encryptedFirebaseUrl', encryptUrl(entry.url));
-				alert('Activated database for this site. Reloading...');
+				notify.success('Activated database for this site. Reloading...');
 				window.location.reload();
 			} catch (e) {
-				alert('Failed to activate database');
+				notify.error('Failed to activate database.');
 			}
 		}
 
@@ -4717,20 +5986,26 @@
 		async function addCollaborator() {
 			const input = document.getElementById('collabEmail');
 			const email = (input.value||'').trim().toLowerCase();
-			if (!email) return alert('Enter an email');
-			if (email === AUTHORIZED_EMAIL) return alert('Owner is already authorized.');
+			if (!email) {
+				notify.error('Enter an email address.');
+				return;
+			}
+			if (email === AUTHORIZED_EMAIL) {
+				notify.info('Owner is already authorized.');
+				return;
+			}
 			await loadCollaborators();
 			if (!collaborators.includes(email)) collaborators.push(email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
 			input.value='';
-			alert('Collaborator added');
+			notify.success('Collaborator added.');
 			renderCollaborators();
 		}
 		async function removeCollaborator(email) {
 			await loadCollaborators();
 			collaborators = collaborators.filter(e=>e!==email);
 			await saveGlobalSetting('collaborators', JSON.stringify(collaborators));
-			alert('Collaborator removed');
+			notify.success('Collaborator removed.');
 			renderCollaborators();
 		}
 
@@ -4791,7 +6066,7 @@
 			}
 			await saveGlobalSetting('themeTint', JSON.stringify(payload));
 			applyThemeTint(payload); // keep local tint applied after save
-			alert('Theme tint saved GLOBALLY!');
+			notify.success('Theme tint saved globally.');
 		}
 
 		// Website Effects Functions
@@ -4937,7 +6212,7 @@
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
 			
-			alert('All visual effects have been reset!');
+			notify.info('All visual effects have been reset.');
 		}
 
 		async function saveEffectsGlobally() {
@@ -4953,8 +6228,8 @@
 
 			// Save GLOBALLY for ALL users
 			await saveGlobalSetting('websiteEffects', JSON.stringify(effects));
-			
-			alert('Website effects saved GLOBALLY! All visitors will see these effects.');
+	
+			notify.success('Website effects saved globally.');
 		}
 
 		async function loadGlobalEffects() {
@@ -5030,7 +6305,13 @@
 
 		// Add reset functions
 		async function resetToDefaults() {
-			if (confirm('Are you sure you want to reset all settings to defaults GLOBALLY? This will affect ALL visitors and cannot be undone.')) {
+			const confirmed = await showConfirm('Reset all settings to defaults for every visitor? This cannot be undone.', {
+				title: 'Reset entire site',
+				confirmText: 'Reset everything',
+				cancelText: 'Keep current settings',
+				type: 'error'
+			});
+			if (confirmed) {
 				// Clear GLOBAL settings
 				await saveGlobalSetting('display-name', 'N/A');
 				await saveGlobalSetting('username', 'N/A');
@@ -5097,8 +6378,12 @@
 				document.getElementById('currentProfilePic').textContent = 'N/A';
 				document.getElementById('currentBackground').textContent = 'N/A';
 				document.getElementById('currentYouTubeVideo').textContent = 'N/A';
+				const gameSettingsUsername = document.getElementById('gameSettingsUsername');
+				if (gameSettingsUsername) {
+					gameSettingsUsername.textContent = formatHandle('');
+				}
 				
-				alert('All settings have been reset to defaults GLOBALLY!');
+				notify.success('All settings have been reset to defaults for every visitor.');
 			}
 		}
 
@@ -5120,6 +6405,7 @@
 			if (event.key === 'Escape') {
 				closeAdminPopup('adminLoginPopup');
 				closeAdminPopup('adminPanelPopup');
+				closeGameSettingsPopup();
 			}
 		});
 
@@ -5167,6 +6453,5 @@
 		setTimeout(setupDateSelectors, 100);
 		
 	</script>
-	</div> <!-- End page-content -->
 </body>
 </html>
