@@ -356,9 +356,7 @@
 			height:14px;
 			object-fit:cover;
 			border-radius:2px;
-			filter:invert(1) grayscale(1) brightness(1.4) contrast(1.6);
 		}
-		.social-link.discord-social-link img{ filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); }
 		.header:before{
 			content:"";
 			position:absolute; inset:0;
@@ -2352,6 +2350,10 @@
 		.admin-panel-body {
 			max-height: 70vh;
 			overflow-y: auto;
+			scrollbar-width: none;
+		}
+		.admin-panel-body::-webkit-scrollbar {
+			display: none;
 		}
 		#allSettingsAppFormPopup .popup-content {
 			display:flex;
@@ -2362,10 +2364,21 @@
 		#allSettingsAppFormPopup .popup-header {
 			flex:0 0 auto;
 		}
+		#allSettingsManagerPopup .popup-body {
+			overflow-y:auto;
+			scrollbar-width:none;
+		}
+		#allSettingsManagerPopup .popup-body::-webkit-scrollbar {
+			display:none;
+		}
 		#allSettingsAppFormPopup .popup-body {
 			flex:1 1 auto;
 			min-height:0;
 			overflow-y:auto;
+			scrollbar-width:none;
+		}
+		#allSettingsAppFormPopup .popup-body::-webkit-scrollbar {
+			display:none;
 		}
 
 		.notification-center {
@@ -3219,25 +3232,25 @@
 	
 	<ul class="social-bar" aria-label="Social Bar">
 		<li><a id="twitchSocialLink" href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
-			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
+			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="youtubeSocialLink" href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
-			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
+			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="tiktokSocialLink" href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
-			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
+			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="discordSocialLink" href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
-			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
+			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="instagramSocialLink" href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
-			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
+			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="xSocialLink" href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
-			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
+			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="redditSocialLink" href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
-			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
+			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png" style="filter: invert(100%);">
 		</a></li>
 	</ul>
 	
@@ -3262,11 +3275,11 @@
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="streamingYearStat">&nbsp;</div>
@@ -3654,7 +3667,7 @@
 				const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 				if (followersElement) {
 					followersElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formattedFollowers} followers
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
@@ -3673,7 +3686,7 @@
 			console.log('🔄 Using fallback for Twitch followers');
 			const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 			followersElement.innerHTML = `
-				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 				N/A followers
 			`;
 		}
@@ -3703,7 +3716,7 @@
 						// Update the subscribers display
 						const subsElement = document.querySelector('.stat img[alt="YouTube"]').parentElement;
 						subsElement.innerHTML = `
-							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 							${formattedSubs} subs
 						`;
 					}
@@ -8362,7 +8375,7 @@
 				const followerElement = document.getElementById('twitchFollowersStat');
 				if (followerElement) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(savedFollowerCount))} followers
 					`;
 				}
@@ -8374,7 +8387,7 @@
 				const subscriberElement = document.getElementById('youtubeSubscribersStat');
 				if (subscriberElement) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(savedSubscriberCount))} subs
 					`;
 				}
@@ -9197,7 +9210,7 @@
 			if (followerElement) {
 				if (count) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(count))} followers
 					`;
 				} else {
@@ -9228,7 +9241,7 @@
 			if (subscriberElement) {
 				if (count) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(count))} subs
 					`;
 				} else {
