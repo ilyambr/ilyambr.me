@@ -1,0 +1,34 @@
+name: Update tracker stats
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # every hour
+  workflow_dispatch:      # manual run button in Actions tab
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Fetch tracker stats
+        env:
+          TRACKER_USERNAME: 'ilyambr#ttb'   # change if needed
+        run: npm run tracker:fetch
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          git commit -m "chore: update tracker stats" || echo "No changes to commit"
+          git push
