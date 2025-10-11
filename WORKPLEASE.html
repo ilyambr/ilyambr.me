@@ -8,12 +8,10 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" referrerpolicy="no-referrer">
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<!-- Firebase SDK -->
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" referrerpolicy="no-referrer"></script>
 	<style>
 		:root{
 			--bg-1:#0b0b12;
@@ -32,10 +30,59 @@
 			--shadow:0 10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
 			--radius:18px;
 			--radius-sm:12px;
+			--accent:#63a4ff;
+			--accent-hover:#7ab4ff;
+			--accent-contrast:#0c1424;
+			--surface-overlay:rgba(255,255,255,0.05);
+			--surface-overlay-hover:rgba(255,255,255,0.12);
+			--surface-button:rgba(255,255,255,0.08);
+			--surface-button-border:rgba(255,255,255,0.16);
+			--surface-button-hover:rgba(255,255,255,0.16);
+			--surface-button-border-hover:rgba(255,255,255,0.22);
+			--text-subtle:rgba(255,255,255,0.6);
+			--text-stronger:rgba(255,255,255,0.75);
+			--danger-overlay:rgba(255,59,107,0.2);
+			--danger-overlay-hover:rgba(255,59,107,0.3);
+			--danger-border:rgba(255,59,107,0.3);
+			--success-main:#49c977;
+			--success-bg:rgba(73,201,119,0.15);
+			--success-border-strong:rgba(73,201,119,0.4);
+			--success-border:rgba(73,201,119,0.35);
+			--success-shadow:rgba(73,201,119,0.25);
+			--info-main:#73b7ff;
+			--info-bg:rgba(111,182,255,0.15);
+			--info-border-strong:rgba(111,182,255,0.4);
+			--info-border:rgba(111,182,255,0.3);
+			--info-shadow:rgba(111,182,255,0.2);
+			--warning-main:#fdc45a;
+			--warning-bg:rgba(253,196,90,0.18);
+			--warning-border-strong:rgba(253,196,90,0.45);
+			--warning-border:rgba(253,196,90,0.35);
+			--warning-shadow:rgba(253,196,90,0.22);
+			--error-main:#ff6b81;
+			--error-bg:rgba(255,107,129,0.18);
+			--error-border-strong:rgba(255,107,129,0.45);
+			--error-border:rgba(255,107,129,0.35);
+			--error-shadow:rgba(255,107,129,0.25);
+			--error-strong:rgba(255,107,129,0.6);
 		}
 
-		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -ms-overflow-style: none; scrollbar-width: none;}
-		*::-webkit-scrollbar{width:0; height:0;}
+		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
+		::-webkit-scrollbar{width:12px; height:12px;}
+		::-webkit-scrollbar:horizontal{height:10px;}
+		::-webkit-scrollbar-track{
+			background:transparent;
+			border-radius:999px;
+		}
+		::-webkit-scrollbar-thumb{
+			background:#ffffff;
+			border-radius:999px;
+			border:3px solid rgba(0,0,0,0.25);
+		}
+		::-webkit-scrollbar-thumb:hover{
+			background:#f5f5f5;
+		}
+		::-webkit-scrollbar-corner{background:transparent;}
 		html,body{height:100%}
 		html{
 			padding:0;
@@ -49,6 +96,8 @@
 			overscroll-behavior-x:none;
 			overscroll-behavior-y:none;
 			overflow-anchor:auto;
+			scrollbar-width:thin;
+			scrollbar-color:rgba(0,199,255,0.55) rgba(10,12,26,0.86);
 		}
 		body{
 			margin:0;
@@ -63,6 +112,12 @@
 			overscroll-behavior-x:none;
 			overscroll-behavior-y:none;
 			max-width:100vw;
+			scrollbar-gutter:stable both-edges;
+		}
+		.page-effects-root{
+			position:relative;
+			min-height:100%;
+			width:100%;
 		}
 		@media (min-width: 1201px){
 			body{
@@ -304,7 +359,6 @@
 			height:14px;
 			object-fit:cover;
 			border-radius:2px;
-			filter:invert(1);
 		}
 		.header:before{
 			content:"";
@@ -460,7 +514,8 @@
 		}
 		.popup-content.game-settings-panel .popup-body{
 			padding:32px;
-			overflow-y:auto;
+			overflow-y:hidden;
+			overflow-x:auto;
 		}
 		.popup-content.game-settings-panel .settings-layout{
 			display:grid;
@@ -957,7 +1012,25 @@
 			gap:12px;
 			max-height:480px;
 			overflow:auto;
-			padding-right:4px;
+			padding-right:6px;
+			scrollbar-width:thin;
+			scrollbar-color:rgba(0,199,255,0.48) rgba(6,8,20,0.78);
+		}
+		.app-settings-tab-list::-webkit-scrollbar{
+			width:8px;
+		}
+		.app-settings-tab-list::-webkit-scrollbar-track{
+			background:rgba(6,8,20,0.78);
+			border-radius:999px;
+		}
+		.app-settings-tab-list::-webkit-scrollbar-thumb{
+			background:linear-gradient(135deg, rgba(0,199,255,0.68), rgba(0,132,255,0.5));
+			border-radius:999px;
+			border:2px solid rgba(6,8,18,0.92);
+			box-shadow:0 8px 18px rgba(0,0,0,0.28);
+		}
+		.app-settings-tab-list::-webkit-scrollbar-thumb:hover{
+			background:linear-gradient(135deg, rgba(60,224,255,0.82), rgba(12,166,255,0.6));
 		}
 		.app-settings-tab-item{
 			display:flex;
@@ -1217,76 +1290,6 @@
 		}
 		.app-special-preview{
 			min-height:280px;
-		}
-		#imageCropperModal{
-			z-index:1400;
-		}
-		.cropper-popup{
-			width:min(96vw, 1320px);
-			max-width:none;
-		}
-		.image-cropper-body{
-			display:flex;
-			flex-direction:column;
-			gap:18px;
-		}
-		.image-cropper-stage{
-			position:relative;
-			width:100%;
-			height:clamp(360px, 68vh, 780px);
-			border-radius:18px;
-			overflow:hidden;
-			border:1px solid rgba(255,255,255,0.14);
-			background:rgba(8,8,18,0.82);
-			max-width:100%;
-		}
-		.image-cropper-stage .cropper-container,
-		.image-cropper-stage .cropper-wrap-box,
-		.image-cropper-stage .cropper-canvas,
-		.image-cropper-stage .cropper-view-box,
-		.image-cropper-stage .cropper-drag-box,
-		.image-cropper-stage .cropper-crop-box,
-		.image-cropper-stage .cropper-modal{
-			border-radius:18px;
-			width:100% !important;
-			height:100% !important;
-			top:0 !important;
-			left:0 !important;
-		}
-		#imageCropperPreview{
-			max-width:100%;
-			max-height:100%;
-			display:block;
-			width:100%;
-		}
-		.image-cropper-hint{
-			font-size:13px;
-			color:rgba(255,255,255,0.65);
-			line-height:1.6;
-		}
-		.image-cropper-controls{
-			display:flex;
-			gap:12px;
-			align-items:center;
-			flex-wrap:wrap;
-			justify-content:flex-end;
-		}
-		.image-cropper-controls .spacer{
-			flex:1 1 auto;
-		}
-		.image-cropper-popup .popup-body{
-			max-height:80vh;
-			overflow:auto;
-			padding-right:4px;
-		}
-		@media (max-width:720px){
-			.cropper-popup{
-				width:calc(100vw - 28px);
-				max-width:calc(100vw - 28px);
-			}
-			.image-cropper-stage{
-				height:clamp(240px, 55vh, 520px);
-			}
 		}
 		.app-form-footer{
 			display:flex;
@@ -1626,7 +1629,7 @@
 			position:relative;
 			height:260px;
 			width:100%;
-			border-radius:28px 28px 0 0;
+			border-radius:0;
 			overflow:hidden;
 			background:rgba(255,255,255,0.06) center/cover no-repeat;
 			border-bottom:1px solid rgba(132,164,255,0.18);
@@ -1654,9 +1657,27 @@
 		.app-settings-tab-bar{
 			display:flex;
 			gap:12px;
-			padding:26px 38px 0;
+			padding:10px 38px 6px;
+			margin-top:-20px;
+			position:relative;
+			z-index:2;
 			overflow-x:auto;
 			scrollbar-width:thin;
+			scrollbar-color:#ffffff transparent;
+			scroll-snap-type:x proximity;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar{
+			height:8px;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-track{
+			background:transparent;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-thumb{
+			background:#ffffff;
+			border-radius:999px;
+		}
+		.app-settings-tab-bar::-webkit-scrollbar-thumb:hover{
+			background:#f1f1f1;
 		}
 		.app-settings-tab-bar.empty{
 			min-height:48px;
@@ -1674,6 +1695,7 @@
 			cursor:pointer;
 			transition:all 0.2s ease;
 			white-space:nowrap;
+			scroll-snap-align:center;
 			box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
 		}
 		.app-settings-tab:hover{
@@ -1798,6 +1820,7 @@
 			}
 			.settings-template-hero{
 				height:220px;
+				border-radius:0;
 			}
 			.settings-template-sections{
 				padding:26px 24px 34px;
@@ -1822,7 +1845,7 @@
 				max-height:none;
 			}
 			.app-settings-tab-bar{
-				padding:18px 24px 0;
+				padding:12px 20px;
 				gap:8px;
 			}
 			.app-settings-tab{
@@ -1998,6 +2021,47 @@
 			min-width: 400px;
 			max-width: 90vw;
 			animation: popupSlideIn 0.3s ease-out;
+		}
+
+		#colorsPopup .popup-content{
+			width:min(640px, 92vw);
+			max-height:min(85vh, 780px);
+			display:flex;
+			flex-direction:column;
+		}
+		#colorsPopup .popup-body{
+			flex:1 1 auto;
+			overflow-y:auto;
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+			padding:20px 24px 24px;
+		}
+		#colorsPopup .admin-setting{
+			flex:1 1 auto;
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+		}
+		#colorsPopup .colors-list{
+			flex:1 1 auto;
+			display:grid;
+			gap:12px;
+			overflow-y:auto;
+			padding-right:8px;
+			max-height:none;
+		}
+		#colorsPopup .colors-actions{
+			display:flex;
+			flex-wrap:wrap;
+			gap:10px;
+			margin-top:4px;
+			padding-top:12px;
+			border-top:1px solid rgba(255,255,255,0.06);
+		}
+		#colorsPopup .colors-actions button{
+			flex:1 1 220px;
+			min-width:180px;
 		}
 
 		.popup-header {
@@ -2219,6 +2283,41 @@
 		.admin-panel-body {
 			max-height: 70vh;
 			overflow-y: auto;
+			scrollbar-width: none;
+		}
+		.admin-panel-body::-webkit-scrollbar {
+			display: none;
+		}
+		#allSettingsAppFormPopup .popup-content {
+			display:flex;
+			flex-direction:column;
+			max-height:90vh;
+			height:90vh;
+		}
+		#allSettingsAppFormPopup .popup-header {
+			flex:0 0 auto;
+		}
+		#allSettingsManagerPopup .popup-body {
+			overflow-y:auto;
+			overflow-x:auto;
+		}
+		#allSettingsManagerPopup .popup-body::-webkit-scrollbar {
+			width:0;
+		}
+		#allSettingsManagerPopup .popup-body::-webkit-scrollbar:horizontal {
+			height:10px;
+		}
+		#allSettingsAppFormPopup .popup-body {
+			flex:1 1 auto;
+			min-height:0;
+			overflow-y:auto;
+			overflow-x:auto;
+		}
+		#allSettingsAppFormPopup .popup-body::-webkit-scrollbar {
+			width:0;
+		}
+		#allSettingsAppFormPopup .popup-body::-webkit-scrollbar:horizontal {
+			height:10px;
 		}
 
 		.notification-center {
@@ -2329,20 +2428,20 @@
 		}
 
 		.notification-input.error {
-			border-color: rgba(255, 107, 129, 0.6);
-			box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+			border-color: var(--error-strong);
+			box-shadow: 0 0 0 3px var(--error-bg);
 		}
 
 		.notification-inline-error {
 			margin-top: 6px;
-			color: #ff6b81;
+			color: var(--error-main);
 			font-size: 12px;
 			line-height: 1.3;
 		}
 
 		.notification-helper {
 			margin-top: 10px;
-			color: rgba(255, 255, 255, 0.6);
+			color: var(--text-subtle);
 			font-size: 12px;
 			line-height: 1.4;
 		}
@@ -2358,15 +2457,15 @@
 			justify-content: center;
 			border-radius: 50%;
 			border: none;
-			background: rgba(255, 255, 255, 0.05);
-			color: rgba(255, 255, 255, 0.75);
+			background: var(--surface-overlay);
+			color: var(--text-stronger);
 			cursor: pointer;
 			transition: all 0.2s ease;
 		}
 
 		.notification-close:hover {
-			background: rgba(255, 255, 255, 0.12);
-			color: #ffffff;
+			background: var(--surface-overlay-hover);
+			color: var(--text);
 		}
 
 		.notification-actions {
@@ -2381,9 +2480,9 @@
 			min-width: 96px;
 			padding: 9px 16px;
 			border-radius: 8px;
-			border: 1px solid rgba(255, 255, 255, 0.16);
-			background: rgba(255, 255, 255, 0.08);
-			color: #ffffff;
+			border: 1px solid var(--surface-button-border);
+			background: var(--surface-button);
+			color: var(--text-stronger);
 			font-size: 13px;
 			font-weight: 500;
 			cursor: pointer;
@@ -2391,63 +2490,63 @@
 		}
 
 		.notification-action:hover {
-			background: rgba(255, 255, 255, 0.16);
-			border-color: rgba(255, 255, 255, 0.22);
+			background: var(--surface-button-hover);
+			border-color: var(--surface-button-border-hover);
 		}
 
 		.notification-action.primary {
-			background: #63a4ff;
-			border-color: #63a4ff;
-			color: #0c1424;
+			background: var(--accent);
+			border-color: var(--accent);
+			color: var(--accent-contrast);
 		}
 
 		.notification-action.primary:hover {
-			background: #7ab4ff;
-			border-color: #7ab4ff;
+			background: var(--accent-hover);
+			border-color: var(--accent-hover);
 		}
 
 		.notification-card.notification-success .notification-icon {
-			background: rgba(73, 201, 119, 0.15);
-			border-color: rgba(73, 201, 119, 0.4);
-			color: #49c977;
+			background: var(--success-bg);
+			border-color: var(--success-border-strong);
+			color: var(--success-main);
 		}
 
 		.notification-card.notification-info .notification-icon {
-			background: rgba(111, 182, 255, 0.15);
-			border-color: rgba(111, 182, 255, 0.4);
-			color: #73b7ff;
+			background: var(--info-bg);
+			border-color: var(--info-border-strong);
+			color: var(--info-main);
 		}
 
 		.notification-card.notification-warning .notification-icon {
-			background: rgba(253, 196, 90, 0.18);
-			border-color: rgba(253, 196, 90, 0.45);
-			color: #fdc45a;
+			background: var(--warning-bg);
+			border-color: var(--warning-border-strong);
+			color: var(--warning-main);
 		}
 
 		.notification-card.notification-error .notification-icon {
-			background: rgba(255, 107, 129, 0.18);
-			border-color: rgba(255, 107, 129, 0.45);
-			color: #ff6b81;
+			background: var(--error-bg);
+			border-color: var(--error-border-strong);
+			color: var(--error-main);
 		}
 
 		.notification-card.notification-success {
-			border-color: rgba(73, 201, 119, 0.35);
-			box-shadow: 0 18px 38px rgba(73, 201, 119, 0.25);
+			border-color: var(--success-border);
+			box-shadow: 0 18px 38px var(--success-shadow);
 		}
 
 		.notification-card.notification-info {
-			border-color: rgba(111, 182, 255, 0.3);
-			box-shadow: 0 18px 38px rgba(111, 182, 255, 0.2);
+			border-color: var(--info-border);
+			box-shadow: 0 18px 38px var(--info-shadow);
 		}
 
 		.notification-card.notification-warning {
-			border-color: rgba(253, 196, 90, 0.35);
-			box-shadow: 0 18px 38px rgba(253, 196, 90, 0.22);
+			border-color: var(--warning-border);
+			box-shadow: 0 18px 38px var(--warning-shadow);
 		}
 
 		.notification-card.notification-error {
-			border-color: rgba(255, 107, 129, 0.35);
-			box-shadow: 0 18px 38px rgba(255, 107, 129, 0.25);
+			border-color: var(--error-border);
+			box-shadow: 0 18px 38px var(--error-shadow);
 		}
 
 		.notification-card.has-actions {
@@ -2499,9 +2598,9 @@
 		}
 
 		.admin-logout-btn {
-			background: rgba(255, 59, 107, 0.2);
-			border: 1px solid rgba(255, 59, 107, 0.3);
-			color: #ffffff;
+			background: var(--danger-overlay);
+			border: 1px solid var(--danger-border);
+			color: var(--text);
 			padding: 4px 12px;
 			border-radius: 6px;
 			font-size: 12px;
@@ -2510,8 +2609,8 @@
 		}
 
 		.admin-logout-btn:hover {
-			background: rgba(255, 59, 107, 0.3);
-			color: #ffffff;
+			background: var(--danger-overlay-hover);
+			color: var(--text);
 		}
 
 		.admin-logout-btn.alt-light {
@@ -2812,6 +2911,23 @@
 			filter: saturate(1.1);
 		}
 
+		.admin-setting button.admin-upload-btn {
+			background: var(--surface-button);
+			border: 1px solid var(--surface-button-border);
+			color: var(--text);
+			filter: none;
+		}
+
+		.admin-setting button.admin-upload-btn:hover {
+			background: var(--surface-button-hover);
+			border-color: var(--surface-button-border-hover);
+		}
+
+		.admin-upload-label {
+			font-size: 13px;
+			color: var(--text-subtle);
+		}
+
 		.admin-setting small {
 			color: var(--muted);
 			font-size: 12px;
@@ -2950,7 +3066,8 @@
 		}
 		
 		.effect-grayscale {
-			filter: grayscale(100%);
+			/* Grayscale is applied via inline filters when the toggle is active. */
+			--effect-grayscale-active: 1;
 		}
 		
 		.effect-sepia {
@@ -2981,7 +3098,7 @@
 		
 		/* Combined effects support */
 		.effect-color.effect-grayscale {
-			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%);
+			filter: hue-rotate(45deg) saturate(1.5);
 		}
 		
 		.effect-color.effect-sepia {
@@ -2989,7 +3106,7 @@
 		}
 		
 		.effect-grayscale.effect-sepia {
-			filter: grayscale(100%) sepia(70%);
+			filter: sepia(70%);
 		}
 		
 		.effect-color.effect-brightness {
@@ -2997,7 +3114,7 @@
 		}
 		
 		.effect-grayscale.effect-brightness {
-			filter: grayscale(100%) brightness(1.3);
+			filter: brightness(1.3);
 		}
 		
 		.effect-sepia.effect-brightness {
@@ -3009,7 +3126,7 @@
 		}
 		
 		.effect-invert.effect-grayscale {
-			filter: invert(1) grayscale(100%);
+			filter: invert(1);
 		}
 		
 		.effect-invert.effect-sepia {
@@ -3022,7 +3139,7 @@
 		
 		/* Triple+ effect combinations */
 		.effect-color.effect-grayscale.effect-brightness {
-			filter: hue-rotate(45deg) saturate(1.5) grayscale(100%) brightness(1.3);
+			filter: hue-rotate(45deg) saturate(1.5) brightness(1.3);
 		}
 		
 		.effect-color.effect-sepia.effect-brightness {
@@ -3030,7 +3147,14 @@
 		}
 		
 		.effect-grayscale.effect-sepia.effect-brightness {
-			filter: grayscale(100%) sepia(70%) brightness(1.3);
+			filter: sepia(70%) brightness(1.3);
+		}
+
+		[data-keep-color="true"],
+		[data-keep-color="true"] *,
+		[data-preserve-color="true"],
+		[data-preserve-color="true"] * {
+			filter: none !important;
 		}
 	</style>
 </head>
@@ -3041,31 +3165,32 @@
 		<div class="loading-spinner"></div>
 	</div>
 
+	<div id="pageEffectsRoot" class="page-effects-root">
 	<div class="page-logo">
-		<img id="pageLogoImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" />
+		<img id="pageLogoImg" src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
 	</div>
 	
 	<ul class="social-bar" aria-label="Social Bar">
 		<li><a id="twitchSocialLink" href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
-			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
+			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="youtubeSocialLink" href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
-			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
+			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="tiktokSocialLink" href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
-			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
+			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="discordSocialLink" href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
-			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
+			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="instagramSocialLink" href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
-			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
+			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="xSocialLink" href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
-			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
+			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png" style="filter: invert(100%);">
 		</a></li>
 		<li><a id="redditSocialLink" href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
-			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
+			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png" style="filter: invert(100%);">
 		</a></li>
 	</ul>
 	
@@ -3090,11 +3215,11 @@
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="streamingYearStat">&nbsp;</div>
@@ -3143,7 +3268,7 @@
 				<div class="about" id="aboutSection">
 					<span id="aboutTextContent">&nbsp;</span>
 					<a class="discord-link discord-about-link" href="https://ilyambr.me/discord" target="_blank" rel="noopener">
-						<img src="https://thumbnail.imgbin.com/2/21/7/discord-icon-blue-discord-logo-for-chatting-and-communication-RA6Qd2f8_t.jpg" alt="Discord"/>
+						<img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord"/>
 						Discord
 					</a>
 					<a class="discord-link settings-link" href="javascript:void(0)" onclick="openGameSettingsPopup()" aria-label="Open all settings">
@@ -3186,6 +3311,8 @@
 		</div>
 	</div>
 
+		</div>
+
 	<!-- Admin Console Button -->
 	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminLogin()">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3195,6 +3322,8 @@
 	</div>
 
 	<script>
+		const pageEffectsRoot = document.getElementById('pageEffectsRoot') || document.body;
+		window.pageEffectsRoot = pageEffectsRoot;
 		const ABOUT_MAX_LENGTH = 100;
 
 		const clampAboutText = (text = "") => {
@@ -3482,7 +3611,7 @@
 				const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 				if (followersElement) {
 					followersElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formattedFollowers} followers
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
@@ -3501,7 +3630,7 @@
 			console.log('🔄 Using fallback for Twitch followers');
 			const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 			followersElement.innerHTML = `
-				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 				N/A followers
 			`;
 		}
@@ -3531,7 +3660,7 @@
 						// Update the subscribers display
 						const subsElement = document.querySelector('.stat img[alt="YouTube"]').parentElement;
 						subsElement.innerHTML = `
-							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 							${formattedSubs} subs
 						`;
 					}
@@ -3798,232 +3927,10 @@
 		let appSettingsEditorHandlersBound = false;
 		let allSettingsMediaHandlersBound = false;
 		let allSettingsSpecialHandlersBound = false;
-		let imageCropperInstance = null;
-		let imageCropperResolve = null;
-		let imageCropperReject = null;
-		let imageCropperOptions = null;
-		let imageCropperHandlersBound = false;
-
 		const ALL_SETTINGS_SPECIAL_OPTIONS = [
 			{ id: 'none', label: 'None' },
 			{ id: 'character-trn', label: 'Character (TRN)' }
 		];
-
-		const IMAGE_CROP_CONFIG = {
-			banner: {
-				title: 'Crop banner',
-				hint: 'Keep the subject centered. Banner crops vertically at 1080 × 1640.',
-				aspectRatio: 1080 / 1640,
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.92
-			},
-			logo: {
-				title: 'Crop logo',
-				hint: 'Square format works best for logos.',
-				aspectRatio: 1
-			},
-			character: {
-				title: 'Crop character portrait',
-				hint: 'Use a tall crop (1080 × 1440). Keep the character centered.',
-				aspectRatio: 1080 / 1440,
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.92
-			},
-			profile: {
-				title: 'Crop profile picture',
-				hint: 'Square avatars look best across the site.',
-				aspectRatio: 1
-			},
-			background: {
-				title: 'Crop background image',
-				hint: 'Choose the portion of the image you want behind everything.',
-				viewMode: 0,
-				autoCropArea: 1,
-				outputFormat: 'image/jpeg',
-				outputQuality: 0.9
-			},
-			actionLogo: {
-				title: 'Crop button logo',
-				hint: 'Square icons align best with the follow/subscribe buttons.',
-				aspectRatio: 1
-			}
-		};
-
-		function ensureImageCropperHandlers() {
-			if (imageCropperHandlersBound) return;
-			const modal = document.getElementById('imageCropperModal');
-			if (!modal) return;
-			const buttons = modal.querySelectorAll('[data-cropper-action]');
-			buttons.forEach(button => {
-				button.addEventListener('click', event => {
-					event.preventDefault();
-					const action = button.dataset.cropperAction;
-					handleImageCropperAction(action);
-				});
-			});
-			modal.addEventListener('click', event => {
-				if (event.target === modal) {
-					handleImageCropperAction('cancel');
-				}
-			});
-			document.addEventListener('keydown', event => {
-				if (event.key === 'Escape') {
-					const isVisible = modal.style.display !== 'none';
-					if (isVisible) {
-						handleImageCropperAction('cancel');
-					}
-				}
-			});
-			imageCropperHandlersBound = true;
-		}
-
-		function handleImageCropperAction(action) {
-			if (!action) return;
-			switch (action) {
-				case 'cancel': {
-					if (typeof imageCropperReject === 'function') {
-						imageCropperReject(new Error('crop-canceled'));
-					}
-					closeImageCropper();
-					break;
-				}
-				case 'reset': {
-					if (imageCropperInstance) {
-						imageCropperInstance.reset();
-					}
-					break;
-				}
-				case 'apply': {
-					if (!imageCropperInstance) return;
-					try {
-						const canvasOptions = imageCropperOptions?.canvas || {};
-						const canvas = imageCropperInstance.getCroppedCanvas(canvasOptions);
-						if (!canvas) throw new Error('canvas-unavailable');
-						if (canvas.getContext) {
-							const ctx = canvas.getContext('2d');
-							if (ctx && 'imageSmoothingQuality' in ctx) {
-								ctx.imageSmoothingQuality = 'high';
-							}
-						}
-						const format = imageCropperOptions?.outputFormat || 'image/png';
-						const quality = typeof imageCropperOptions?.outputQuality === 'number' ? imageCropperOptions.outputQuality : undefined;
-						const dataUrl = typeof quality === 'number'
-							? canvas.toDataURL(format, quality)
-							: canvas.toDataURL(format);
-						if (typeof imageCropperResolve === 'function') {
-							imageCropperResolve(dataUrl);
-						}
-						closeImageCropper();
-					} catch (error) {
-						console.error('Failed to crop image:', error);
-						if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
-							notify.error('Could not crop that image. Try again.');
-						}
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-
-		function closeImageCropper() {
-			const modal = document.getElementById('imageCropperModal');
-			const preview = document.getElementById('imageCropperPreview');
-			if (imageCropperInstance) {
-				imageCropperInstance.destroy();
-				imageCropperInstance = null;
-			}
-			if (preview) {
-				preview.onload = null;
-				preview.onerror = null;
-				preview.src = '';
-			}
-			if (modal) {
-				modal.style.display = 'none';
-				modal.classList.remove('active-cropper');
-			}
-			imageCropperOptions = null;
-			imageCropperResolve = null;
-			imageCropperReject = null;
-		}
-
-		function openImageCropper(dataUrl, options = {}) {
-			ensureImageCropperHandlers();
-			const modal = document.getElementById('imageCropperModal');
-			const preview = document.getElementById('imageCropperPreview');
-			const titleEl = document.getElementById('imageCropperTitle');
-			const hintEl = document.getElementById('imageCropperHint');
-			if (!modal || !preview) {
-				return Promise.reject(new Error('cropper-modal-missing'));
-			}
-			const applyBtn = modal.querySelector('[data-cropper-action="apply"]');
-			return new Promise((resolve, reject) => {
-				imageCropperResolve = resolve;
-				imageCropperReject = reject;
-				imageCropperOptions = options || {};
-				modal.style.display = 'flex';
-				modal.classList.add('active-cropper');
-				modal.scrollTop = 0;
-				if (applyBtn) applyBtn.disabled = true;
-				if (titleEl) titleEl.textContent = options?.title || 'Adjust image crop';
-				if (hintEl) hintEl.textContent = options?.hint || 'Drag to reposition the image. Use your mouse wheel or pinch to zoom.';
-				const cleanup = () => {
-					preview.onload = null;
-					preview.onerror = null;
-				};
-				preview.onload = () => {
-					cleanup();
-					if (imageCropperInstance) {
-						imageCropperInstance.destroy();
-					}
-					const aspectRatio = Number.isFinite(options?.aspectRatio) ? options.aspectRatio : undefined;
-					const cropOptions = {
-						aspectRatio,
-						initialAspectRatio: aspectRatio,
-						viewMode: typeof options?.viewMode === 'number' ? options.viewMode : 1,
-						autoCropArea: typeof options?.autoCropArea === 'number' ? options.autoCropArea : 0.92,
-						background: false,
-						movable: true,
-						zoomable: true,
-						wheelZoomRatio: 0.12,
-						dragMode: 'move',
-						responsive: true,
-						checkOrientation: false,
-						ready() {
-							const stage = modal.querySelector('.image-cropper-stage');
-							if (!stage) return;
-							const bounds = stage.getBoundingClientRect();
-							const imageData = this.getImageData();
-							if (!imageData || !imageData.naturalWidth || !imageData.naturalHeight) {
-								if (applyBtn) applyBtn.disabled = false;
-								return;
-							}
-							this.reset();
-							const scale = Math.min(
-								bounds.width / imageData.naturalWidth,
-								bounds.height / imageData.naturalHeight
-							);
-							if (Number.isFinite(scale) && scale > 0) {
-								this.zoomTo(scale);
-							}
-							this.setDragMode('move');
-							if (applyBtn) applyBtn.disabled = false;
-						}
-					};
-					imageCropperInstance = new Cropper(preview, cropOptions);
-				};
-				preview.onerror = () => {
-					cleanup();
-					if (applyBtn) applyBtn.disabled = false;
-					reject(new Error('crop-load-failed'));
-					closeImageCropper();
-				};
-				preview.src = '';
-				preview.src = dataUrl;
-			});
-		}
-
 		function readFileAsDataURL(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -4031,27 +3938,6 @@
 				reader.onerror = () => reject(new Error('file-read-failed'));
 				reader.readAsDataURL(file);
 			});
-		}
-
-		async function requestImageCrop(dataUrl, key) {
-			if (!dataUrl) return null;
-			if (typeof Cropper === 'undefined') {
-				return dataUrl;
-			}
-			const config = IMAGE_CROP_CONFIG[key] || {};
-			try {
-				const result = await openImageCropper(dataUrl, config);
-				return result;
-			} catch (error) {
-				if (error && error.message === 'crop-canceled') {
-					return null;
-				}
-				console.warn('Image crop failed; falling back to original image.', error);
-				if (typeof notify !== 'undefined' && typeof notify.warning === 'function') {
-					notify.warning('Using the original upload because cropping failed.');
-				}
-				return dataUrl;
-			}
 		}
 
 		const DEFAULT_GAME_SETTINGS_TABS = [
@@ -4290,24 +4176,29 @@
 
 			const container = document.createElement('section');
 			container.className = 'settings-app-template';
+			container.dataset.keepColor = 'true';
 			container.dataset.appId = app.id;
 
 			const hero = document.createElement('div');
 			hero.className = 'settings-template-hero';
+			hero.dataset.keepColor = 'true';
 			applyBackgroundImage(hero, app.banner);
 
 			const heroOverlay = document.createElement('div');
 			heroOverlay.className = 'settings-template-hero-overlay';
+			heroOverlay.dataset.keepColor = 'true';
 
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.keepColor = 'true';
 				heroOverlay.appendChild(logo);
 			} else {
 				const fallback = document.createElement('div');
 				fallback.className = 'settings-template-logo-fallback';
 				fallback.textContent = (app.name || 'App').charAt(0).toUpperCase();
+				fallback.dataset.keepColor = 'true';
 				heroOverlay.appendChild(fallback);
 			}
 
@@ -4325,13 +4216,16 @@
 
 			const templateBody = document.createElement('div');
 			templateBody.className = 'settings-template-body';
+			templateBody.dataset.keepColor = 'true';
 
 			const tabBar = document.createElement('div');
 			tabBar.className = 'app-settings-tab-bar';
+			tabBar.dataset.keepColor = 'true';
 			templateBody.appendChild(tabBar);
 
 			const sectionsWrap = document.createElement('div');
 			sectionsWrap.className = 'settings-template-sections';
+			sectionsWrap.dataset.keepColor = 'true';
 			templateBody.appendChild(sectionsWrap);
 
 			container.appendChild(templateBody);
@@ -4428,6 +4322,7 @@
 
 			const detailCard = document.createElement('div');
 			detailCard.className = 'settings-app-detail';
+			detailCard.dataset.keepColor = 'true';
 			detailCard.dataset.appId = app.id;
 			detailCard.appendChild(container);
 			const specialOption = normalizeAllSettingsSpecialOption(app?.specialOption);
@@ -4436,6 +4331,7 @@
 				characterPanel = document.createElement('aside');
 				characterPanel.className = 'character-trn-panel';
 				characterPanel.dataset.appId = `${app.id}-character`;
+				characterPanel.dataset.keepColor = 'true';
 				if (app.characterImage) {
 					applyBackgroundImage(characterPanel, app.characterImage);
 				} else {
@@ -4556,6 +4452,7 @@
 		function buildTabAppDisplay(app, isActive = false) {
 			const display = document.createElement('article');
 			display.className = 'settings-app-display';
+			display.dataset.keepColor = 'true';
 			display.dataset.appId = app.id;
 			display.tabIndex = 0;
 			display.setAttribute('role', 'button');
@@ -4567,10 +4464,12 @@
 			applyBackgroundImage(display, app.banner);
 			const overlay = document.createElement('div');
 			overlay.className = 'app-card-overlay static';
+			overlay.dataset.keepColor = 'true';
 			if (app.logo) {
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.keepColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -4630,6 +4529,7 @@
 			content.appendChild(hint);
 			const grid = document.createElement('div');
 			grid.className = 'settings-app-list';
+			grid.dataset.keepColor = 'true';
 			appsForTab.forEach(app => {
 				const tile = buildTabAppDisplay(app, app.id === selectedAllSettingsAppId);
 				tile.addEventListener('click', () => selectSettingsApp(app.id));
@@ -5232,12 +5132,8 @@
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, type);
-				if (!cropped) {
-					return;
-				}
-				pendingAllSettingsAppMedia[type] = cropped;
+				const dataUrl = await readFileAsDataURL(file);
+				pendingAllSettingsAppMedia[type] = dataUrl;
 				setAllSettingsMediaPreview(type, pendingAllSettingsAppMedia[type]);
 			} catch (error) {
 				console.error('Failed to process media upload:', error);
@@ -5360,6 +5256,7 @@
 				const logo = document.createElement('img');
 				logo.src = app.logo;
 				logo.alt = `${app.name} logo`;
+				logo.dataset.keepColor = 'true';
 				overlay.appendChild(logo);
 			}
 			const nameEl = document.createElement('div');
@@ -5672,16 +5569,16 @@
 	</div>
 
 	<!-- Colors Editor Popup -->
-	<div id="colorsPopup" class="popup-overlay">
-		<div class="popup-content">
+	<div id="colorsPopup" class="popup-overlay" data-keep-color="true">
+		<div class="popup-content" data-keep-color="true">
 			<div class="popup-header">
 				<h3>Edit Site Colors</h3>
 				<button class="close-btn" onclick="closePopup('colorsPopup')">&times;</button>
 			</div>
-			<div class="popup-body">
-				<div class="admin-setting">
-					<div id="colorsList" style="display:grid; gap:10px;"></div>
-					<div style="display:flex; gap:10px; margin-top:12px;">
+			<div class="popup-body" data-keep-color="true">
+				<div class="admin-setting" data-keep-color="true">
+					<div id="colorsList" class="colors-list" data-keep-color="true"></div>
+					<div class="colors-actions" data-keep-color="true">
 						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
 						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
 					</div>
@@ -5691,8 +5588,8 @@
 	</div>
 
 	<!-- All Settings Popup -->
-	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay">
-		<div class="popup-content game-settings-panel">
+	<div id="gameSettingsPopup" class="popup-overlay game-settings-overlay" data-keep-color="true">
+		<div class="popup-content game-settings-panel" data-keep-color="true">
 			<div class="popup-header">
 				<div>
 					<h3>All Settings</h3>
@@ -5700,18 +5597,18 @@
 				</div>
 				<button class="close-btn" onclick="closeGameSettingsPopup()" aria-label="Close all settings">&times;</button>
 			</div>
-			<div class="popup-body" id="gameSettingsBody">
-				<div class="settings-layout">
-					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories"></nav>
-					<div class="settings-content" id="gameSettingsContent"></div>
+			<div class="popup-body" id="gameSettingsBody" data-keep-color="true">
+				<div class="settings-layout" data-keep-color="true">
+					<nav class="settings-tabs" id="gameSettingsTabs" aria-label="Settings categories" data-keep-color="true"></nav>
+					<div class="settings-content" id="gameSettingsContent" data-keep-color="true"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="settingsAppDetailPopup" class="popup-overlay settings-detail-overlay">
-		<div class="settings-detail-columns" id="settingsDetailColumns">
-			<div class="popup-content settings-detail-panel" id="settingsDetailMainPanel">
+	<div id="settingsAppDetailPopup" class="popup-overlay settings-detail-overlay" data-keep-color="true">
+		<div class="settings-detail-columns" id="settingsDetailColumns" data-keep-color="true">
+			<div class="popup-content settings-detail-panel" id="settingsDetailMainPanel" data-keep-color="true">
 				<div class="popup-header">
 					<div>
 						<h3 id="settingsAppDetailTitle">App Settings</h3>
@@ -5719,35 +5616,12 @@
 					</div>
 					<button class="close-btn" onclick="closeSettingsAppDetailPopup()" aria-label="Close app settings detail">&times;</button>
 				</div>
-				<div class="popup-body">
-					<div id="settingsAppDetailBody"></div>
+				<div class="popup-body" data-keep-color="true">
+					<div id="settingsAppDetailBody" data-keep-color="true"></div>
 				</div>
 			</div>
-			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true">
-				<div class="character-detail-body" id="settingsCharacterDetailBody"></div>
-			</div>
-		</div>
-	</div>
-
-	<div id="imageCropperModal" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="imageCropperTitle" style="display:none;">
-		<div class="popup-content cropper-popup image-cropper-popup">
-			<div class="popup-header">
-				<h3 id="imageCropperTitle">Adjust image crop</h3>
-				<button class="close-btn" type="button" data-cropper-action="cancel" aria-label="Cancel image cropping">&times;</button>
-			</div>
-			<div class="popup-body">
-				<div class="image-cropper-body">
-					<div class="image-cropper-stage">
-						<img id="imageCropperPreview" alt="Image crop preview">
-					</div>
-					<div class="image-cropper-hint" id="imageCropperHint">Drag to reposition the image. Use your mouse wheel or pinch to zoom in/out.</div>
-					<div class="image-cropper-controls">
-						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="cancel">Cancel</button>
-						<span class="spacer"></span>
-						<button type="button" class="admin-logout-btn alt-light" data-cropper-action="reset">Reset</button>
-						<button type="button" class="admin-logout-btn" data-cropper-action="apply">Use Image</button>
-					</div>
-				</div>
+			<div class="popup-content character-detail-panel" id="settingsCharacterDetailPanel" aria-hidden="true" data-keep-color="true">
+				<div class="character-detail-body" id="settingsCharacterDetailBody" data-keep-color="true"></div>
 			</div>
 		</div>
 	</div>
@@ -5781,7 +5655,7 @@
 								<input type="text" id="allSettingsAppName" class="app-name-input" placeholder="Valorant" maxlength="60">
 							</div>
 							<div class="app-inline-logo">
-								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" tabindex="0" role="button" aria-label="Upload logo image">
+								<div class="app-form-logo-preview app-media-preview empty" id="allSettingsAppLogoPreview" data-media-type="logo" data-keep-color="true" tabindex="0" role="button" aria-label="Upload logo image">
 									<button class="app-media-upload" type="button" data-media-trigger="logo" aria-label="Upload logo image">
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 										Upload
@@ -5806,7 +5680,7 @@
 							<div class="app-form-previews">
 								<div class="app-media-block">
 									<span class="app-media-hint">Banner • 1080 × 1640</span>
-									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" tabindex="0" role="button" aria-label="Upload banner image">
+									<div class="app-form-banner-preview app-media-preview empty" id="allSettingsAppBannerPreview" data-media-type="banner" data-keep-color="true" tabindex="0" role="button" aria-label="Upload banner image">
 										<button class="app-media-upload" type="button" data-media-trigger="banner" aria-label="Upload banner image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -5831,7 +5705,7 @@
 							<div class="app-special-media" id="allSettingsSpecialMedia">
 								<div class="app-media-block">
 									<span class="app-media-hint">Character Image • 1080 × 1440</span>
-									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" tabindex="0" role="button" aria-label="Upload character image">
+									<div class="app-special-preview app-media-preview empty" id="allSettingsCharacterPreview" data-media-type="character" data-keep-color="true" tabindex="0" role="button" aria-label="Upload character image">
 										<button class="app-media-upload" type="button" data-media-trigger="character" aria-label="Upload character image">
 											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>
 											Upload
@@ -5961,14 +5835,17 @@
 				<div class="admin-section">
 					<h4>Page Logo Settings</h4>
 					<div class="admin-setting">
-						<label for="pageLogo">Page Logo:</label>
-						<div style="display:flex; gap:10px; align-items:center;">
-							<input type="url" id="pageLogo" placeholder="https://example.com/logo.svg" style="flex:2;">
-							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1;" title="Enter source resolution (e.g., 1920x1080)">
-							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1;" title="Displayed size (widthxheight in px)">
+						<label for="pageLogoUploadButton">Page Logo:</label>
+						<div class="page-logo-upload" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+							<button type="button" class="admin-upload-btn" id="pageLogoUploadButton" onclick="triggerPageLogoUpload()">Upload image</button>
+							<span id="pageLogoUploadName" class="admin-upload-label" aria-live="polite">No file selected</span>
+							<input type="hidden" id="pageLogo">
+							<input type="file" id="pageLogoUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this)">
+							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1 1 140px;" title="Enter source resolution (e.g., 1920x1080)">
+							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1 1 140px;" title="Displayed size (widthxheight in px)">
 						</div>
 						<button onclick="updatePageLogo()">Update</button>
-						<small>URL and optional source resolution; the logo is scaled consistently to fit the box.</small>
+						<small>Upload a logo image and optionally record its source resolution and display size.</small>
 					</div>
 					<div class="admin-setting">
 						<label style="display:flex; align-items:center; gap:8px;">
@@ -6407,7 +6284,42 @@
 			{ key: '--card', type: 'hex' },
 			{ key: '--glass', type: 'rgba' },
 			{ key: '--border', type: 'rgba' },
-			{ key: '--button-glow', type: 'rgba' }
+			{ key: '--button-glow', type: 'rgba' },
+			{ key: '--accent', type: 'hex' },
+			{ key: '--accent-hover', type: 'hex' },
+			{ key: '--accent-contrast', type: 'hex' },
+			{ key: '--surface-overlay', type: 'rgba' },
+			{ key: '--surface-overlay-hover', type: 'rgba' },
+			{ key: '--surface-button', type: 'rgba' },
+			{ key: '--surface-button-border', type: 'rgba' },
+			{ key: '--surface-button-hover', type: 'rgba' },
+			{ key: '--surface-button-border-hover', type: 'rgba' },
+			{ key: '--text-subtle', type: 'rgba' },
+			{ key: '--text-stronger', type: 'rgba' },
+			{ key: '--danger-overlay', type: 'rgba' },
+			{ key: '--danger-overlay-hover', type: 'rgba' },
+			{ key: '--danger-border', type: 'rgba' },
+			{ key: '--success-main', type: 'hex' },
+			{ key: '--success-bg', type: 'rgba' },
+			{ key: '--success-border-strong', type: 'rgba' },
+			{ key: '--success-border', type: 'rgba' },
+			{ key: '--success-shadow', type: 'rgba' },
+			{ key: '--info-main', type: 'hex' },
+			{ key: '--info-bg', type: 'rgba' },
+			{ key: '--info-border-strong', type: 'rgba' },
+			{ key: '--info-border', type: 'rgba' },
+			{ key: '--info-shadow', type: 'rgba' },
+			{ key: '--warning-main', type: 'hex' },
+			{ key: '--warning-bg', type: 'rgba' },
+			{ key: '--warning-border-strong', type: 'rgba' },
+			{ key: '--warning-border', type: 'rgba' },
+			{ key: '--warning-shadow', type: 'rgba' },
+			{ key: '--error-main', type: 'hex' },
+			{ key: '--error-bg', type: 'rgba' },
+			{ key: '--error-border-strong', type: 'rgba' },
+			{ key: '--error-border', type: 'rgba' },
+			{ key: '--error-shadow', type: 'rgba' },
+			{ key: '--error-strong', type: 'rgba' }
 		];
 
 		function getCssVar(key) {
@@ -6481,9 +6393,11 @@
 				row.style.display = 'grid';
 				row.style.gridTemplateColumns = '160px 1fr 110px';
 				row.style.gap = '10px';
+				row.dataset.keepColor = 'true';
 				const label = document.createElement('label');
 				label.textContent = v.key;
 				label.style.color = 'var(--muted)';
+				label.dataset.keepColor = 'true';
 				const input = document.createElement('input');
 				input.type = 'text';
 				input.value = getCssVar(v.key);
@@ -6491,6 +6405,7 @@
 				input.style.border = '1px solid var(--border)';
 				input.style.color = 'var(--text)';
 				input.style.borderRadius = '8px';
+				input.dataset.keepColor = 'true';
 				input.oninput = (e) => {
 					setCssVar(v.key, e.target.value);
 					// keep color input in sync if user types a value
@@ -6508,6 +6423,7 @@
 				preview.style.background = getCssVar(v.key);
 				preview.style.cursor = 'pointer';
 				preview.title = 'Click to pick color';
+				preview.dataset.keepColor = 'true';
 
 				// hidden color input to open the native picker
 				const color = document.createElement('input');
@@ -6515,6 +6431,7 @@
 				color.style.position = 'absolute';
 				color.style.opacity = '0';
 				color.style.pointerEvents = 'none';
+				color.dataset.keepColor = 'true';
 				// initialize color input from current value (convert to hex, ignore alpha)
 				try {
 					const rgb = parseCssColor(input.value);
@@ -6567,7 +6484,18 @@
 			const defaults = {
 				'--bg-1':'#0b0b12','--bg-2':'#0e0b1a','--twitch':'#3a3a3a','--twitch-2':'#777777','--pink':'#666666','--cyan':'#888888','--glow':'#9a9a9a',
 				'--text':'#e8e8f0','--muted':'#b8b8c7','--card':'#121226cc','--glass':'rgba(18,18,38,0.55)','--border':'rgba(255,255,255,0.08)',
-				'--button-glow':'rgba(145,70,255,0.35)'
+				'--button-glow':'rgba(145,70,255,0.35)','--accent':'#63a4ff','--accent-hover':'#7ab4ff','--accent-contrast':'#0c1424',
+				'--surface-overlay':'rgba(255,255,255,0.05)','--surface-overlay-hover':'rgba(255,255,255,0.12)','--surface-button':'rgba(255,255,255,0.08)',
+				'--surface-button-border':'rgba(255,255,255,0.16)','--surface-button-hover':'rgba(255,255,255,0.16)','--surface-button-border-hover':'rgba(255,255,255,0.22)',
+				'--text-subtle':'rgba(255,255,255,0.6)','--text-stronger':'rgba(255,255,255,0.75)','--danger-overlay':'rgba(255,59,107,0.2)',
+				'--danger-overlay-hover':'rgba(255,59,107,0.3)','--danger-border':'rgba(255,59,107,0.3)','--success-main':'#49c977',
+				'--success-bg':'rgba(73,201,119,0.15)','--success-border-strong':'rgba(73,201,119,0.4)','--success-border':'rgba(73,201,119,0.35)',
+				'--success-shadow':'rgba(73,201,119,0.25)','--info-main':'#73b7ff','--info-bg':'rgba(111,182,255,0.15)',
+				'--info-border-strong':'rgba(111,182,255,0.4)','--info-border':'rgba(111,182,255,0.3)','--info-shadow':'rgba(111,182,255,0.2)',
+				'--warning-main':'#fdc45a','--warning-bg':'rgba(253,196,90,0.18)','--warning-border-strong':'rgba(253,196,90,0.45)',
+				'--warning-border':'rgba(253,196,90,0.35)','--warning-shadow':'rgba(253,196,90,0.22)','--error-main':'#ff6b81',
+				'--error-bg':'rgba(255,107,129,0.18)','--error-border-strong':'rgba(255,107,129,0.45)','--error-border':'rgba(255,107,129,0.35)',
+				'--error-shadow':'rgba(255,107,129,0.25)','--error-strong':'rgba(255,107,129,0.6)'
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
@@ -7165,7 +7093,20 @@
 		let isAdminLoggedIn = false;
 		let adminUser = null;
 		const GOOGLE_CLIENT_ID = '1012238246699-5fknt3dtu6gbo42j5fvdonqsct81tfbp.apps.googleusercontent.com';
-		const AUTHORIZED_EMAIL = 'amberrpann@gmail.com';
+		const AUTHORIZED_EMAIL_ENCODED = 'YW1iZXJycGFubkBnbWFpbC5jb20=';
+		const AUTHORIZED_EMAIL = (() => {
+			if (typeof atob === 'function') {
+				return atob(AUTHORIZED_EMAIL_ENCODED);
+			}
+			if (typeof Buffer !== 'undefined') {
+				try {
+					return Buffer.from(AUTHORIZED_EMAIL_ENCODED, 'base64').toString('utf-8');
+				} catch (err) {
+					console.warn('Buffer base64 decode failed, falling back to encoded email.', err);
+				}
+			}
+			return 'amberrpann@gmail.com';
+		})();
 		// Collaborators list (hoisted early to avoid TDZ)
 		let collaborators = [];
 
@@ -7554,14 +7495,8 @@
 			const preview = document.getElementById('actionLogoPreview');
 			const wrap = document.getElementById('actionLogoPreviewWrap');
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'actionLogo');
-				if (!cropped) {
-					if (preview) preview.removeAttribute('src');
-					if (wrap) wrap.style.display = 'none';
-					return;
-				}
-				if (preview) preview.src = cropped;
+				const dataUrl = await readFileAsDataURL(file);
+				if (preview) preview.src = dataUrl;
 				if (wrap) wrap.style.display = 'flex';
 			} catch (error) {
 				console.error('Failed to process action logo:', error);
@@ -7688,25 +7623,56 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
+		function triggerPageLogoUpload(){ const f = document.getElementById('pageLogoUploadFile'); if (f) f.click(); }
+		async function handlePageLogoUploadFile(input) {
+			const file = input?.files?.[0];
+			if (!file) return;
+			try {
+				const dataUrl = await readFileAsDataURL(file);
+				const logoInput = document.getElementById('pageLogo');
+				if (logoInput) {
+					logoInput.value = dataUrl;
+					logoInput.dataset.filename = file.name || '';
+				}
+				const previewEl = document.getElementById('pageLogoImg');
+				if (previewEl) {
+					previewEl.src = dataUrl;
+				}
+				const label = document.getElementById('pageLogoUploadName');
+				if (label) {
+					label.textContent = `${file.name} (ready to save)`;
+				}
+				const status = document.getElementById('currentPageLogo');
+				if (status && (!status.textContent || status.textContent === 'N/A' || status.textContent === 'Default')) {
+					status.textContent = 'Uploaded image (unsaved)';
+				}
+				if (typeof notify !== 'undefined' && typeof notify.info === 'function') {
+					notify.info('Logo ready to save. Click Update to apply globally.');
+				}
+			} catch (error) {
+				console.error('Failed to prepare page logo:', error);
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Could not load that image. Try a different file.');
+				}
+			} finally {
+				if (input) input.value = '';
+			}
+		}
 		async function handleProfileUploadFile(input) {
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'profile');
-				if (!cropped) {
-					return;
-				}
+				const dataUrl = await readFileAsDataURL(file);
 				const profileInput = document.getElementById('profilePicture');
-				if (profileInput) profileInput.value = cropped;
-				await saveGlobalSetting('profile-pic', cropped);
+				if (profileInput) profileInput.value = dataUrl;
+				await saveGlobalSetting('profile-pic', dataUrl);
 				const avatarImgs = document.querySelectorAll('.avatar img');
-				avatarImgs.forEach(img => (img.src = cropped));
-				setProfilePreviewImage(cropped);
+				avatarImgs.forEach(img => (img.src = dataUrl));
+				setProfilePreviewImage(dataUrl);
 				const statusEl = document.getElementById('currentProfilePic');
 				if (statusEl) statusEl.textContent = 'uploaded image';
 				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
-					notify.success('Profile image uploaded, cropped, and applied globally.');
+					notify.success('Profile image uploaded and applied globally.');
 				}
 			} catch (error) {
 				console.error('Failed to update profile image:', error);
@@ -7722,19 +7688,16 @@
 			const file = input.files && input.files[0];
 			if (!file) return;
 			try {
-				const rawData = await readFileAsDataURL(file);
-				const cropped = await requestImageCrop(rawData, 'background');
-				if (!cropped) {
-					return;
-				}
+				const dataUrl = await readFileAsDataURL(file);
 				const backgroundInput = document.getElementById('backgroundImage');
-				if (backgroundInput) backgroundInput.value = cropped;
-				await saveGlobalSetting('background', cropped);
-				document.body.style.background = `url('${cropped}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				if (backgroundInput) backgroundInput.value = dataUrl;
+				await saveGlobalSetting('background', dataUrl);
+				document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				const statusEl = document.getElementById('currentBackground');
 				if (statusEl) statusEl.textContent = 'uploaded image';
 				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
-					notify.success('Background image uploaded, cropped, and applied globally.');
+					notify.success('Background image uploaded and applied globally.');
 				}
 			} catch (error) {
 				console.error('Failed to update background image:', error);
@@ -7956,6 +7919,21 @@
 					logoElement.src = 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
 				}
 			}
+			const uploadLabel = document.getElementById('pageLogoUploadName');
+			if (uploadLabel) {
+				if (savedPageLogo && savedPageLogo !== 'N/A') {
+					uploadLabel.textContent = savedPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use';
+				} else {
+					uploadLabel.textContent = 'Default logo in use';
+				}
+			}
+			const pageLogoField = document.getElementById('pageLogo');
+			if (pageLogoField) {
+				pageLogoField.value = '';
+				if (pageLogoField.dataset) {
+					delete pageLogoField.dataset.filename;
+				}
+			}
 			// Apply saved page logo size (widthxheight)
 			if (savedLogoSize && /^\d{2,5}x\d{2,5}$/i.test(savedLogoSize)) {
 				const [w, h] = savedLogoSize.toLowerCase().split('x');
@@ -7970,11 +7948,7 @@
 				const useInvert = (savedLogoInvert === null || savedLogoInvert === undefined) ? true : !!savedLogoInvert;
 				const toggle = document.getElementById('logoInvertToggle');
 				if (toggle) toggle.checked = useInvert;
-				if (useInvert) {
-					document.body.classList.remove('logo-no-invert');
-				} else {
-					document.body.classList.add('logo-no-invert');
-				}
+				applyLogoInvertState(useInvert);
 			}
 			
 			// Apply saved bio
@@ -8025,7 +7999,7 @@
 				const followerElement = document.getElementById('twitchFollowersStat');
 				if (followerElement) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(savedFollowerCount))} followers
 					`;
 				}
@@ -8037,7 +8011,7 @@
 				const subscriberElement = document.getElementById('youtubeSubscribersStat');
 				if (subscriberElement) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(savedSubscriberCount))} subs
 					`;
 				}
@@ -8218,6 +8192,7 @@
 				const img = new Image();
 				img.onload = function() {
 					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					pageEffectsRoot.style.background = document.body.style.background;
 					console.log('🎨 Global background applied successfully');
 					backgroundLoaded = true;
 					checkContentLoaded();
@@ -8225,6 +8200,7 @@
 				img.onerror = function() {
 					console.log('❌ Global background failed to load, reverting to default');
 					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					pageEffectsRoot.style.background = document.body.style.background;
 					backgroundLoaded = true;
 					saveGlobalSetting('background', 'Default');
 					checkContentLoaded();
@@ -8233,6 +8209,7 @@
 			} else {
 				// Use default background
 				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				backgroundLoaded = true;
 				checkContentLoaded();
 			}
@@ -8291,7 +8268,7 @@
 			}
 
 			// Load and apply global website effects
-			loadGlobalEffects();
+			await loadGlobalEffects();
 		}
 
 		function updateYouTubeEmbed(videoId) {
@@ -8382,6 +8359,10 @@
 				if (!value || value === 'N/A') return fallback;
 				return value.length > limit ? `${value.substring(0, limit)}...` : value;
 			};
+			const formatLogoDisplay = (value) => {
+				if (!value || value === 'N/A') return 'Default';
+				return value.startsWith('data:') ? 'Uploaded image' : shorten(value);
+			};
 
 			setCurrentText('currentDisplayName', currentDisplayName && currentDisplayName !== 'N/A' ? currentDisplayName : 'N/A');
 			setCurrentText('currentUsername', currentUsername && currentUsername !== 'N/A' ? currentUsername : 'N/A');
@@ -8402,13 +8383,28 @@
 			setCurrentText('currentBackground', shorten(currentBg, 50));
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
 			setCurrentText('currentShortVideo', formatShortVideoLabel(currentShortVideo));
-			setCurrentText('currentPageLogo', currentPageLogo ? shorten(currentPageLogo) : 'Default');
+			setCurrentText('currentPageLogo', formatLogoDisplay(currentPageLogo));
+			const pageLogoUploadName = document.getElementById('pageLogoUploadName');
+			if (pageLogoUploadName) {
+				pageLogoUploadName.textContent = currentPageLogo && currentPageLogo !== 'N/A'
+					? (currentPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use')
+					: 'Default logo in use';
+			}
+			const pageLogoHidden = document.getElementById('pageLogo');
+			if (pageLogoHidden) {
+				pageLogoHidden.value = '';
+				if (pageLogoHidden.dataset) {
+					delete pageLogoHidden.dataset.filename;
+				}
+			}
 			const resInput = document.getElementById('pageLogoResolution');
 			if (resInput) resInput.value = currentPageLogoResolution;
 			const sizeInput = document.getElementById('pageLogoSize');
 			if (sizeInput) sizeInput.value = currentPageLogoSize || '135x135';
+			const effectiveLogoInvert = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
 			const invToggle = document.getElementById('logoInvertToggle');
-			if (invToggle) invToggle.checked = (currentLogoInvert === null || currentLogoInvert === undefined) ? true : !!currentLogoInvert;
+			if (invToggle) invToggle.checked = effectiveLogoInvert;
+			applyLogoInvertState(effectiveLogoInvert);
 			setCurrentText('currentBio', shorten(currentBio));
 			setCurrentText('currentAboutText', shorten(currentAboutText, ABOUT_MAX_LENGTH));
 			setCurrentText('currentStreamingYear', currentStreamingYear || 'N/A');
@@ -8513,6 +8509,7 @@
 				
 				// Apply background immediately
 				document.body.style.background = `url('${url}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				
 				// Update current settings display
 				document.getElementById('currentBackground').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
@@ -8654,66 +8651,104 @@
 		}
 
 		async function updatePageLogo() {
-			const logoUrl = document.getElementById('pageLogo').value.trim();
+			const logoInput = document.getElementById('pageLogo');
+			const uploadedFileName = logoInput?.dataset?.filename || '';
+			const logoData = (logoInput?.value || '').trim();
 			const resolution = (document.getElementById('pageLogoResolution').value || '').trim();
 			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
 
-			if (!logoUrl && !resolution && !sizeStr) {
-				notify.error('Provide at least one value: URL, resolution, or size.');
+			if (!logoData && !resolution && !sizeStr) {
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Upload a logo or adjust the resolution/size before saving.');
+				}
 				return;
 			}
 
-			// Optional: basic validation of resolution (WxH)
 			if (resolution && !/^\d{2,5}x\d{2,5}$/i.test(resolution)) {
-				notify.error('Resolution must use the format 1920x1080.');
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Resolution must use the format 1920x1080.');
+				}
 				return;
 			}
-			// Optional: basic validation of size (WxH)
 			if (sizeStr && !/^\d{2,5}x\d{2,5}$/i.test(sizeStr)) {
-				notify.error('Size must use the format 135x135.');
+				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
+					notify.error('Size must use the format 135x135.');
+				}
 				return;
 			}
 
-			// Save GLOBALLY for ALL users
-			if (logoUrl) {
-				await saveGlobalSetting('pageLogo', logoUrl);
+			const savePromises = [];
+			if (logoData) {
+				savePromises.push(saveGlobalSetting('pageLogo', logoData));
 			}
 			if (resolution) {
-				await saveGlobalSetting('pageLogoResolution', resolution);
+				savePromises.push(saveGlobalSetting('pageLogoResolution', resolution));
 			}
 			if (sizeStr) {
-				await saveGlobalSetting('pageLogoSize', sizeStr);
+				savePromises.push(saveGlobalSetting('pageLogoSize', sizeStr));
 			}
-			
-			// Update logo immediately
+			await Promise.all(savePromises);
+
 			const logoElement = document.getElementById('pageLogoImg');
-			if (logoElement && logoUrl) {
-				logoElement.src = logoUrl;
+			if (logoElement && logoData) {
+				logoElement.src = logoData;
 			}
 			if (sizeStr) {
 				const [w, h] = sizeStr.toLowerCase().split('x');
 				const logoBox = document.querySelector('.page-logo');
-				if (logoBox) { logoBox.style.width = w + 'px'; logoBox.style.height = h + 'px'; }
+				if (logoBox) {
+					logoBox.style.width = w + 'px';
+					logoBox.style.height = h + 'px';
+				}
 			}
-			
-			// Update current settings display
-			const shortUrl = logoUrl.length > 30 ? logoUrl.substring(0, 30) + '...' : logoUrl;
-			document.getElementById('currentPageLogo').textContent = shortUrl;
-			document.getElementById('pageLogo').value = '';
+
+			const statusEl = document.getElementById('currentPageLogo');
+			if (statusEl && logoData) {
+				if (logoData.startsWith('data:')) {
+					statusEl.textContent = 'Uploaded image';
+				} else {
+					statusEl.textContent = logoData.length > 30 ? `${logoData.substring(0, 30)}...` : logoData;
+				}
+			}
+
+			const uploadLabel = document.getElementById('pageLogoUploadName');
+			if (uploadLabel && logoData) {
+				uploadLabel.textContent = uploadedFileName ? `${uploadedFileName} (saved)` : 'Uploaded image saved';
+			}
+
+			if (logoInput) {
+				logoInput.value = '';
+				if (logoInput.dataset) {
+					delete logoInput.dataset.filename;
+				}
+			}
 			document.getElementById('pageLogoResolution').value = '';
 			document.getElementById('pageLogoSize').value = '';
-			
-			notify.success('Page logo updated globally.');
+
+			if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
+				notify.success('Page logo updated globally.');
+			}
+		}
+
+		function applyLogoInvertState(shouldInvert) {
+			const logoElement = document.getElementById('pageLogoImg');
+			if (shouldInvert) {
+				document.body.classList.remove('logo-no-invert');
+				if (logoElement) {
+					logoElement.style.filter = 'invert(100%)';
+				}
+			} else {
+				document.body.classList.add('logo-no-invert');
+				if (logoElement) {
+					logoElement.style.filter = 'none';
+				}
+			}
 		}
 
 		async function updateLogoInvert() {
 			const checked = document.getElementById('logoInvertToggle').checked;
 			await saveGlobalSetting('logoInvert', checked);
-			if (checked) {
-				document.body.classList.remove('logo-no-invert');
-			} else {
-				document.body.classList.add('logo-no-invert');
-			}
+			applyLogoInvertState(checked);
 			console.log('Logo invert set to:', checked);
 		}
 
@@ -8803,7 +8838,7 @@
 			if (followerElement) {
 				if (count) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(count))} followers
 					`;
 				} else {
@@ -8834,7 +8869,7 @@
 			if (subscriberElement) {
 				if (count) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" style="filter: invert(100%);"/>
 						${formatNumber(parseInt(count))} subs
 					`;
 				} else {
@@ -9497,13 +9532,162 @@
 			notify.success('Theme tint saved globally.');
 		}
 
+		var GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
+		var APP_IMAGE_SELECTOR = '.settings-app-card img, .settings-app-display img';
+		var APP_TEXT_SELECTORS = [
+			'.settings-app-card .app-card-name',
+			'.settings-app-card .app-card-badge',
+			'.settings-app-card .app-card-actions',
+			'.settings-app-card .app-card-action',
+			'.settings-app-card .app-card-overlay > *:not(img)',
+			'.settings-app-display .app-card-name',
+			'.settings-app-display .app-card-badge',
+			'.settings-app-display .app-card-actions',
+			'.settings-app-display .app-card-action',
+			'.settings-app-display .app-card-overlay > *:not(img)'
+		];
+
+		function ensureGrayscaleGlobals() {
+			if (!(GRAYSCALE_SKIP_TAGS instanceof Set)) {
+				GRAYSCALE_SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'TEMPLATE']);
+			}
+			if (typeof APP_IMAGE_SELECTOR !== 'string') {
+				APP_IMAGE_SELECTOR = '.settings-app-card img, .settings-app-display img';
+			}
+			if (!Array.isArray(APP_TEXT_SELECTORS) || !APP_TEXT_SELECTORS.length) {
+				APP_TEXT_SELECTORS = [
+					'.settings-app-card .app-card-name',
+					'.settings-app-card .app-card-badge',
+					'.settings-app-card .app-card-actions',
+					'.settings-app-card .app-card-action',
+					'.settings-app-card .app-card-overlay > *:not(img)',
+					'.settings-app-display .app-card-name',
+					'.settings-app-display .app-card-badge',
+					'.settings-app-display .app-card-actions',
+					'.settings-app-display .app-card-action',
+					'.settings-app-display .app-card-overlay > *:not(img)'
+				];
+			}
+		}
+		ensureGrayscaleGlobals();
+		var grayscaleObserver = null;
+		var grayscaleActive = false;
+
+		function applyGrayscaleToNode(node) {
+			if (!(node instanceof Element)) return;
+			if (node.dataset.grayscaleApplied === 'true') return;
+			const currentFilter = node.style.filter || '';
+			if (currentFilter.includes('grayscale(')) return;
+			node.dataset.grayscaleOriginalFilter = currentFilter;
+			const trimmed = currentFilter.trim();
+			node.style.filter = trimmed ? `${trimmed} grayscale(100%)` : 'grayscale(100%)';
+			node.dataset.grayscaleApplied = 'true';
+		}
+
+		function shouldSkipGlobalGrayscale(node) {
+			ensureGrayscaleGlobals();
+			if (!(node instanceof Element)) return true;
+			if (node === pageEffectsRoot) return false;
+			if (!pageEffectsRoot.contains(node)) return true;
+			if (GRAYSCALE_SKIP_TAGS.has(node.tagName)) return true;
+			if (node.matches(APP_IMAGE_SELECTOR)) return true;
+			if (node.matches('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
+			if (node.closest('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
+			if (node.closest('.settings-app-card')) return true;
+			if (node.closest('.settings-app-display')) return true;
+			if (node.querySelector && node.querySelector('[data-keep-color="true"], [data-preserve-color="true"], .settings-app-card img, .settings-app-display img')) return true;
+			return false;
+		}
+
+		function applyHardcodedGrayscale(root = pageEffectsRoot) {
+			ensureGrayscaleGlobals();
+			if (!(root instanceof Element) && root !== pageEffectsRoot) return;
+			const scope = root === pageEffectsRoot ? pageEffectsRoot : root;
+			if (scope instanceof Element && scope !== pageEffectsRoot && !shouldSkipGlobalGrayscale(scope)) {
+				applyGrayscaleToNode(scope);
+			}
+			scope.querySelectorAll('*').forEach(node => {
+				if (shouldSkipGlobalGrayscale(node)) return;
+				applyGrayscaleToNode(node);
+			});
+			APP_TEXT_SELECTORS.forEach(selector => {
+				scope.querySelectorAll(selector).forEach(node => {
+					if (node.matches(APP_IMAGE_SELECTOR)) return;
+					applyGrayscaleToNode(node);
+				});
+			});
+		}
+
+		function clearHardcodedGrayscale() {
+			document.querySelectorAll('[data-grayscale-applied="true"]').forEach(node => {
+				const original = node.dataset.grayscaleOriginalFilter;
+				if (original !== undefined) {
+					if (original) {
+						node.style.filter = original;
+					} else {
+						node.style.removeProperty('filter');
+					}
+				}
+				delete node.dataset.grayscaleApplied;
+				delete node.dataset.grayscaleOriginalFilter;
+			});
+		}
+
+		function processAddedNodesForGrayscale(node) {
+			if (!grayscaleActive) return;
+			if (!node) return;
+			if (node instanceof Element) {
+				applyHardcodedGrayscale(node);
+				return;
+			}
+			if (typeof DocumentFragment !== 'undefined' && node instanceof DocumentFragment) {
+				Array.from(node.childNodes).forEach(child => processAddedNodesForGrayscale(child));
+			}
+		}
+
+		function ensureGrayscaleObserver() {
+			if (grayscaleObserver) return;
+			grayscaleObserver = new MutationObserver(mutations => {
+				if (!grayscaleActive) return;
+				mutations.forEach(mutation => {
+					mutation.addedNodes.forEach(node => processAddedNodesForGrayscale(node));
+				});
+			});
+			grayscaleObserver.observe(pageEffectsRoot, { childList: true, subtree: true });
+		}
+
+		function teardownGrayscaleObserver() {
+			if (!grayscaleObserver) return;
+			grayscaleObserver.disconnect();
+			grayscaleObserver = null;
+		}
+
+		function updateHardcodedGrayscaleState(force = false) {
+			ensureGrayscaleGlobals();
+			const isActive = pageEffectsRoot.classList.contains('effect-grayscale');
+			if (!isActive) {
+				if (grayscaleActive || force) {
+					clearHardcodedGrayscale();
+				}
+				grayscaleActive = false;
+				teardownGrayscaleObserver();
+				return;
+			}
+			ensureGrayscaleObserver();
+			if (!grayscaleActive || force) {
+				clearHardcodedGrayscale();
+				applyHardcodedGrayscale();
+			}
+			grayscaleActive = true;
+		}
+
 		// Website Effects Functions
 		function toggleColorEffect() {
 			const isChecked = document.getElementById('colorEffectToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-color');
+				pageEffectsRoot.classList.add('effect-color');
 			} else {
-				document.body.classList.remove('effect-color');
+				pageEffectsRoot.classList.remove('effect-color');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9512,10 +9696,11 @@
 		function toggleGrayscale() {
 			const isChecked = document.getElementById('grayscaleToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-grayscale');
+				pageEffectsRoot.classList.add('effect-grayscale');
 			} else {
-				document.body.classList.remove('effect-grayscale');
+				pageEffectsRoot.classList.remove('effect-grayscale');
 			}
+			updateHardcodedGrayscaleState(true);
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
 		}
@@ -9534,9 +9719,9 @@
 		function toggleSepia() {
 			const isChecked = document.getElementById('sepiaToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-sepia');
+				pageEffectsRoot.classList.add('effect-sepia');
 			} else {
-				document.body.classList.remove('effect-sepia');
+				pageEffectsRoot.classList.remove('effect-sepia');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9545,9 +9730,9 @@
 		function toggleInvert() {
 			const isChecked = document.getElementById('invertToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-invert');
+				pageEffectsRoot.classList.add('effect-invert');
 			} else {
-				document.body.classList.remove('effect-invert');
+				pageEffectsRoot.classList.remove('effect-invert');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9556,9 +9741,9 @@
 		function toggleBrightness() {
 			const isChecked = document.getElementById('brightnessToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-brightness');
+				pageEffectsRoot.classList.add('effect-brightness');
 			} else {
-				document.body.classList.remove('effect-brightness');
+				pageEffectsRoot.classList.remove('effect-brightness');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9568,33 +9753,31 @@
 			// Build combined filter string for complex combinations
 			const effects = [];
 			
-			if (document.body.classList.contains('effect-invert')) {
+			if (pageEffectsRoot.classList.contains('effect-invert')) {
 				effects.push('invert(1)');
 			}
-			if (document.body.classList.contains('effect-color')) {
+			if (pageEffectsRoot.classList.contains('effect-color')) {
 				// Use dynamic hue from control if available
 				const hue = parseInt(document.getElementById('colorHueInput')?.value || '45', 10);
 				effects.push(`hue-rotate(${isNaN(hue) ? 45 : hue}deg)`);
 				effects.push('saturate(1.5)');
 			}
-			if (document.body.classList.contains('effect-grayscale')) {
-				effects.push('grayscale(100%)');
-			}
-			if (document.body.classList.contains('effect-sepia')) {
+			if (pageEffectsRoot.classList.contains('effect-sepia')) {
 				effects.push('sepia(70%)');
 			}
-			if (document.body.classList.contains('effect-brightness')) {
+			if (pageEffectsRoot.classList.contains('effect-brightness')) {
 				effects.push('brightness(1.3)');
 			}
 
 			// Apply combined filter if we have multiple effects
 			if (effects.length > 1) {
-				document.body.style.filter = effects.join(' ');
+				pageEffectsRoot.style.filter = effects.join(' ');
 			} else if (effects.length === 1) {
-				document.body.style.filter = effects[0];
+				pageEffectsRoot.style.filter = effects[0];
 			} else {
-				document.body.style.filter = '';
+				pageEffectsRoot.style.filter = '';
 			}
+			updateHardcodedGrayscaleState();
 		}
 
 		function setColorFilterFromHue(hue) {
@@ -9603,7 +9786,7 @@
 			const input = document.getElementById('colorHueInput');
 			if (slider) slider.value = h;
 			if (input) input.value = h;
-			if (document.body.classList.contains('effect-color')) {
+			if (pageEffectsRoot.classList.contains('effect-color')) {
 				updateCombinedFilters();
 				scheduleEffectsAutoSave();
 			}
@@ -9634,11 +9817,12 @@
 			setColorFilterFromHue(45);
 			
 			// Remove all effect classes
-			document.body.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
-			document.body.style.filter = '';
+			pageEffectsRoot.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
+			pageEffectsRoot.style.filter = '';
 			// Hide the blur overlay
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
+			updateHardcodedGrayscaleState(true);
 			
 			notify.info('All visual effects have been reset.');
 		}
@@ -9662,33 +9846,40 @@
 
 		async function loadGlobalEffects() {
 			const savedEffects = await loadGlobalSetting('websiteEffects');
+			const setToggleChecked = (id, value) => {
+				const el = document.getElementById(id);
+				if (!el) return false;
+				el.checked = !!value;
+				return true;
+			};
+			let effectsApplied = false;
 			if (savedEffects && savedEffects !== 'N/A') {
 				try {
 					const effects = JSON.parse(savedEffects);
-					
+				
 					// Apply saved effects
-					document.getElementById('colorEffectToggle').checked = effects.color || false;
-					document.getElementById('grayscaleToggle').checked = effects.grayscale || false;
-					document.getElementById('blurToggle').checked = effects.blur || false;
-					document.getElementById('sepiaToggle').checked = effects.sepia || false;
-					document.getElementById('invertToggle').checked = effects.invert || false;
-					document.getElementById('brightnessToggle').checked = effects.brightness || false;
+					setToggleChecked('colorEffectToggle', effects.color);
+					setToggleChecked('grayscaleToggle', effects.grayscale);
+					setToggleChecked('blurToggle', effects.blur);
+					setToggleChecked('sepiaToggle', effects.sepia);
+					setToggleChecked('invertToggle', effects.invert);
+					setToggleChecked('brightnessToggle', effects.brightness);
 					setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
-					
+				
 					// Apply the effects to the page
-					if (effects.color) document.body.classList.add('effect-color');
-					if (effects.grayscale) document.body.classList.add('effect-grayscale');
+					if (effects.color) pageEffectsRoot.classList.add('effect-color');
+					if (effects.grayscale) pageEffectsRoot.classList.add('effect-grayscale');
 					// Blur now toggles the .bg-glass overlay
 					const glass = document.querySelector('.bg-glass');
 					if (glass) {
 						if (effects.blur) glass.classList.remove('hidden'); else glass.classList.add('hidden');
 					}
-					if (effects.sepia) document.body.classList.add('effect-sepia');
-					if (effects.invert) document.body.classList.add('effect-invert');
-					if (effects.brightness) document.body.classList.add('effect-brightness');
-					
+					if (effects.sepia) pageEffectsRoot.classList.add('effect-sepia');
+					if (effects.invert) pageEffectsRoot.classList.add('effect-invert');
+					if (effects.brightness) pageEffectsRoot.classList.add('effect-brightness');
+				
 					updateCombinedFilters();
-					
+					effectsApplied = true;
 					console.log('🎨 Applied global website effects:', effects);
 				} catch (e) {
 					console.error('Error parsing saved effects:', e);
@@ -9700,23 +9891,23 @@
 					if (database && cached) {
 						await saveGlobalSetting('websiteEffects', cached);
 						const effects = JSON.parse(cached);
-						document.getElementById('colorEffectToggle').checked = !!effects.color;
-						document.getElementById('grayscaleToggle').checked = !!effects.grayscale;
-						document.getElementById('blurToggle').checked = !!effects.blur;
-						document.getElementById('sepiaToggle').checked = !!effects.sepia;
-						document.getElementById('invertToggle').checked = !!effects.invert;
-						document.getElementById('brightnessToggle').checked = !!effects.brightness;
+						setToggleChecked('colorEffectToggle', effects.color);
+						setToggleChecked('grayscaleToggle', effects.grayscale);
+						setToggleChecked('blurToggle', effects.blur);
+						setToggleChecked('sepiaToggle', effects.sepia);
+						setToggleChecked('invertToggle', effects.invert);
+						setToggleChecked('brightnessToggle', effects.brightness);
 						setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
-						if (effects.color) document.body.classList.add('effect-color');
-						if (effects.grayscale) document.body.classList.add('effect-grayscale');
+						if (effects.color) pageEffectsRoot.classList.add('effect-color');
+						if (effects.grayscale) pageEffectsRoot.classList.add('effect-grayscale');
 						const glassM = document.querySelector('.bg-glass');
 						if (glassM) { if (effects.blur) glassM.classList.remove('hidden'); else glassM.classList.add('hidden'); }
-						if (effects.sepia) document.body.classList.add('effect-sepia');
-						if (effects.invert) document.body.classList.add('effect-invert');
-						if (effects.brightness) document.body.classList.add('effect-brightness');
+						if (effects.sepia) pageEffectsRoot.classList.add('effect-sepia');
+						if (effects.invert) pageEffectsRoot.classList.add('effect-invert');
+						if (effects.brightness) pageEffectsRoot.classList.add('effect-brightness');
 						updateCombinedFilters();
+						effectsApplied = true;
 						console.log('⬆️ Migrated website effects from local cache to Firebase');
-						return;
 					}
 				} catch (e) {
 					console.warn('Effects migration skipped:', e);
@@ -9728,6 +9919,20 @@
 					if (blurChecked) glass.classList.remove('hidden'); else glass.classList.add('hidden');
 				}
 				setColorFilterFromHue(45);
+			}
+			updateHardcodedGrayscaleState(true);
+			if (!effectsApplied) {
+				// Ensure effect root classes reflect toggle state when no saved effects were applied
+				if (!document.getElementById('colorEffectToggle')?.checked) pageEffectsRoot.classList.remove('effect-color');
+				if (!document.getElementById('grayscaleToggle')?.checked) pageEffectsRoot.classList.remove('effect-grayscale');
+				if (!document.getElementById('sepiaToggle')?.checked) pageEffectsRoot.classList.remove('effect-sepia');
+				if (!document.getElementById('invertToggle')?.checked) pageEffectsRoot.classList.remove('effect-invert');
+				if (!document.getElementById('brightnessToggle')?.checked) pageEffectsRoot.classList.remove('effect-brightness');
+				const glassSync = document.querySelector('.bg-glass');
+				if (glassSync) {
+					if (document.getElementById('blurToggle')?.checked) glassSync.classList.remove('hidden'); else glassSync.classList.add('hidden');
+				}
+				updateCombinedFilters();
 			}
 		}
 
