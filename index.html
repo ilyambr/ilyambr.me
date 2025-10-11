@@ -6627,16 +6627,21 @@
 				preview.title = 'Click to pick color';
 				preview.dataset.keepColor = 'true';
 				preview.tabIndex = 0;
+				preview.setAttribute('role', 'button');
+				preview.setAttribute('aria-label', `Pick color for ${v.key}`);
 
 				// hidden color input to open the native picker
 				const color = document.createElement('input');
 				color.type = 'color';
 				color.style.position = 'fixed';
-				color.style.left = '-1000px';
-				color.style.top = '-1000px';
+				color.style.left = '16px';
+				color.style.top = '16px';
+				color.style.width = '1px';
+				color.style.height = '1px';
 				color.style.opacity = '0';
 				color.style.pointerEvents = 'none';
 				color.setAttribute('tabindex', '-1');
+				color.setAttribute('aria-hidden', 'true');
 				color.dataset.keepColor = 'true';
 				// initialize color input from current value (convert to hex, ignore alpha)
 				try {
@@ -6644,13 +6649,30 @@
 					color.value = rgbToHex(rgb.r, rgb.g, rgb.b);
 				} catch { color.value = '#ffffff'; }
 
-				preview.addEventListener('click', () => {
+				const openPicker = () => {
+					if (typeof color.focus === 'function') {
+						try {
+							color.focus({ preventScroll: true });
+						} catch {
+							color.focus();
+						}
+					}
 					color.click();
-				});
+				};
+				preview.addEventListener('click', openPicker);
 				preview.addEventListener('keydown', event => {
 					if (event.key === 'Enter' || event.key === ' ') {
 						event.preventDefault();
-						color.click();
+						openPicker();
+					}
+				});
+				color.addEventListener('blur', () => {
+					if (typeof preview.focus === 'function') {
+						try {
+							preview.focus({ preventScroll: true });
+						} catch {
+							preview.focus();
+						}
 					}
 				});
 				color.addEventListener('input', () => {
