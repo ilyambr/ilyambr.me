@@ -3049,14 +3049,8 @@
 			flex: 0 0 220px;
 			display: flex;
 			flex-direction: column;
-			gap: 14px;
+			gap: 18px;
 			min-width: 200px;
-		}
-
-		.page-logo-meta > small {
-			color: var(--muted);
-			font-size: 12px;
-			margin-top: -6px;
 		}
 
 		.page-logo-upload {
@@ -3071,15 +3065,11 @@
 
 		.page-logo-meta-fields {
 			display: grid;
-			gap: 10px;
+			gap: 12px;
 		}
 
 		.page-logo-meta-fields label {
-			display: flex;
-			flex-direction: column;
-			gap: 6px;
-			font-size: 13px;
-			color: var(--muted);
+			display: block;
 		}
 
 		.page-logo-meta-fields input {
@@ -3089,7 +3079,7 @@
 		.logo-invert-toggle {
 			display: flex;
 			align-items: center;
-			gap: 10px;
+			gap: 8px;
 			font-size: 13px;
 			color: var(--text);
 		}
@@ -3097,7 +3087,7 @@
 		.page-logo-actions {
 			display: flex;
 			flex-direction: column;
-			gap: 6px;
+			gap: 10px;
 		}
 
 		.page-logo-actions button {
@@ -6024,14 +6014,14 @@
 					<div class="admin-setting page-logo-settings">
 						<div class="page-logo-settings-card">
 							<div class="page-logo-previews">
-								<div class="logo-preview-card large" role="button" tabindex="0" aria-label="Upload logo for large preview" onclick="triggerPageLogoUpload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload();}">
+								<div class="logo-preview-card large" role="button" tabindex="0" aria-label="Upload large logo" onclick="triggerPageLogoUpload('large')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload('large');}">
 									<div class="logo-preview-frame" id="pageLogoLargeFrame">
 										<img id="pageLogoAdminPreviewLarge" alt="Large logo preview" />
 										<span class="logo-preview-placeholder">upload</span>
 									</div>
 									<div class="logo-preview-caption">Preview - Large Logo</div>
 								</div>
-								<div class="logo-preview-card small" role="button" tabindex="0" aria-label="Upload logo for small preview" onclick="triggerPageLogoUpload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload();}">
+								<div class="logo-preview-card small" role="button" tabindex="0" aria-label="Upload small logo" onclick="triggerPageLogoUpload('small')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload('small');}">
 									<div class="logo-preview-frame" id="pageLogoSmallFrame">
 										<img id="pageLogoAdminPreviewSmall" alt="Small logo preview" />
 										<span class="logo-preview-placeholder">upload</span>
@@ -6040,33 +6030,23 @@
 								</div>
 							</div>
 							<div class="page-logo-meta">
-								<div class="page-logo-upload">
-									<button type="button" class="admin-upload-btn" id="pageLogoUploadButton" onclick="triggerPageLogoUpload()">Upload image</button>
-									<span id="pageLogoUploadName" class="admin-upload-label" aria-live="polite">No file selected</span>
-									<input type="hidden" id="pageLogo">
-									<input type="file" id="pageLogoUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this)">
-								</div>
 								<div class="page-logo-meta-fields">
-									<label for="pageLogoResolution">
-										Source Resolution
-										<input type="text" id="pageLogoResolution" placeholder="1920x1080" title="Enter source resolution (e.g., 1920x1080)">
-									</label>
-									<label for="pageLogoSize">
-										Display Size
-										<input type="text" id="pageLogoSize" placeholder="135x135" title="Displayed size (widthxheight in px)">
-									</label>
+									<input type="text" id="pageLogoResolution" placeholder="1920x1080" title="Large logo source resolution (e.g., 1920x1080)">
+									<input type="text" id="pageLogoSize" placeholder="135x135" title="Small logo display size (widthxheight in px)">
 								</div>
 								<label class="logo-invert-toggle" for="logoInvertToggle">
 									<input type="checkbox" id="logoInvertToggle" checked onchange="updateLogoInvert()">
 									<span>Invert Logo (white on dark background)</span>
 								</label>
-								<small>Uncheck if your logo is already dark or you want the original colors.</small>
 								<div class="page-logo-actions">
 									<button type="button" onclick="updatePageLogo()">Update Logo</button>
-									<small>Upload a logo image and optionally record its source resolution and display size.</small>
 								</div>
 							</div>
 						</div>
+						<input type="hidden" id="pageLogoLarge">
+						<input type="hidden" id="pageLogoSmall">
+						<input type="file" id="pageLogoLargeUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this, 'large')">
+						<input type="file" id="pageLogoSmallUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this, 'small')">
 					</div>
 				</div>
 				
@@ -6344,6 +6324,7 @@
 						<p><strong>About Text:</strong> <span id="currentAboutText">N/A</span></p>
 						<p><strong>Streaming Year:</strong> <span id="currentStreamingYear">N/A</span></p>
 						<p><strong>Page Logo:</strong> <span id="currentPageLogo">N/A</span></p>
+						<p><strong>Page Logo (Small):</strong> <span id="currentPageLogoSmall">N/A</span></p>
 						<p><strong>Twitch Status:</strong> <span id="currentTwitchStatus">None</span></p>
 						<p><strong>Twitch Channel:</strong> <span id="currentTwitchChannel">ilyambrr</span></p>
 						<p><strong>Follower Count:</strong> <span id="currentFollowerCount">API</span></p>
@@ -6645,13 +6626,17 @@
 				preview.style.cursor = 'pointer';
 				preview.title = 'Click to pick color';
 				preview.dataset.keepColor = 'true';
+				preview.tabIndex = 0;
 
 				// hidden color input to open the native picker
 				const color = document.createElement('input');
 				color.type = 'color';
-				color.style.position = 'absolute';
+				color.style.position = 'fixed';
+				color.style.left = '-1000px';
+				color.style.top = '-1000px';
 				color.style.opacity = '0';
 				color.style.pointerEvents = 'none';
+				color.setAttribute('tabindex', '-1');
 				color.dataset.keepColor = 'true';
 				// initialize color input from current value (convert to hex, ignore alpha)
 				try {
@@ -6661,6 +6646,12 @@
 
 				preview.addEventListener('click', () => {
 					color.click();
+				});
+				preview.addEventListener('keydown', event => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						color.click();
+					}
 				});
 				color.addEventListener('input', () => {
 					const pickedHex = color.value; // #rrggbb
@@ -7848,60 +7839,66 @@
 		// Upload handlers for Profile Picture and Background
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
-		function triggerPageLogoUpload(){ const f = document.getElementById('pageLogoUploadFile'); if (f) f.click(); }
-		function setPageLogoPreviewImage(src) {
-			const previews = [
-				{ img: document.getElementById('pageLogoAdminPreviewLarge'), frame: document.getElementById('pageLogoLargeFrame') },
-				{ img: document.getElementById('pageLogoAdminPreviewSmall'), frame: document.getElementById('pageLogoSmallFrame') }
-			];
-			const hasImage = !!src;
-			previews.forEach(({ img, frame }) => {
-				if (!img || !frame) return;
-				if (hasImage) {
-					img.src = src;
-					img.style.display = 'block';
-					frame.classList.add('has-image');
-				} else {
-					img.removeAttribute('src');
-					img.style.display = 'none';
-					frame.classList.remove('has-image');
-				}
-			});
+		function triggerPageLogoUpload(type){ const target = type === 'small' ? document.getElementById('pageLogoSmallUploadFile') : document.getElementById('pageLogoLargeUploadFile'); if (target) target.click(); }
+		function setPageLogoPreviewImage(type, src) {
+			const map = {
+				large: { img: document.getElementById('pageLogoAdminPreviewLarge'), frame: document.getElementById('pageLogoLargeFrame') },
+				small: { img: document.getElementById('pageLogoAdminPreviewSmall'), frame: document.getElementById('pageLogoSmallFrame') }
+			};
+			const target = map[type];
+			if (!target) return;
+			const { img, frame } = target;
+			if (!img || !frame) return;
+			if (src) {
+				img.src = src;
+				img.style.display = 'block';
+				frame.classList.add('has-image');
+			} else {
+				img.removeAttribute('src');
+				img.style.display = 'none';
+				frame.classList.remove('has-image');
+			}
 			const invertEnabled = !document.body.classList.contains('logo-no-invert');
 			updateAdminLogoPreviewInvert(invertEnabled);
 		}
 		function updateAdminLogoPreviewInvert(shouldInvert) {
-			const previews = document.querySelectorAll('#pageLogoAdminPreviewLarge, #pageLogoAdminPreviewSmall');
-			previews.forEach(img => {
+			['pageLogoAdminPreviewLarge', 'pageLogoAdminPreviewSmall'].forEach(id => {
+				const img = document.getElementById(id);
 				if (!img) return;
 				img.style.filter = shouldInvert ? 'invert(100%)' : 'none';
 			});
 		}
-		async function handlePageLogoUploadFile(input) {
+		async function handlePageLogoUploadFile(input, type) {
 			const file = input?.files?.[0];
 			if (!file) return;
 			try {
 				const dataUrl = await readFileAsDataURL(file);
-				const logoInput = document.getElementById('pageLogo');
-				if (logoInput) {
-					logoInput.value = dataUrl;
-					logoInput.dataset.filename = file.name || '';
+				const hiddenId = type === 'small' ? 'pageLogoSmall' : 'pageLogoLarge';
+				const targetInput = document.getElementById(hiddenId);
+				if (targetInput) {
+					targetInput.value = dataUrl;
+					targetInput.dataset.filename = file.name || '';
 				}
-				const previewEl = document.getElementById('pageLogoImg');
-				if (previewEl) {
-					previewEl.src = dataUrl;
+				if (type === 'large') {
+					const previewEl = document.getElementById('pageLogoImg');
+					if (previewEl) {
+						previewEl.src = dataUrl;
+					}
 				}
-				setPageLogoPreviewImage(dataUrl);
-				const label = document.getElementById('pageLogoUploadName');
-				if (label) {
-					label.textContent = `${file.name} (ready to save)`;
+				if (type === 'small') {
+					const faviconLink = document.querySelector('link[rel="icon"]');
+					if (faviconLink) {
+						faviconLink.href = dataUrl;
+					}
 				}
-				const status = document.getElementById('currentPageLogo');
+				setPageLogoPreviewImage(type, dataUrl);
+				const statusId = type === 'small' ? 'currentPageLogoSmall' : 'currentPageLogo';
+				const status = document.getElementById(statusId);
 				if (status && (!status.textContent || status.textContent === 'N/A' || status.textContent === 'Default')) {
 					status.textContent = 'Uploaded image (unsaved)';
 				}
 				if (typeof notify !== 'undefined' && typeof notify.info === 'function') {
-					notify.info('Logo ready to save. Click Update to apply globally.');
+					notify.info(`${type === 'small' ? 'Small' : 'Large'} logo ready to save.`);
 				}
 			} catch (error) {
 				console.error('Failed to prepare page logo:', error);
@@ -8051,6 +8048,7 @@
 			const savedShortVideoRaw = await loadGlobalSetting('shortVideoEmbed');
 			const savedShortVideo = normalizeShortVideoConfig(savedShortVideoRaw);
 			const savedPageLogo = await loadGlobalSetting('pageLogo');
+			const savedPageLogoSmall = await loadGlobalSetting('pageLogoSmall');
 			const savedLogoInvert = await loadGlobalSetting('logoInvert');
 			const savedLogoSize = await loadGlobalSetting('pageLogoSize');
 			const savedBio = await loadGlobalSetting('bioText');
@@ -8160,32 +8158,33 @@
 				console.log('✅ Discord link updated');
 			}
 			
-			// Apply saved page logo
-			if (savedPageLogo && savedPageLogo !== 'N/A') {
-				console.log('🖼️ Applying global page logo to ALL visitors:', savedPageLogo);
-				const logoElement = document.getElementById('pageLogoImg');
-				if (logoElement) {
-					logoElement.src = savedPageLogo;
-				}
-			} else {
-				const logoElement = document.getElementById('pageLogoImg');
-				if (logoElement) {
-					logoElement.src = 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
+			// Apply saved page logos
+			const logoElement = document.getElementById('pageLogoImg');
+			const initialLargeLogoSrc = (savedPageLogo && savedPageLogo !== 'N/A') ? savedPageLogo : (logoElement ? logoElement.src : '');
+			if (logoElement) {
+				logoElement.src = initialLargeLogoSrc || 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
+			}
+			const appliedLargeLogo = logoElement ? logoElement.src : initialLargeLogoSrc;
+			const faviconLink = document.querySelector('link[rel="icon"]');
+			const initialSmallLogoSrc = (savedPageLogoSmall && savedPageLogoSmall !== 'N/A') ? savedPageLogoSmall : (faviconLink ? faviconLink.href : '');
+			if (faviconLink && initialSmallLogoSrc) {
+				faviconLink.href = initialSmallLogoSrc;
+			}
+			const appliedSmallLogo = faviconLink ? faviconLink.href : initialSmallLogoSrc;
+			setPageLogoPreviewImage('large', appliedLargeLogo);
+			setPageLogoPreviewImage('small', appliedSmallLogo);
+			const pageLogoLargeHidden = document.getElementById('pageLogoLarge');
+			if (pageLogoLargeHidden) {
+				pageLogoLargeHidden.value = '';
+				if (pageLogoLargeHidden.dataset) {
+					delete pageLogoLargeHidden.dataset.filename;
 				}
 			}
-			const uploadLabel = document.getElementById('pageLogoUploadName');
-			if (uploadLabel) {
-				if (savedPageLogo && savedPageLogo !== 'N/A') {
-					uploadLabel.textContent = savedPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use';
-				} else {
-					uploadLabel.textContent = 'Default logo in use';
-				}
-			}
-			const pageLogoField = document.getElementById('pageLogo');
-			if (pageLogoField) {
-				pageLogoField.value = '';
-				if (pageLogoField.dataset) {
-					delete pageLogoField.dataset.filename;
+			const pageLogoSmallHidden = document.getElementById('pageLogoSmall');
+			if (pageLogoSmallHidden) {
+				pageLogoSmallHidden.value = '';
+				if (pageLogoSmallHidden.dataset) {
+					delete pageLogoSmallHidden.dataset.filename;
 				}
 			}
 			// Apply saved page logo size (widthxheight)
@@ -8572,6 +8571,7 @@
 			const currentShortVideoRaw = await loadGlobalSetting('shortVideoEmbed') || '';
 			const currentShortVideo = normalizeShortVideoConfig(currentShortVideoRaw);
 			const currentPageLogo = await loadGlobalSetting('pageLogo') || '';
+			const currentPageLogoSmall = await loadGlobalSetting('pageLogoSmall') || '';
 			const currentPageLogoResolution = await loadGlobalSetting('pageLogoResolution') || '';
 			const currentPageLogoSize = await loadGlobalSetting('pageLogoSize') || '';
 			const currentLogoInvert = await loadGlobalSetting('logoInvert');
@@ -8638,22 +8638,29 @@
 			setCurrentText('currentYouTubeVideo', currentVideo || 'N/A');
 			setCurrentText('currentShortVideo', formatShortVideoLabel(currentShortVideo));
 			setCurrentText('currentPageLogo', formatLogoDisplay(currentPageLogo));
-			const pageLogoUploadName = document.getElementById('pageLogoUploadName');
-			if (pageLogoUploadName) {
-				pageLogoUploadName.textContent = currentPageLogo && currentPageLogo !== 'N/A'
-					? (currentPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use')
-					: 'Default logo in use';
-			}
+			setCurrentText('currentPageLogoSmall', formatLogoDisplay(currentPageLogoSmall));
 			const mainLogoElement = document.getElementById('pageLogoImg');
-			const adminPreviewSrc = currentPageLogo && currentPageLogo !== 'N/A'
+			const adminLargePreviewSrc = currentPageLogo && currentPageLogo !== 'N/A'
 				? currentPageLogo
 				: (mainLogoElement ? mainLogoElement.src : '');
-			setPageLogoPreviewImage(adminPreviewSrc);
-			const pageLogoHidden = document.getElementById('pageLogo');
-			if (pageLogoHidden) {
-				pageLogoHidden.value = '';
-				if (pageLogoHidden.dataset) {
-					delete pageLogoHidden.dataset.filename;
+			const faviconLinkCurrent = document.querySelector('link[rel="icon"]');
+			const adminSmallPreviewSrc = currentPageLogoSmall && currentPageLogoSmall !== 'N/A'
+				? currentPageLogoSmall
+				: (faviconLinkCurrent ? faviconLinkCurrent.href : '');
+			setPageLogoPreviewImage('large', adminLargePreviewSrc);
+			setPageLogoPreviewImage('small', adminSmallPreviewSrc);
+			const pageLogoLargeHidden = document.getElementById('pageLogoLarge');
+			if (pageLogoLargeHidden) {
+				pageLogoLargeHidden.value = '';
+				if (pageLogoLargeHidden.dataset) {
+					delete pageLogoLargeHidden.dataset.filename;
+				}
+			}
+			const pageLogoSmallHidden = document.getElementById('pageLogoSmall');
+			if (pageLogoSmallHidden) {
+				pageLogoSmallHidden.value = '';
+				if (pageLogoSmallHidden.dataset) {
+					delete pageLogoSmallHidden.dataset.filename;
 				}
 			}
 			const resInput = document.getElementById('pageLogoResolution');
@@ -8910,15 +8917,18 @@
 		}
 
 		async function updatePageLogo() {
-			const logoInput = document.getElementById('pageLogo');
-			const uploadedFileName = logoInput?.dataset?.filename || '';
-			const logoData = (logoInput?.value || '').trim();
+			const largeInput = document.getElementById('pageLogoLarge');
+			const smallInput = document.getElementById('pageLogoSmall');
+			const largeFileName = largeInput?.dataset?.filename || '';
+			const smallFileName = smallInput?.dataset?.filename || '';
+			const largeData = (largeInput?.value || '').trim();
+			const smallData = (smallInput?.value || '').trim();
 			const resolution = (document.getElementById('pageLogoResolution').value || '').trim();
 			const sizeStr = (document.getElementById('pageLogoSize').value || '').trim();
 
-			if (!logoData && !resolution && !sizeStr) {
+			if (!largeData && !smallData && !resolution && !sizeStr) {
 				if (typeof notify !== 'undefined' && typeof notify.error === 'function') {
-					notify.error('Upload a logo or adjust the resolution/size before saving.');
+					notify.error('Upload a logo or adjust the fields before saving.');
 				}
 				return;
 			}
@@ -8937,8 +8947,12 @@
 			}
 
 			const savePromises = [];
-			if (logoData) {
-				savePromises.push(saveGlobalSetting('pageLogo', logoData));
+			if (largeData) {
+				savePromises.push(saveGlobalSetting('pageLogo', largeData));
+				savePromises.push(saveGlobalSetting('pageLogoLarge', largeData));
+			}
+			if (smallData) {
+				savePromises.push(saveGlobalSetting('pageLogoSmall', smallData));
 			}
 			if (resolution) {
 				savePromises.push(saveGlobalSetting('pageLogoResolution', resolution));
@@ -8948,12 +8962,19 @@
 			}
 			await Promise.all(savePromises);
 
-			const logoElement = document.getElementById('pageLogoImg');
-			if (logoElement && logoData) {
-				logoElement.src = logoData;
+			if (largeData) {
+				const logoElement = document.getElementById('pageLogoImg');
+				if (logoElement) {
+					logoElement.src = largeData;
+				}
+				setPageLogoPreviewImage('large', largeData);
 			}
-			if (logoData) {
-				setPageLogoPreviewImage(logoData);
+			if (smallData) {
+				const faviconLink = document.querySelector('link[rel="icon"]');
+				if (faviconLink) {
+					faviconLink.href = smallData;
+				}
+				setPageLogoPreviewImage('small', smallData);
 			}
 			if (sizeStr) {
 				const [w, h] = sizeStr.toLowerCase().split('x');
@@ -8964,31 +8985,32 @@
 				}
 			}
 
-			const statusEl = document.getElementById('currentPageLogo');
-			if (statusEl && logoData) {
-				if (logoData.startsWith('data:')) {
-					statusEl.textContent = 'Uploaded image';
-				} else {
-					statusEl.textContent = logoData.length > 30 ? `${logoData.substring(0, 30)}...` : logoData;
+			const statusLarge = document.getElementById('currentPageLogo');
+			if (statusLarge && largeData) {
+				statusLarge.textContent = largeData.startsWith('data:') ? 'Uploaded image' : (largeData.length > 30 ? `${largeData.substring(0, 30)}...` : largeData);
+			}
+			const statusSmall = document.getElementById('currentPageLogoSmall');
+			if (statusSmall && smallData) {
+				statusSmall.textContent = smallData.startsWith('data:') ? 'Uploaded image' : (smallData.length > 30 ? `${smallData.substring(0, 30)}...` : smallData);
+			}
+
+			if (largeInput) {
+				largeInput.value = '';
+				if (largeInput.dataset) {
+					delete largeInput.dataset.filename;
 				}
 			}
-
-			const uploadLabel = document.getElementById('pageLogoUploadName');
-			if (uploadLabel && logoData) {
-				uploadLabel.textContent = uploadedFileName ? `${uploadedFileName} (saved)` : 'Uploaded image saved';
-			}
-
-			if (logoInput) {
-				logoInput.value = '';
-				if (logoInput.dataset) {
-					delete logoInput.dataset.filename;
+			if (smallInput) {
+				smallInput.value = '';
+				if (smallInput.dataset) {
+					delete smallInput.dataset.filename;
 				}
 			}
 			document.getElementById('pageLogoResolution').value = '';
 			document.getElementById('pageLogoSize').value = '';
 
 			if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
-				notify.success('Page logo updated globally.');
+				notify.success('Page logos updated globally.');
 			}
 		}
 
