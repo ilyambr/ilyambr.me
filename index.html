@@ -114,6 +114,11 @@
 			max-width:100vw;
 			scrollbar-gutter:stable both-edges;
 		}
+		.page-effects-root{
+			position:relative;
+			min-height:100%;
+			width:100%;
+		}
 		@media (min-width: 1201px){
 			body{
 				overflow-y:hidden;
@@ -3160,6 +3165,7 @@
 		<div class="loading-spinner"></div>
 	</div>
 
+	<div id="pageEffectsRoot" class="page-effects-root">
 	<div class="page-logo">
 		<img id="pageLogoImg" src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
 	</div>
@@ -3290,12 +3296,12 @@
 		<aside class="short-video-panel" id="shortVideoPanel" aria-label="Featured short video">
 				<div class="card short-video-card">
 					<h3>Featured Short</h3>
-					<div class="short-video-embed">
-						<div class="short-video-placeholder" id="shortVideoPlaceholder">
+					<div class="short-video-embed" data-keep-color="true">
+						<div class="short-video-placeholder" id="shortVideoPlaceholder" data-keep-color="true">
 							<strong>No short video yet</strong>
 							<span>Paste a TikTok or YouTube Shorts link in the admin panel to showcase it here.</span>
 						</div>
-						<div id="shortVideoEmbed"></div>
+						<div id="shortVideoEmbed" data-keep-color="true"></div>
 					</div>
 				</div>
 		</aside>
@@ -3304,6 +3310,8 @@
 			© 2025 ilyambr, made with love <3
 		</div>
 	</div>
+
+		</div>
 
 	<!-- Admin Console Button -->
 	<div class="admin-button" role="button" aria-label="Open admin console" onclick="openAdminLogin()">
@@ -3314,6 +3322,8 @@
 	</div>
 
 	<script>
+		const pageEffectsRoot = document.getElementById('pageEffectsRoot') || document.body;
+		window.pageEffectsRoot = pageEffectsRoot;
 		const ABOUT_MAX_LENGTH = 100;
 
 		const clampAboutText = (text = "") => {
@@ -7683,6 +7693,7 @@
 				if (backgroundInput) backgroundInput.value = dataUrl;
 				await saveGlobalSetting('background', dataUrl);
 				document.body.style.background = `url('${dataUrl}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				const statusEl = document.getElementById('currentBackground');
 				if (statusEl) statusEl.textContent = 'uploaded image';
 				if (typeof notify !== 'undefined' && typeof notify.success === 'function') {
@@ -8181,6 +8192,7 @@
 				const img = new Image();
 				img.onload = function() {
 					document.body.style.background = `url('${savedBg}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					pageEffectsRoot.style.background = document.body.style.background;
 					console.log('🎨 Global background applied successfully');
 					backgroundLoaded = true;
 					checkContentLoaded();
@@ -8188,6 +8200,7 @@
 				img.onerror = function() {
 					console.log('❌ Global background failed to load, reverting to default');
 					document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+					pageEffectsRoot.style.background = document.body.style.background;
 					backgroundLoaded = true;
 					saveGlobalSetting('background', 'Default');
 					checkContentLoaded();
@@ -8196,6 +8209,7 @@
 			} else {
 				// Use default background
 				document.body.style.background = `url('https://ilyambr.me/img/bg.jpg') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				backgroundLoaded = true;
 				checkContentLoaded();
 			}
@@ -8495,6 +8509,7 @@
 				
 				// Apply background immediately
 				document.body.style.background = `url('${url}') center / cover fixed no-repeat, linear-gradient(180deg, var(--bg-1), var(--bg-2))`;
+				pageEffectsRoot.style.background = document.body.style.background;
 				
 				// Update current settings display
 				document.getElementById('currentBackground').textContent = url.substring(0, 50) + (url.length > 50 ? '...' : '');
@@ -9572,8 +9587,8 @@
 		function shouldSkipGlobalGrayscale(node) {
 			ensureGrayscaleGlobals();
 			if (!(node instanceof Element)) return true;
-			if (node === document.body) return false;
-			if (!document.body.contains(node)) return true;
+			if (node === pageEffectsRoot) return false;
+			if (!pageEffectsRoot.contains(node)) return true;
 			if (GRAYSCALE_SKIP_TAGS.has(node.tagName)) return true;
 			if (node.matches(APP_IMAGE_SELECTOR)) return true;
 			if (node.matches('[data-keep-color="true"], [data-preserve-color="true"]')) return true;
@@ -9584,11 +9599,11 @@
 			return false;
 		}
 
-		function applyHardcodedGrayscale(root = document.body) {
+		function applyHardcodedGrayscale(root = pageEffectsRoot) {
 			ensureGrayscaleGlobals();
-			if (!(root instanceof Element) && root !== document.body) return;
-			const scope = root === document.body ? document.body : root;
-			if (scope instanceof Element && scope !== document.body && !shouldSkipGlobalGrayscale(scope)) {
+			if (!(root instanceof Element) && root !== pageEffectsRoot) return;
+			const scope = root === pageEffectsRoot ? pageEffectsRoot : root;
+			if (scope instanceof Element && scope !== pageEffectsRoot && !shouldSkipGlobalGrayscale(scope)) {
 				applyGrayscaleToNode(scope);
 			}
 			scope.querySelectorAll('*').forEach(node => {
@@ -9638,7 +9653,7 @@
 					mutation.addedNodes.forEach(node => processAddedNodesForGrayscale(node));
 				});
 			});
-			grayscaleObserver.observe(document.body, { childList: true, subtree: true });
+			grayscaleObserver.observe(pageEffectsRoot, { childList: true, subtree: true });
 		}
 
 		function teardownGrayscaleObserver() {
@@ -9649,7 +9664,7 @@
 
 		function updateHardcodedGrayscaleState(force = false) {
 			ensureGrayscaleGlobals();
-			const isActive = document.body.classList.contains('effect-grayscale');
+			const isActive = pageEffectsRoot.classList.contains('effect-grayscale');
 			if (!isActive) {
 				if (grayscaleActive || force) {
 					clearHardcodedGrayscale();
@@ -9670,9 +9685,9 @@
 		function toggleColorEffect() {
 			const isChecked = document.getElementById('colorEffectToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-color');
+				pageEffectsRoot.classList.add('effect-color');
 			} else {
-				document.body.classList.remove('effect-color');
+				pageEffectsRoot.classList.remove('effect-color');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9681,9 +9696,9 @@
 		function toggleGrayscale() {
 			const isChecked = document.getElementById('grayscaleToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-grayscale');
+				pageEffectsRoot.classList.add('effect-grayscale');
 			} else {
-				document.body.classList.remove('effect-grayscale');
+				pageEffectsRoot.classList.remove('effect-grayscale');
 			}
 			updateHardcodedGrayscaleState(true);
 			updateCombinedFilters();
@@ -9704,9 +9719,9 @@
 		function toggleSepia() {
 			const isChecked = document.getElementById('sepiaToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-sepia');
+				pageEffectsRoot.classList.add('effect-sepia');
 			} else {
-				document.body.classList.remove('effect-sepia');
+				pageEffectsRoot.classList.remove('effect-sepia');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9715,9 +9730,9 @@
 		function toggleInvert() {
 			const isChecked = document.getElementById('invertToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-invert');
+				pageEffectsRoot.classList.add('effect-invert');
 			} else {
-				document.body.classList.remove('effect-invert');
+				pageEffectsRoot.classList.remove('effect-invert');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9726,9 +9741,9 @@
 		function toggleBrightness() {
 			const isChecked = document.getElementById('brightnessToggle').checked;
 			if (isChecked) {
-				document.body.classList.add('effect-brightness');
+				pageEffectsRoot.classList.add('effect-brightness');
 			} else {
-				document.body.classList.remove('effect-brightness');
+				pageEffectsRoot.classList.remove('effect-brightness');
 			}
 			updateCombinedFilters();
 			scheduleEffectsAutoSave();
@@ -9738,29 +9753,29 @@
 			// Build combined filter string for complex combinations
 			const effects = [];
 			
-			if (document.body.classList.contains('effect-invert')) {
+			if (pageEffectsRoot.classList.contains('effect-invert')) {
 				effects.push('invert(1)');
 			}
-			if (document.body.classList.contains('effect-color')) {
+			if (pageEffectsRoot.classList.contains('effect-color')) {
 				// Use dynamic hue from control if available
 				const hue = parseInt(document.getElementById('colorHueInput')?.value || '45', 10);
 				effects.push(`hue-rotate(${isNaN(hue) ? 45 : hue}deg)`);
 				effects.push('saturate(1.5)');
 			}
-			if (document.body.classList.contains('effect-sepia')) {
+			if (pageEffectsRoot.classList.contains('effect-sepia')) {
 				effects.push('sepia(70%)');
 			}
-			if (document.body.classList.contains('effect-brightness')) {
+			if (pageEffectsRoot.classList.contains('effect-brightness')) {
 				effects.push('brightness(1.3)');
 			}
 
 			// Apply combined filter if we have multiple effects
 			if (effects.length > 1) {
-				document.body.style.filter = effects.join(' ');
+				pageEffectsRoot.style.filter = effects.join(' ');
 			} else if (effects.length === 1) {
-				document.body.style.filter = effects[0];
+				pageEffectsRoot.style.filter = effects[0];
 			} else {
-				document.body.style.filter = '';
+				pageEffectsRoot.style.filter = '';
 			}
 			updateHardcodedGrayscaleState();
 		}
@@ -9771,7 +9786,7 @@
 			const input = document.getElementById('colorHueInput');
 			if (slider) slider.value = h;
 			if (input) input.value = h;
-			if (document.body.classList.contains('effect-color')) {
+			if (pageEffectsRoot.classList.contains('effect-color')) {
 				updateCombinedFilters();
 				scheduleEffectsAutoSave();
 			}
@@ -9802,8 +9817,8 @@
 			setColorFilterFromHue(45);
 			
 			// Remove all effect classes
-			document.body.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
-			document.body.style.filter = '';
+			pageEffectsRoot.classList.remove('effect-color', 'effect-grayscale', 'effect-blur-bg', 'effect-sepia', 'effect-invert', 'effect-brightness');
+			pageEffectsRoot.style.filter = '';
 			// Hide the blur overlay
 			const glass = document.querySelector('.bg-glass');
 			if (glass) glass.classList.add('hidden');
@@ -9852,16 +9867,16 @@
 					setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
 				
 					// Apply the effects to the page
-					if (effects.color) document.body.classList.add('effect-color');
-					if (effects.grayscale) document.body.classList.add('effect-grayscale');
+					if (effects.color) pageEffectsRoot.classList.add('effect-color');
+					if (effects.grayscale) pageEffectsRoot.classList.add('effect-grayscale');
 					// Blur now toggles the .bg-glass overlay
 					const glass = document.querySelector('.bg-glass');
 					if (glass) {
 						if (effects.blur) glass.classList.remove('hidden'); else glass.classList.add('hidden');
 					}
-					if (effects.sepia) document.body.classList.add('effect-sepia');
-					if (effects.invert) document.body.classList.add('effect-invert');
-					if (effects.brightness) document.body.classList.add('effect-brightness');
+					if (effects.sepia) pageEffectsRoot.classList.add('effect-sepia');
+					if (effects.invert) pageEffectsRoot.classList.add('effect-invert');
+					if (effects.brightness) pageEffectsRoot.classList.add('effect-brightness');
 				
 					updateCombinedFilters();
 					effectsApplied = true;
@@ -9883,13 +9898,13 @@
 						setToggleChecked('invertToggle', effects.invert);
 						setToggleChecked('brightnessToggle', effects.brightness);
 						setColorFilterFromHue(typeof effects.hue === 'number' ? effects.hue : 45);
-						if (effects.color) document.body.classList.add('effect-color');
-						if (effects.grayscale) document.body.classList.add('effect-grayscale');
+						if (effects.color) pageEffectsRoot.classList.add('effect-color');
+						if (effects.grayscale) pageEffectsRoot.classList.add('effect-grayscale');
 						const glassM = document.querySelector('.bg-glass');
 						if (glassM) { if (effects.blur) glassM.classList.remove('hidden'); else glassM.classList.add('hidden'); }
-						if (effects.sepia) document.body.classList.add('effect-sepia');
-						if (effects.invert) document.body.classList.add('effect-invert');
-						if (effects.brightness) document.body.classList.add('effect-brightness');
+						if (effects.sepia) pageEffectsRoot.classList.add('effect-sepia');
+						if (effects.invert) pageEffectsRoot.classList.add('effect-invert');
+						if (effects.brightness) pageEffectsRoot.classList.add('effect-brightness');
 						updateCombinedFilters();
 						effectsApplied = true;
 						console.log('⬆️ Migrated website effects from local cache to Firebase');
@@ -9907,12 +9922,12 @@
 			}
 			updateHardcodedGrayscaleState(true);
 			if (!effectsApplied) {
-				// Ensure body classes reflect toggle state when no saved effects were applied
-				if (!document.getElementById('colorEffectToggle')?.checked) document.body.classList.remove('effect-color');
-				if (!document.getElementById('grayscaleToggle')?.checked) document.body.classList.remove('effect-grayscale');
-				if (!document.getElementById('sepiaToggle')?.checked) document.body.classList.remove('effect-sepia');
-				if (!document.getElementById('invertToggle')?.checked) document.body.classList.remove('effect-invert');
-				if (!document.getElementById('brightnessToggle')?.checked) document.body.classList.remove('effect-brightness');
+				// Ensure effect root classes reflect toggle state when no saved effects were applied
+				if (!document.getElementById('colorEffectToggle')?.checked) pageEffectsRoot.classList.remove('effect-color');
+				if (!document.getElementById('grayscaleToggle')?.checked) pageEffectsRoot.classList.remove('effect-grayscale');
+				if (!document.getElementById('sepiaToggle')?.checked) pageEffectsRoot.classList.remove('effect-sepia');
+				if (!document.getElementById('invertToggle')?.checked) pageEffectsRoot.classList.remove('effect-invert');
+				if (!document.getElementById('brightnessToggle')?.checked) pageEffectsRoot.classList.remove('effect-brightness');
 				const glassSync = document.querySelector('.bg-glass');
 				if (glassSync) {
 					if (document.getElementById('blurToggle')?.checked) glassSync.classList.remove('hidden'); else glassSync.classList.add('hidden');
