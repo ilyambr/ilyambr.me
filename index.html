@@ -4346,14 +4346,19 @@
 			const desired = normalizeTrackerUsername(app.characterTrnUsername);
 			if (!desired) return;
 			fetchTrackerStatsSnapshot().then(snapshot => {
-				if (!snapshot || normalizeTrackerUsername(snapshot.username) !== desired || !snapshot.stats) return;
-				const { stats, updatedAt, profileUrl } = snapshot;
+				if (!snapshot || normalizeTrackerUsername(snapshot.username) !== desired) return;
+				const { stats, updatedAt, profileUrl, username } = snapshot;
 				const playtime = stats?.timePlayed?.displayValue || null;
-				const kd = stats?.kDRatio?.displayValue || null;
+				const kdStat = stats?.kDRatio || stats?.kdRatio;
+				const kd = kdStat?.displayValue || null;
 				const playtimeEl = panelEl.querySelector('[data-role="tracker-playtime"]');
-				if (playtimeEl && playtime) playtimeEl.textContent = playtime;
+				if (playtimeEl && playtime) {
+					playtimeEl.textContent = playtime;
+				}
 				const kdEl = panelEl.querySelector('[data-role="tracker-kdratio"]');
-				if (kdEl && kd) kdEl.textContent = kd;
+				if (kdEl && kd) {
+					kdEl.textContent = kd;
+				}
 				const updatedEl = panelEl.querySelector('[data-role="tracker-updated"]');
 				if (updatedEl && updatedAt) {
 					try {
@@ -4362,9 +4367,17 @@
 						updatedEl.textContent = updatedAt;
 					}
 				}
-				const profileLinkEl = panelEl.querySelector('[data-role="tracker-profile-link"]');
+				const profileLinkEl = panelEl.querySelector('[data-role="tracker-username-link"]');
 				if (profileLinkEl && profileUrl) {
+					if (profileLinkEl.__preventDefaultHandler) {
+						profileLinkEl.removeEventListener('click', profileLinkEl.__preventDefaultHandler);
+						delete profileLinkEl.__preventDefaultHandler;
+					}
 					profileLinkEl.href = profileUrl;
+				}
+				const usernameEl = panelEl.querySelector('[data-role="tracker-username"]');
+				if (usernameEl && username) {
+					usernameEl.textContent = username;
 				}
 			});
 		}
@@ -4760,13 +4773,22 @@
 				const characterName = document.createElement('h4');
 				characterName.className = 'character-trn-name';
 				const displayName = app.characterName || app.characterTrnUsername || 'Tracker Profile';
-				if (app.characterTrnProfileUrl) {
+				const trackerSnapshot = resolveTrackerStatsForApp(app);
+				const trackerProfileUrl = trackerSnapshot?.profileUrl || app.characterTrnProfileUrl || null;
+				if (trackerProfileUrl || app.characterTrnUsername) {
 					const profileLink = document.createElement('a');
-					profileLink.href = app.characterTrnProfileUrl;
 					profileLink.target = '_blank';
 					profileLink.rel = 'noopener noreferrer';
 					profileLink.className = 'character-trn-link';
 					profileLink.textContent = displayName;
+					profileLink.dataset.role = 'tracker-username-link';
+					if (trackerProfileUrl) {
+						profileLink.href = trackerProfileUrl;
+					} else {
+						const preventDefaultHandler = (event) => event.preventDefault();
+						profileLink.__preventDefaultHandler = preventDefaultHandler;
+						profileLink.addEventListener('click', preventDefaultHandler);
+					}
 					characterName.appendChild(profileLink);
 				} else {
 					characterName.textContent = displayName;
@@ -4774,21 +4796,22 @@
 				content.appendChild(characterName);
 				const meta = document.createElement('div');
 				meta.className = 'character-trn-meta';
-				const trackerSnapshot = resolveTrackerStatsForApp(app);
 				const trackerStats = trackerSnapshot?.stats || {};
-				const trackerProfileUrl = trackerSnapshot?.profileUrl || app.characterTrnProfileUrl || null;
 				const trackerUpdatedDisplay = trackerSnapshot?.updatedAt ? formatTrackerTimestamp(trackerSnapshot.updatedAt) : null;
-				const statItems = [
-					{ label: 'Playtime', value: trackerStats?.timePlayed?.displayValue || app.characterTrnPlaytime || '124h 32m', domRole: 'tracker-playtime' },
-					{ label: 'K/D Ratio', value: trackerStats?.kDRatio?.displayValue || app.characterTrnKd || '2.45', domRole: 'tracker-kdratio' },
-					{ label: 'Game', value: getTrnGameLabel(app.characterTrnGame) },
-					{ label: 'Username', value: app.characterTrnUsername || '—' }
-				];
-				if (trackerProfileUrl) {
-					statItems.push({ label: 'Tracker Profile', value: 'Open profile', href: trackerProfileUrl, domRole: 'tracker-profile-link' });
+				const statItems = [];
+				const playtimeDisplay = trackerStats?.timePlayed?.displayValue || app.characterTrnPlaytime || null;
+				if (playtimeDisplay) {
+					statItems.push({ label: 'Playtime', value: playtimeDisplay, domRole: 'tracker-playtime' });
+				}
+				const kdDisplay = trackerStats?.kDRatio?.displayValue || app.characterTrnKd || null;
+				if (kdDisplay) {
+					statItems.push({ label: 'K/D Ratio', value: kdDisplay, domRole: 'tracker-kdratio' });
+				}
+				if (app.characterTrnUsername) {
+					statItems.push({ label: 'Username', value: app.characterTrnUsername, domRole: 'tracker-username' });
 				}
 				if (trackerUpdatedDisplay) {
-					statItems.push({ label: 'Tracker Updated', value: trackerUpdatedDisplay, domRole: 'tracker-updated' });
+					statItems.push({ label: 'Last Updated', value: trackerUpdatedDisplay, domRole: 'tracker-updated' });
 				}
 				statItems.forEach(stat => {
 					const item = document.createElement('div');
@@ -4798,21 +4821,9 @@
 					statLabel.textContent = stat.label;
 					const statValue = document.createElement('span');
 					statValue.className = 'character-trn-meta-value';
-					if (stat.href) {
-						const link = document.createElement('a');
-						link.href = stat.href;
-						link.target = '_blank';
-						link.rel = 'noopener noreferrer';
-						link.textContent = stat.value;
-						if (stat.domRole) {
-							link.dataset.role = stat.domRole;
-						}
-						statValue.appendChild(link);
-					} else {
-						statValue.textContent = stat.value;
-						if (stat.domRole) {
-							statValue.dataset.role = stat.domRole;
-						}
+					statValue.textContent = stat.value;
+					if (stat.domRole) {
+						statValue.dataset.role = stat.domRole;
 					}
 					item.appendChild(statLabel);
 					item.appendChild(statValue);
