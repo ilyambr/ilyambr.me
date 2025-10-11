@@ -2336,19 +2336,19 @@
 				transform: scale(0.9);
 			}
 			to {
-				opacity: 1;
-				transform: scale(1);
-			}
-		}
-
-		/* Responsive popup styles */
-		@media (max-width: 640px) {
-			.popup-content {
-				min-width: 320px;
-				margin: 20px;
-			}
-			
-			.popup-buttons {
+				const profileLinkEl = panelEl.querySelector('[data-role="tracker-username-link"]');
+				if (profileLinkEl) {
+					if (profileUrl) {
+						if (profileLinkEl.__preventDefaultHandler) {
+							profileLinkEl.removeEventListener('click', profileLinkEl.__preventDefaultHandler);
+							delete profileLinkEl.__preventDefaultHandler;
+						}
+						profileLinkEl.href = profileUrl;
+					}
+					if (username) {
+						profileLinkEl.textContent = username;
+					}
+				}
 				gap: 10px;
 			}
 			
@@ -4359,19 +4359,6 @@
 				if (kdEl && kd) {
 					kdEl.textContent = kd;
 				}
-				const profileLinkEl = panelEl.querySelector('[data-role="tracker-username-link"]');
-				if (profileLinkEl) {
-					if (profileUrl) {
-						if (profileLinkEl.__preventDefaultHandler) {
-							profileLinkEl.removeEventListener('click', profileLinkEl.__preventDefaultHandler);
-							delete profileLinkEl.__preventDefaultHandler;
-						}
-						profileLinkEl.href = profileUrl;
-					}
-					if (username) {
-						profileLinkEl.textContent = username;
-					}
-				}
 				const usernameEl = panelEl.querySelector('[data-role="tracker-username"]');
 				if (usernameEl && username) {
 					if (usernameEl.tagName === 'A') {
@@ -4793,24 +4780,7 @@
 				const displayName = app.characterName || app.characterTrnUsername || 'Tracker Profile';
 				const trackerSnapshot = resolveTrackerStatsForApp(app);
 				const trackerProfileUrl = trackerSnapshot?.profileUrl || app.characterTrnProfileUrl || null;
-				if (trackerProfileUrl || app.characterTrnUsername) {
-					const profileLink = document.createElement('a');
-					profileLink.target = '_blank';
-					profileLink.rel = 'noopener noreferrer';
-					profileLink.className = 'character-trn-link';
-					profileLink.textContent = displayName;
-					profileLink.dataset.role = 'tracker-username-link';
-					if (trackerProfileUrl) {
-						profileLink.href = trackerProfileUrl;
-					} else {
-						const preventDefaultHandler = (event) => event.preventDefault();
-						profileLink.__preventDefaultHandler = preventDefaultHandler;
-						profileLink.addEventListener('click', preventDefaultHandler);
-					}
-					characterName.appendChild(profileLink);
-				} else {
-					characterName.textContent = displayName;
-				}
+				characterName.textContent = displayName;
 				content.appendChild(characterName);
 				const meta = document.createElement('div');
 				meta.className = 'character-trn-meta';
