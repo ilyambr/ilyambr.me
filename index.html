@@ -536,7 +536,7 @@
 			display:flex;
 			flex-direction:column;
 			gap:10px;
-			margin:-3px 0 0;
+			margin:-7px 0 0;
 			padding:3px 0 6px;
 			background:transparent;
 			border:none;
@@ -605,17 +605,19 @@
 			background-size:cover;
 			background-position:center;
 			display:flex;
-			align-items:flex-end;
-			justify-content:center;
+			align-items:stretch;
+			justify-content:flex-end;
 		}
 		.app-settings-overlay{
 			position:relative;
 			width:100%;
+			height:100%;
 			padding:48px 32px;
-			background:linear-gradient(180deg, rgba(5,5,10,0.15) 0%, rgba(5,5,10,0.85) 100%);
+			background:linear-gradient(180deg, rgba(5,5,10,0.05) 0%, rgba(5,5,10,0.25) 100%);
 			display:flex;
 			flex-direction:column;
 			align-items:center;
+			justify-content:flex-end;
 			gap:12px;
 			text-align:center;
 		}
@@ -1651,14 +1653,16 @@
 			content:"";
 			position:absolute;
 			inset:0;
-			background:linear-gradient(190deg, rgba(4,6,12,0.08) 0%, rgba(4,6,12,0.92) 100%);
+			background:linear-gradient(190deg, rgba(4,6,12,0.02) 0%, rgba(4,6,12,0.25) 100%);
 		}
 		.settings-template-hero-overlay{
 			position:absolute;
-			inset:auto 0 0 0;
-			padding:34px 40px;
+			inset:0;
+			padding:40px;
 			display:flex;
-			align-items:center;
+			flex-direction:column;
+			align-items:flex-start;
+			justify-content:flex-end;
 			gap:22px;
 			z-index:1;
 		}
