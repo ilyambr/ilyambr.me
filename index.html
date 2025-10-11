@@ -65,6 +65,13 @@
 			--error-border:rgba(255,107,129,0.35);
 			--error-shadow:rgba(255,107,129,0.25);
 			--error-strong:rgba(255,107,129,0.6);
+			--settings-section-bg-start:rgba(20,24,46,0.86);
+			--settings-section-bg-end:rgba(12,14,28,0.94);
+			--settings-section-border:rgba(132,164,255,0.16);
+			--settings-section-heading:rgba(173,222,255,0.86);
+			--settings-section-row-label:rgba(174,205,255,0.72);
+			--settings-section-row-value:rgba(255,255,255,0.96);
+			--settings-section-placeholder:rgba(186,204,232,0.66);
 		}
 
 		*{box-sizing:border-box; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
@@ -482,7 +489,7 @@
 			background:linear-gradient(90deg, #3a3a3a, #7a7a7a);
 			padding:4px 8px; border-radius:999px; font-size:12px;
 			border:1px solid rgba(255,255,255,0.15);
-			box-shadow:0 10px 24px rgba(255,59,107,0.35);
+			box-shadow:0 10px 24px rgba(160,160,160,0.35);
 		}
 		.thumb.hide-live:after{
 			display:none;
@@ -529,8 +536,8 @@
 			display:flex;
 			flex-direction:column;
 			gap:10px;
-			margin:0;
-			padding:6px 0;
+			margin:-3px 0 0;
+			padding:3px 0 6px;
 			background:transparent;
 			border:none;
 		}
@@ -550,11 +557,13 @@
 			transition:all .15s ease;
 		}
 		.popup-content.game-settings-panel .settings-tab:hover{
-			background:rgba(255,255,255,0.1);
+			background:rgba(255,255,255,0.22);
+			color:#0c1424;
 		}
 		.popup-content.game-settings-panel .settings-tab.active{
-			background:linear-gradient(90deg, rgba(140,140,140,0.65), rgba(200,200,200,0.35));
-			box-shadow:0 8px 24px rgba(0,0,0,0.2);
+			background:#ffffff;
+			color:#0c1424;
+			box-shadow:0 10px 26px rgba(0,0,0,0.18);
 		}
 		.popup-content.game-settings-panel .settings-content{
 			position:relative;
@@ -1759,8 +1768,8 @@
 			display:flex;
 			flex-direction:column;
 			gap:18px;
-			background:linear-gradient(165deg, rgba(20,24,46,0.86) 0%, rgba(12,14,28,0.94) 100%);
-			border:1px solid rgba(132,164,255,0.16);
+			background:linear-gradient(165deg, var(--settings-section-bg-start) 0%, var(--settings-section-bg-end) 100%);
+			border:1px solid var(--settings-section-border);
 			border-radius:22px;
 			padding:24px 28px 26px;
 			box-shadow:0 26px 46px rgba(6,10,30,0.32), inset 0 0 0 1px rgba(255,255,255,0.02);
@@ -1772,7 +1781,7 @@
 			font-weight:700;
 			letter-spacing:0.48px;
 			text-transform:uppercase;
-			color:rgba(173,222,255,0.86);
+			color:var(--settings-section-heading);
 		}
 		.settings-template-grid{
 			display:grid;
@@ -1789,7 +1798,7 @@
 			margin:0;
 			font-size:12px;
 			font-weight:600;
-			color:rgba(174,205,255,0.72);
+			color:var(--settings-section-row-label);
 			text-transform:uppercase;
 			letter-spacing:0.42px;
 			min-width:0;
@@ -1798,14 +1807,14 @@
 			margin:0;
 			font-size:16px;
 			font-weight:600;
-			color:rgba(255,255,255,0.96);
+			color:var(--settings-section-row-value);
 			line-height:1.5;
 			word-break:break-word;
 			min-width:0;
 		}
 		.settings-template-placeholder{
 			margin:0;
-			color:rgba(186,204,232,0.66);
+			color:var(--settings-section-placeholder);
 			font-size:14px;
 		}
 		@media (max-width: 1280px){
@@ -2936,6 +2945,180 @@
 			color: var(--muted);
 			font-size: 12px;
 			margin-top: -4px;
+		}
+
+		.admin-setting.page-logo-settings {
+			gap: 0;
+		}
+
+		.page-logo-settings-card {
+			display: flex;
+			gap: 20px;
+			padding: 18px;
+			background: rgba(12, 12, 18, 0.55);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			border-radius: 14px;
+			box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+			flex-wrap: wrap;
+		}
+
+		.page-logo-previews {
+			display: flex;
+			gap: 18px;
+			flex: 1 1 420px;
+			min-width: 0;
+		}
+
+		.logo-preview-card {
+			flex: 1 1 0;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			cursor: pointer;
+		}
+
+		.logo-preview-card.large {
+			flex: 1.4 1 0;
+		}
+
+		.logo-preview-card.small {
+			flex: 1 1 0;
+		}
+
+		.logo-preview-frame {
+			position: relative;
+			width: 100%;
+			padding-top: 56.25%;
+			background: rgba(0, 0, 0, 0.45);
+			border: 1px dashed rgba(255, 255, 255, 0.28);
+			border-radius: 12px;
+			overflow: hidden;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.logo-preview-card.small .logo-preview-frame {
+			padding-top: 100%;
+		}
+
+		.logo-preview-card:focus .logo-preview-frame,
+		.logo-preview-card:hover .logo-preview-frame {
+			border-color: rgba(145, 70, 255, 0.8);
+			box-shadow: 0 0 0 3px rgba(145, 70, 255, 0.18);
+		}
+
+		.logo-preview-frame img {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			display: none;
+			filter: invert(100%);
+			transition: transform 0.2s ease;
+		}
+
+		.logo-preview-frame.has-image img {
+			display: block;
+		}
+
+		.logo-preview-placeholder {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			color: rgba(255, 255, 255, 0.6);
+			font-size: 14px;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+			pointer-events: none;
+		}
+
+		.logo-preview-frame.has-image .logo-preview-placeholder {
+			opacity: 0;
+		}
+
+		.logo-preview-caption {
+			font-size: 13px;
+			font-weight: 600;
+			color: rgba(255, 255, 255, 0.68);
+			text-align: center;
+		}
+
+		.page-logo-meta {
+			flex: 0 0 220px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			min-width: 200px;
+		}
+
+		.page-logo-meta > small {
+			color: var(--muted);
+			font-size: 12px;
+			margin-top: -6px;
+		}
+
+		.page-logo-upload {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+
+		.page-logo-upload .admin-upload-label {
+			margin-top: -2px;
+		}
+
+		.page-logo-meta-fields {
+			display: grid;
+			gap: 10px;
+		}
+
+		.page-logo-meta-fields label {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			font-size: 13px;
+			color: var(--muted);
+		}
+
+		.page-logo-meta-fields input {
+			width: 100%;
+		}
+
+		.logo-invert-toggle {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 13px;
+			color: var(--text);
+		}
+
+		.page-logo-actions {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.page-logo-actions button {
+			width: 100%;
+		}
+
+		@media (max-width: 900px) {
+			.page-logo-settings-card {
+				flex-direction: column;
+			}
+			.page-logo-previews {
+				flex-direction: column;
+			}
+			.logo-preview-card.large,
+			.logo-preview-card.small {
+				flex: none;
+			}
+			.page-logo-meta {
+				flex: 1 1 auto;
+				width: 100%;
+			}
 		}
 
 		.current-settings {
@@ -5838,25 +6021,52 @@
 				
 				<div class="admin-section">
 					<h4>Page Logo Settings</h4>
-					<div class="admin-setting">
-						<label for="pageLogoUploadButton">Page Logo:</label>
-						<div class="page-logo-upload" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-							<button type="button" class="admin-upload-btn" id="pageLogoUploadButton" onclick="triggerPageLogoUpload()">Upload image</button>
-							<span id="pageLogoUploadName" class="admin-upload-label" aria-live="polite">No file selected</span>
-							<input type="hidden" id="pageLogo">
-							<input type="file" id="pageLogoUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this)">
-							<input type="text" id="pageLogoResolution" placeholder="1920x1080" style="flex:1 1 140px;" title="Enter source resolution (e.g., 1920x1080)">
-							<input type="text" id="pageLogoSize" placeholder="135x135" style="flex:1 1 140px;" title="Displayed size (widthxheight in px)">
+					<div class="admin-setting page-logo-settings">
+						<div class="page-logo-settings-card">
+							<div class="page-logo-previews">
+								<div class="logo-preview-card large" role="button" tabindex="0" aria-label="Upload logo for large preview" onclick="triggerPageLogoUpload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload();}">
+									<div class="logo-preview-frame" id="pageLogoLargeFrame">
+										<img id="pageLogoAdminPreviewLarge" alt="Large logo preview" />
+										<span class="logo-preview-placeholder">upload</span>
+									</div>
+									<div class="logo-preview-caption">Preview - Large Logo</div>
+								</div>
+								<div class="logo-preview-card small" role="button" tabindex="0" aria-label="Upload logo for small preview" onclick="triggerPageLogoUpload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();triggerPageLogoUpload();}">
+									<div class="logo-preview-frame" id="pageLogoSmallFrame">
+										<img id="pageLogoAdminPreviewSmall" alt="Small logo preview" />
+										<span class="logo-preview-placeholder">upload</span>
+									</div>
+									<div class="logo-preview-caption">Preview - Small Logo</div>
+								</div>
+							</div>
+							<div class="page-logo-meta">
+								<div class="page-logo-upload">
+									<button type="button" class="admin-upload-btn" id="pageLogoUploadButton" onclick="triggerPageLogoUpload()">Upload image</button>
+									<span id="pageLogoUploadName" class="admin-upload-label" aria-live="polite">No file selected</span>
+									<input type="hidden" id="pageLogo">
+									<input type="file" id="pageLogoUploadFile" accept="image/*" style="display:none" onchange="handlePageLogoUploadFile(this)">
+								</div>
+								<div class="page-logo-meta-fields">
+									<label for="pageLogoResolution">
+										Source Resolution
+										<input type="text" id="pageLogoResolution" placeholder="1920x1080" title="Enter source resolution (e.g., 1920x1080)">
+									</label>
+									<label for="pageLogoSize">
+										Display Size
+										<input type="text" id="pageLogoSize" placeholder="135x135" title="Displayed size (widthxheight in px)">
+									</label>
+								</div>
+								<label class="logo-invert-toggle" for="logoInvertToggle">
+									<input type="checkbox" id="logoInvertToggle" checked onchange="updateLogoInvert()">
+									<span>Invert Logo (white on dark background)</span>
+								</label>
+								<small>Uncheck if your logo is already dark or you want the original colors.</small>
+								<div class="page-logo-actions">
+									<button type="button" onclick="updatePageLogo()">Update Logo</button>
+									<small>Upload a logo image and optionally record its source resolution and display size.</small>
+								</div>
+							</div>
 						</div>
-						<button onclick="updatePageLogo()">Update</button>
-						<small>Upload a logo image and optionally record its source resolution and display size.</small>
-					</div>
-					<div class="admin-setting">
-						<label style="display:flex; align-items:center; gap:8px;">
-							<input type="checkbox" id="logoInvertToggle" checked onchange="updateLogoInvert()">
-							<span>Invert Logo (white on dark background)</span>
-						</label>
-						<small>Uncheck if your logo is already dark or you want the original colors</small>
 					</div>
 				</div>
 				
@@ -6323,7 +6533,14 @@
 			{ key: '--error-border-strong', type: 'rgba' },
 			{ key: '--error-border', type: 'rgba' },
 			{ key: '--error-shadow', type: 'rgba' },
-			{ key: '--error-strong', type: 'rgba' }
+			{ key: '--error-strong', type: 'rgba' },
+			{ key: '--settings-section-bg-start', type: 'rgba' },
+			{ key: '--settings-section-bg-end', type: 'rgba' },
+			{ key: '--settings-section-border', type: 'rgba' },
+			{ key: '--settings-section-heading', type: 'rgba' },
+			{ key: '--settings-section-row-label', type: 'rgba' },
+			{ key: '--settings-section-row-value', type: 'rgba' },
+			{ key: '--settings-section-placeholder', type: 'rgba' }
 		];
 
 		function getCssVar(key) {
@@ -6499,7 +6716,11 @@
 				'--warning-main':'#fdc45a','--warning-bg':'rgba(253,196,90,0.18)','--warning-border-strong':'rgba(253,196,90,0.45)',
 				'--warning-border':'rgba(253,196,90,0.35)','--warning-shadow':'rgba(253,196,90,0.22)','--error-main':'#ff6b81',
 				'--error-bg':'rgba(255,107,129,0.18)','--error-border-strong':'rgba(255,107,129,0.45)','--error-border':'rgba(255,107,129,0.35)',
-				'--error-shadow':'rgba(255,107,129,0.25)','--error-strong':'rgba(255,107,129,0.6)'
+				'--error-shadow':'rgba(255,107,129,0.25)','--error-strong':'rgba(255,107,129,0.6)',
+				'--settings-section-bg-start':'rgba(20,24,46,0.86)','--settings-section-bg-end':'rgba(12,14,28,0.94)',
+				'--settings-section-border':'rgba(132,164,255,0.16)','--settings-section-heading':'rgba(173,222,255,0.86)',
+				'--settings-section-row-label':'rgba(174,205,255,0.72)','--settings-section-row-value':'rgba(255,255,255,0.96)',
+				'--settings-section-placeholder':'rgba(186,204,232,0.66)'
 			};
 			Object.entries(defaults).forEach(([k,v])=>setCssVar(k,v));
 			await saveGlobalSetting('siteColors', JSON.stringify(defaults));
@@ -7628,6 +7849,34 @@
 		function triggerProfileUpload(){ const f = document.getElementById('profilePictureUploadFile'); if (f) f.click(); }
 		function triggerBackgroundUpload(){ const f = document.getElementById('backgroundImageUploadFile'); if (f) f.click(); }
 		function triggerPageLogoUpload(){ const f = document.getElementById('pageLogoUploadFile'); if (f) f.click(); }
+		function setPageLogoPreviewImage(src) {
+			const previews = [
+				{ img: document.getElementById('pageLogoAdminPreviewLarge'), frame: document.getElementById('pageLogoLargeFrame') },
+				{ img: document.getElementById('pageLogoAdminPreviewSmall'), frame: document.getElementById('pageLogoSmallFrame') }
+			];
+			const hasImage = !!src;
+			previews.forEach(({ img, frame }) => {
+				if (!img || !frame) return;
+				if (hasImage) {
+					img.src = src;
+					img.style.display = 'block';
+					frame.classList.add('has-image');
+				} else {
+					img.removeAttribute('src');
+					img.style.display = 'none';
+					frame.classList.remove('has-image');
+				}
+			});
+			const invertEnabled = !document.body.classList.contains('logo-no-invert');
+			updateAdminLogoPreviewInvert(invertEnabled);
+		}
+		function updateAdminLogoPreviewInvert(shouldInvert) {
+			const previews = document.querySelectorAll('#pageLogoAdminPreviewLarge, #pageLogoAdminPreviewSmall');
+			previews.forEach(img => {
+				if (!img) return;
+				img.style.filter = shouldInvert ? 'invert(100%)' : 'none';
+			});
+		}
 		async function handlePageLogoUploadFile(input) {
 			const file = input?.files?.[0];
 			if (!file) return;
@@ -7642,6 +7891,7 @@
 				if (previewEl) {
 					previewEl.src = dataUrl;
 				}
+				setPageLogoPreviewImage(dataUrl);
 				const label = document.getElementById('pageLogoUploadName');
 				if (label) {
 					label.textContent = `${file.name} (ready to save)`;
@@ -8394,6 +8644,11 @@
 					? (currentPageLogo.startsWith('data:') ? 'Uploaded image in use' : 'Custom logo URL in use')
 					: 'Default logo in use';
 			}
+			const mainLogoElement = document.getElementById('pageLogoImg');
+			const adminPreviewSrc = currentPageLogo && currentPageLogo !== 'N/A'
+				? currentPageLogo
+				: (mainLogoElement ? mainLogoElement.src : '');
+			setPageLogoPreviewImage(adminPreviewSrc);
 			const pageLogoHidden = document.getElementById('pageLogo');
 			if (pageLogoHidden) {
 				pageLogoHidden.value = '';
@@ -8697,6 +8952,9 @@
 			if (logoElement && logoData) {
 				logoElement.src = logoData;
 			}
+			if (logoData) {
+				setPageLogoPreviewImage(logoData);
+			}
 			if (sizeStr) {
 				const [w, h] = sizeStr.toLowerCase().split('x');
 				const logoBox = document.querySelector('.page-logo');
@@ -8747,6 +9005,7 @@
 					logoElement.style.filter = 'none';
 				}
 			}
+			updateAdminLogoPreviewInvert(shouldInvert);
 		}
 
 		async function updateLogoInvert() {
