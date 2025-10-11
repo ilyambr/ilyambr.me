@@ -356,8 +356,9 @@
 			height:14px;
 			object-fit:cover;
 			border-radius:2px;
-			filter:invert(1);
+			filter:invert(1) grayscale(1) brightness(1.4) contrast(1.6);
 		}
+		.social-link.discord-social-link img{ filter:invert(1) grayscale(1) brightness(1.6) contrast(1.8); }
 		.header:before{
 			content:"";
 			position:absolute; inset:0;
@@ -2091,6 +2092,47 @@
 			animation: popupSlideIn 0.3s ease-out;
 		}
 
+		#colorsPopup .popup-content{
+			width:min(640px, 92vw);
+			max-height:min(85vh, 780px);
+			display:flex;
+			flex-direction:column;
+		}
+		#colorsPopup .popup-body{
+			flex:1 1 auto;
+			overflow-y:auto;
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+			padding:20px 24px 24px;
+		}
+		#colorsPopup .admin-setting{
+			flex:1 1 auto;
+			display:flex;
+			flex-direction:column;
+			gap:16px;
+		}
+		#colorsPopup .colors-list{
+			flex:1 1 auto;
+			display:grid;
+			gap:12px;
+			overflow-y:auto;
+			padding-right:8px;
+			max-height:none;
+		}
+		#colorsPopup .colors-actions{
+			display:flex;
+			flex-wrap:wrap;
+			gap:10px;
+			margin-top:4px;
+			padding-top:12px;
+			border-top:1px solid rgba(255,255,255,0.06);
+		}
+		#colorsPopup .colors-actions button{
+			flex:1 1 220px;
+			min-width:180px;
+		}
+
 		.popup-header {
 			display: flex;
 			justify-content: space-between;
@@ -3172,30 +3214,30 @@
 	</div>
 
 	<div class="page-logo">
-		<img id="pageLogoImg" src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Logo" />
+		<img id="pageLogoImg" src="https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png" alt="Logo" />
 	</div>
 	
 	<ul class="social-bar" aria-label="Social Bar">
 		<li><a id="twitchSocialLink" href="https://www.twitch.tv/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Twitch">
-			<img alt="Twitch" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
+			<img alt="Twitch" src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png">
 		</a></li>
 		<li><a id="youtubeSocialLink" href="https://www.youtube.com/@ilyambr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Youtube">
-			<img alt="Youtube" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
+			<img alt="Youtube" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png">
 		</a></li>
 		<li><a id="tiktokSocialLink" href="https://www.tiktok.com/@ilyambr_" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="TikTok">
-			<img alt="TikTok" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
+			<img alt="TikTok" src="https://static.wixstatic.com/media/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_7fc95bac711041dcb9691b6a09192a84~mv2.png">
 		</a></li>
 		<li><a id="discordSocialLink" href="https://discord.gg/EK4nvAJPzc" target="_blank" rel="noreferrer noopener" class="social-link discord-social-link" aria-label="Discord">
-			<img alt="Discord" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
+			<img alt="Discord" src="https://static.wixstatic.com/media/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_f642c87820384bd6b2a7c95d10b73a22~mv2.png">
 		</a></li>
 		<li><a id="instagramSocialLink" href="https://www.instagram.com/ilyambr_/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Instagram">
-			<img alt="Instagram" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
+			<img alt="Instagram" src="https://static.wixstatic.com/media/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_ca1d837ce7194421b781ee7384061a8e~mv2.png">
 		</a></li>
 		<li><a id="xSocialLink" href="https://x.com/ilyambrr" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="X">
-			<img alt="X" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
+			<img alt="X" src="https://static.wixstatic.com/media/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_bc7125385fcf422cad29fbe20a2b237c~mv2.png">
 		</a></li>
 		<li><a id="redditSocialLink" href="https://www.reddit.com/user/ilyambr/" target="_blank" rel="noreferrer noopener" class="social-link" aria-label="Reddit">
-			<img alt="Reddit" data-keep-color="true" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
+			<img alt="Reddit" src="https://static.wixstatic.com/media/11062b_1b825ed041384249b8d50464cf9de627~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_1b825ed041384249b8d50464cf9de627~mv2.png">
 		</a></li>
 	</ul>
 	
@@ -3220,11 +3262,11 @@
 				</div>
 				<div class="stats">
 					<div class="stat" id="twitchFollowersStat">
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="youtubeSubscribersStat">
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
 						&nbsp;
 					</div>
 					<div class="stat" id="streamingYearStat">&nbsp;</div>
@@ -3612,7 +3654,7 @@
 				const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 				if (followersElement) {
 					followersElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formattedFollowers} followers
 					`;
 					console.log('✅ Updated Twitch followers display:', formattedFollowers);
@@ -3631,7 +3673,7 @@
 			console.log('🔄 Using fallback for Twitch followers');
 			const followersElement = document.querySelector('.stat img[alt="Twitch"]').parentElement;
 			followersElement.innerHTML = `
-				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
+				<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 				N/A followers
 			`;
 		}
@@ -3661,7 +3703,7 @@
 						// Update the subscribers display
 						const subsElement = document.querySelector('.stat img[alt="YouTube"]').parentElement;
 						subsElement.innerHTML = `
-							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
+							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
 							${formattedSubs} subs
 						`;
 					}
@@ -5858,8 +5900,8 @@
 			</div>
 			<div class="popup-body" data-keep-color="true">
 				<div class="admin-setting" data-keep-color="true">
-					<div id="colorsList" style="display:grid; gap:10px;" data-keep-color="true"></div>
-					<div style="display:flex; gap:10px; margin-top:12px;">
+					<div id="colorsList" class="colors-list" data-keep-color="true"></div>
+					<div class="colors-actions" data-keep-color="true">
 						<button onclick="saveColorsToDb()" style="background: linear-gradient(90deg, #00d2d3, #54a0ff);">Save Colors Globally</button>
 						<button onclick="resetColorsToDefaults()" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24);">Reset Colors</button>
 					</div>
@@ -8237,7 +8279,7 @@
 			} else {
 				const logoElement = document.getElementById('pageLogoImg');
 				if (logoElement) {
-					logoElement.src = 'https://www.svgrepo.com/show/353655/discord-icon.svg';
+					logoElement.src = 'https://ilyambr.me/Screenshot_2025-02-06_010238_edited_edited.png';
 				}
 			}
 			const uploadLabel = document.getElementById('pageLogoUploadName');
@@ -8320,7 +8362,7 @@
 				const followerElement = document.getElementById('twitchFollowersStat');
 				if (followerElement) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formatNumber(parseInt(savedFollowerCount))} followers
 					`;
 				}
@@ -8332,7 +8374,7 @@
 				const subscriberElement = document.getElementById('youtubeSubscribersStat');
 				if (subscriberElement) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
 						${formatNumber(parseInt(savedSubscriberCount))} subs
 					`;
 				}
@@ -9155,7 +9197,7 @@
 			if (followerElement) {
 				if (count) {
 					followerElement.innerHTML = `
-						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch" data-keep-color="true"/>
+						<img src="https://static.wixstatic.com/media/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_33ebef7d3c404a0baa46a0ec8b83cd51~mv2.png" alt="Twitch"/>
 						${formatNumber(parseInt(count))} followers
 					`;
 				} else {
@@ -9186,7 +9228,7 @@
 			if (subscriberElement) {
 				if (count) {
 					subscriberElement.innerHTML = `
-						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube" data-keep-color="true"/>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube"/>
 						${formatNumber(parseInt(count))} subs
 					`;
 				} else {
