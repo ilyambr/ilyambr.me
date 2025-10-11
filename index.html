@@ -4277,6 +4277,7 @@
 		let currentGameSettingsTabId = null;
 		let selectedAllSettingsAppId = null;
 		const TRACKER_STATS_ENDPOINT = '/data/ilyambr-ttb-tracker.json';
+		const TRACKER_STATS_FALLBACK_ENDPOINT = '/data/example-tracker.json';
 		let cachedTrackerStatsSnapshot = null;
 		let trackerStatsFetchPromise = null;
 
@@ -4291,12 +4292,20 @@
 			if (!force && trackerStatsFetchPromise) {
 				return trackerStatsFetchPromise;
 			}
-			trackerStatsFetchPromise = fetch(TRACKER_STATS_ENDPOINT, { cache: 'no-store' })
-				.then(response => {
-					if (!response.ok) {
-						throw new Error(`Tracker stats request failed: ${response.status}`);
-					}
-					return response.json();
+			const loadSnapshot = async (endpoint) => {
+				const response = await fetch(endpoint, { cache: 'no-store' });
+				if (!response.ok) {
+					throw new Error(`Tracker stats request failed: ${response.status}`);
+				}
+				return response.json();
+			};
+			trackerStatsFetchPromise = loadSnapshot(TRACKER_STATS_ENDPOINT)
+				.catch(error => {
+					console.warn('Primary tracker snapshot unavailable, trying fallback', {
+						message: error?.message,
+						status: error?.status || null
+					});
+					return loadSnapshot(TRACKER_STATS_FALLBACK_ENDPOINT);
 				})
 				.then(data => {
 					cachedTrackerStatsSnapshot = data && typeof data === 'object' ? data : null;

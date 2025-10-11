@@ -1,0 +1,30 @@
+{
+  "username": "ilyambr#ttb",
+  "profileUrl": "https://tracker.gg/valorant/profile/riot/ilyambr%23ttb?",
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "source": {
+    "endpoint": "https://api.tracker.gg/api/v2/valorant/standard/profile/riot/ilyambr%23ttb"
+  },
+  "stats": {
+    "timePlayed": {
+      "displayName": "Time Played",
+      "displayCategory": "Combat",
+      "category": "combat",
+      "metadata": {},
+      "value": 22910,
+      "displayValue": "6h 21m",
+      "displayType": "TimeSeconds",
+      "percentile": null
+    },
+    "kDRatio": {
+      "displayName": "K/D Ratio",
+      "displayCategory": "Combat",
+      "category": "combat",
+      "metadata": {},
+      "value": 0.650246305418719,
+      "displayValue": "0.65",
+      "displayType": "NumberPrecision2",
+      "percentile": 3
+    }
+  }
+}
