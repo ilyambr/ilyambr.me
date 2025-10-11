@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
-    "lint": "eslint api"
+    "lint": "eslint api",
+    "tracker:fetch": "node scripts/fetch-tracker-stats.js"
   },
   "dependencies": {
     "firebase-admin": "^12.5.0",

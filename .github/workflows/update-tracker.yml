@@ -1,0 +1,72 @@
+name: Update Tracker Stats
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force refresh even if cache exists'
+        required: false
+        default: 'false'
+
+jobs:
+  refresh:
+    name: Refresh cached tracker stats
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      FORCE_REFRESH: ${{ github.event.inputs.force || 'false' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Fetch tracker stats snapshot
+        env:
+          TRACKER_USERNAME: ${{ secrets.TRACKER_USERNAME }}
+          FORCE_REFRESH: ${{ env.FORCE_REFRESH }}
+        run: |
+          if [ -z "$TRACKER_USERNAME" ]; then
+            echo "TRACKER_USERNAME secret is not set" >&2
+            exit 1
+          fi
+          if [ "$FORCE_REFRESH" = "true" ]; then
+            node scripts/fetch-tracker-stats.js --force
+          else
+            npm run tracker:fetch
+          fi
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet --exit-code; then
+            echo "No updates to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          git commit -m "chore: refresh tracker stats"
+
+      - name: Push changes
+        if: ${{ success() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push
